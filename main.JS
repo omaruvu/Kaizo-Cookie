@@ -1,5 +1,5 @@
-Game.registerMod("Kaizo cookies", {
-	init: function() {
+Game.registerMod("Kaizo Cookies", { 
+	init: function() { 
 
         // notification!
 		Game.Notify(`Good luck.`, ``, [21,32],10,1);
@@ -35,14 +35,32 @@ Game.registerMod("Kaizo cookies", {
 		//minigame
 		eval('Game.modifyBuildingPrice='+Game.modifyBuildingPrice.toString().replace("if (Game.hasBuff('Crafty pixies')) price*=0.98;","if (Game.hasBuff('Crafty pixies')) price*=0.90;"))
 
+		eval("Game.Objects['Wizard tower'].minigame.spells['summon crafty pixies'].desc="+'"'+Game.Objects['Wizard tower'].minigame.spells['summon crafty pixies'].desc.replace('2','10')+'"');
+
 		eval("Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].win="+Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].win.toString().replace("{if ((Game.Objects[i].amount<max || n==1) && Game.Objects[i].getPrice()<=Game.cookies*2 && Game.Objects[i].amount<400) buildings.push(Game.Objects[i]);}","{if ((Game.Objects[i].amount<max || n==1) && Game.Objects[i].getPrice()<=Game.cookies*2 && Game.Objects[i].amount<1000) buildings.push(Game.Objects[i]);}"))
+
+        eval("Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].desc="+'"'+Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].desc.replace('400','1000')+'"');
+
+		//because cookiemains wanted so
+		for (let i in Game.Objects) {
+			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);", "if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.005);"));
+
+			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);", "else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.0025);"));
+
+			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025);", "if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.00125);"));
+		}
+
+	    grimoire=Game.Objects['Wizard tower'].minigame;
+        grimoire.spells['hand of fate'].failFunc=function(){return 0.5};
+
+
+		
 
 		//custom upgrade
 		this.createAchievements=function(){
 			this.achievements = []
 			this.achievements.push(new Game.Upgrade('Golden sugar',(" Sugar lumps mature <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
-		
-			order=90000;
+			for(let i of this.achievements){i.order=350045;}
 			LocalizeUpgradesAndAchievs()
 		}
 		this.checkAchievements=function(){
