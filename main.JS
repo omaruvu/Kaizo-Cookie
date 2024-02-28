@@ -1,5 +1,7 @@
 Game.registerMod("Kaizo Cookies", { 
 	init: function() { 
+//Special thanks to Cursed, Yeetdragon for helping me with the code, Fififoop for quality control/suggestions 
+//and cookiemains for playtesting this mod, you can look at the cookiemains section to see what ideas he suggested
 
         // notification!
 		Game.Notify(`Good luck.`, ``, [21,32],10,1);
@@ -18,11 +20,11 @@ Game.registerMod("Kaizo Cookies", {
 			return false;
 		}
 
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0002;'))
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001;'))
 
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'))
 
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','me.sucked-=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies'))
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','me.sucked-=(((Game.cookiesEarned/Game.fps)*Game.cpsSucked));//suck the cookies'))
 
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
 
@@ -53,6 +55,9 @@ Game.registerMod("Kaizo Cookies", {
 	    grimoire=Game.Objects['Wizard tower'].minigame;
         grimoire.spells['hand of fate'].failFunc=function(){return 0.5};
 
+		eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("//if (Math.random()<0.2) choices.push('clot','cursed finger','ruin cookies');","if (Math.random()<0.2) choices.push('clot','cursed finger','ruin cookies');"))
+
+		eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("if (Game.BuildingsOwned>=10 && Math.random()<0.25) choices.push('building special');","if (Game.BuildingsOwned>=10 && Math.random()<0.10) choices.push('building special');"))
 
 		
 
@@ -73,5 +78,19 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} if (Game.Has("Golden sugar")) { Game.lumpMatureAge-=(hour*8); }'));
 
 		
+	},
+	save: function(){
+        let str = "";
+        for(let i of this.achievements) {
+          str+=i.unlocked; //using comma works like that in python but not js
+          str+=i.bought; //seperating them otherwise it adds 1+1 and not "1"+"1"
+        }
+        return str;
+    },
+    load: function(str){
+        for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
+          this.achievements[i].unlocked=Number(str[2*i]); //multiplied by 2 because 2 values for each upgrade
+          this.achievements[i].bought=Number(str[(2*i)+1]); //+1 for the second value
+        }
     }
 });
