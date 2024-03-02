@@ -1,6 +1,6 @@
 Game.registerMod("Kaizo Cookies", { 
 	init: function() { 
-//Special thanks to Cursed, Yeetdragon for helping me with the code, Fififoop for quality control & suggestions 
+//Special thanks to Cursed, Yeetdragon for helping me with the code, Fififoop for quality control & suggestions, Rubik for suggestions
 //and cookiemains for playtesting this mod, you can look at the cookiemains section to see what ideas he suggested
 
         // notification!
@@ -49,9 +49,34 @@ Game.registerMod("Kaizo Cookies", {
 
 
 		//dragon auras
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("mult*=1+Game.auraMult('Radiant Appetite');","mult*=0.5+Game.auraMult('Radiant Appetite');"))
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("mult*=1+Game.auraMult('Radiant Appetite');","mult*=0.5+Game.auraMult('Radiant Appetite');"));
 
-		eval('Game.mouseCps='+Game.mouseCps.toString().replace("mult*=1+Game.auraMult('Dragon Cursor')*0.05;","mult*=1+Game.auraMult('Dragon Cursor')*0.50;"))
+		eval('Game.Upgrade.prototype.getPrice='+Game.Upgrade.prototype.getPrice.toString().replace("price*=1-Game.auraMult('Master of the Armory')*0.02;","price*=1-Game.auraMult('Master of the Armory')*0.10;"));
+
+		eval('Game.modifyBuildingPrice='+Game.modifyBuildingPrice.toString().replace("price*=1-Game.auraMult('Fierce Hoarder')*0.02;","price*=1-Game.auraMult('Fierce Hoarder')*0.05;"));
+
+		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777);`,`buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777*(1.3+('Dragon Cursor')));`));
+
+		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`list.push('blood frenzy','chain cookie','cookie storm');`,`list.push('blood frenzy','chain cookie','cookie storm');if (Game.Has('Unholy Dominion')){list.push('blood frenzy')}`));
+
+		eval('Game.GetHeavenlyMultiplier='+Game.GetHeavenlyMultiplier.toString().replace("heavenlyMult*=1+Game.auraMult('Dragon God')*0.05;","heavenlyMult*=1+Game.auraMult('Dragon God')*0.20;"));
+
+		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`if (Math.random()<Game.auraMult('Dragonflight')) list.push('dragonflight');`,`if (Math.random()<Game.auraMult('Dragonflight')) list.push('dragonflight'); if (Math.random()<Game.auraMult('Ancestral Metamorphosis')) list.push('Ancestral Metamorphosis');`));
+
+        eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`else if (choice=='blood frenzy')`,`else if (choice=='Ancestral Metamorphosis')
+        {
+			var valn=Math.max(7,Math.min(Game.cookies*1.0,Game.cookiesPs*60*60*24));
+			Game.Earn(valn);
+			popup=("Dragon\'s hoard!")+'<br><small>'+("+%1!",("%1 cookie",LBeautify(valn)))+'</small>';
+        }else if (choice=='blood frenzy')`));
+
+        Game.dragonAuras[2].desc = "Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy is <b>30%</b> more powerful.";
+		Game.dragonAuras[6].desc = "All upgrades are <b>10% cheaper</b>.";
+		Game.dragonAuras[7].desc = "All buildings are <b>5% cheaper</b>.";
+        Game.dragonAuras[8].desc = "<b>+20%</b> prestige level effect on CpS.";
+        Game.dragonAuras[11].desc = "Golden cookies give <b>10%</b> more cookies."+'<br>'+"Golden cookies may trigger a <b>Dragon\'s hoard</b>.";
+		Game.dragonAuras[12].desc = "Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy appear <b>twice as often</b>.";
+        Game.dragonAuras[15].desc = "All cookie production <b>multiplied by 1.5</b>.";
 
 		//because cookiemains wanted so
 		for (let i in Game.Objects) {
@@ -84,8 +109,6 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Butter biscuit (with butter)'].basePrice=999999999999999999999999999999999999999999999999999999999*butterBiscuitMult
 		Game.Upgrades['Everybutter biscuit'].basePrice=999999999999999999999999999999999999999999999999999999999999*butterBiscuitMult
 		Game.Upgrades['Personal biscuit'].basePrice=999999999999999999999999999999999999999999999999999999999999999*butterBiscuitMult
-
-		
 
 		//custom upgrade
 		this.createAchievements=function(){
