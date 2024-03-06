@@ -6,6 +6,10 @@ Game.registerMod("Kaizo Cookies", {
         // notification!
 		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.`, [21,32],10,1);
 
+		/*=====================================================================================
+        Wrinklers
+        =======================================================================================*/
+
         function inRect(x,y,rect)
 		{
 			//find out if the point x,y is in the rotated rectangle rect{w,h,r,o} (width,height,rotation in radians,y-origin) (needs to be normalized)
@@ -30,7 +34,9 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes['golden'].popFunc.toString().replace("if (me.wrath>0) list.push('clot','multiply cookies','ruin cookies');","if (me.wrath>0) list.push('clot','ruin cookies');"));
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes['golden'].popFunc.toString().replace("if (Game.BuildingsOwned>=10 && Math.random()<0.25) list.push('building special');","if (Game.BuildingsOwned>=10 && me.wrath==0 && Math.random()<0.25) list.push('building special');")); 
 
-		//minigame
+		/*=====================================================================================
+        Minigames 
+        =======================================================================================*/
         eval('Game.modifyBuildingPrice='+Game.modifyBuildingPrice.toString().replace("if (Game.hasBuff('Crafty pixies')) price*=0.98;","if (Game.hasBuff('Crafty pixies')) price*=0.90;"))
 
 		Game.registerHook('check', () => {
@@ -41,6 +47,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		});
 
+        //garden changes
 		Game.registerHook('check', () => {
 			if (Game.Objects['Farm'].minigameLoaded) {
 				Game.Objects['Farm'].minigame.getMuts = Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['cronerice',0.01]);","if (neighsM['bakerWheat']>=1 && neighsM['wrinklegill']>=1) muts.push(['cronerice',0.01]);");
@@ -53,18 +60,54 @@ Game.registerMod("Kaizo Cookies", {
 				Game.Objects['Farm'].minigame.plants['thumbcorn'].children=['bakerWheat','thumbcorn','gildmillet','glovemorel'];
 				Game.Objects['Farm'].minigame.plants['wrinklegill'].children=['cronerice','elderwort','shriekbulb'];
 		
-				Game.Objects['Farm'].minigame.plants['whiskerbloom'].effsStr='<div class="green">&bull; '+loc("milk effects")+' +0.05%</div>';
+				Game.Objects['Farm'].minigame.plants['whiskerbloom'].effsStr='<div class="green">&bull; '+loc("milk effects")+' +0.005%</div>';
 				Game.Objects['Farm'].minigame.plants['glovemorel'].effsStr='<div class="green">&bull; '+loc("cookies/click")+' +4%</div><div class="green">&bull; '+loc("%1 CpS",Game.Objects['Cursor'].single)+' +0.5%</div><div class="red">&bull; '+loc("CpS")+' -1%</div>';
 			}
 		});
 
-		//upgrade
-		eval('Game.mouseCps='+Game.mouseCps.toString().replace("if (Game.Has('Unshackled cursors')) add*=	25;","if (Game.Has('Unshackled cursors')) add*=	20;"))
+		//CBG buff
+		new Game.buffType('haggler dream', function(time, pow) {
+			return {
+				name: 'Hagglers dream',
+				desc: loc("+20% prestige level effect on CpS for 20 seconds!", [pow, Game.sayTime(time * Game.fps, -1)]),
+				icon: [19, 7],
+				time: time * Game.fps,
+				multCpS: pow,
+				aura: 1
+			};
+		});
 
+		eval('Game.GetHeavenlyMultiplier=' + Game.GetHeavenlyMultiplier.toString().replace("if (Game.Has('Lucky payout')) heavenlyMult*=1.01;", "if (Game.Has('Lucky payout')) heavenlyMult*=1.01; if (Game.hasBuff('haggler dream')) heavenlyMult*=1.20;"));
+
+		Game.registerHook('check', () => {
+			if (Game.Objects['Wizard tower'].minigameLoaded) {
+				//CBG win effect
+				eval("Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].win=" + Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].win.toString().replace('Game.Earn(val);', "var buff = Game.gainBuff('haggler dream', 60, 2);"));
+		        eval("Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].win = " + Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].win.toString().replace(`Game.Popup('<div style="font-size:80%;">'+loc("+%1!",loc("%1 cookie",LBeautify(val)))+'</div>',Game.mouseX,Game.mouseY);`, `Game.Popup('<div style="font-size:80%;">'+loc("Heavenly chips are stronger!")+'</div>',Game.mouseX,Game.mouseY);`));
+		        eval("Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].win = " + Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].win.toString().replace(`Game.Notify(loc("Conjure Baked Goods")+(EN?'!':''),loc("You magic <b>%1</b> out of thin air.",loc("%1 cookie",LBeautify(val))),[21,11],6);`, `Game.Notify(loc("Conjure Baked Goods")+(EN?'!':''),loc("Your heavenly chips are stronger.",loc("")),[21,11],6);`));
+
+				//CBG fail effect
+				eval("Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].fail="+Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].fail.toString().replace(`var val=Math.min(Game.cookies*0.15,Game.cookiesPs*60*15)+13;`,`var val=Math.min(Game.cookies*0.5)+13;`));
+
+				//desc
+				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].desc=loc("+20% prestige level effect on CpS for 20 seconds.");
+				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].failDesc=loc("Trigger a %1-minute clot and lose half of your cookies owned.",15);
+
+			}
+		});
+		
+		//upgrades
+		eval('Game.mouseCps='+Game.mouseCps.toString().replace("if (Game.Has('Unshackled cursors')) add*=	25;","if (Game.Has('Unshackled cursors')) add*=	20;"))
+		eval("Game.Objects['Cursor'].cps="+Game.Objects['Cursor'].cps.toString().replace("if (Game.Has('Unshackled cursors')) add*=	25;","if (Game.Has('Unshackled cursors')) add*=	20;"))
+		Game.Upgrades['Unshackled cursors'].ddesc=getStrThousandFingersGain(20);
+        
+ 
 		Game.Upgrades['Wrinkly cookies'].power=15;
 		Game.Upgrades['Wrinkly cookies'].ddesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>'
 
-		//dragon auras
+		/*=====================================================================================
+        Dragon auras
+        =======================================================================================*/
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("mult*=1+Game.auraMult('Radiant Appetite');","mult*=0.5+Game.auraMult('Radiant Appetite');"));
 
 		eval('Game.Upgrade.prototype.getPrice='+Game.Upgrade.prototype.getPrice.toString().replace("price*=1-Game.auraMult('Master of the Armory')*0.02;","price*=1-Game.auraMult('Master of the Armory')*0.10;"));
@@ -94,7 +137,10 @@ Game.registerMod("Kaizo Cookies", {
 		Game.dragonAuras[12].desc = "Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy appear <b>twice as often</b>.";
         Game.dragonAuras[15].desc = "All cookie production <b>multiplied by 1.5</b>.";
 
-		//because cookiemains wanted so
+		
+		/*=====================================================================================
+        because Cookiemains wanted so
+        =======================================================================================*/
 		for (let i in Game.Objects) {
 			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);", "if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.005);"));
 			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);", "else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.0025);"));
@@ -156,7 +202,6 @@ Game.registerMod("Kaizo Cookies", {
 				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"))
 				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"))
                 eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"))
-
 			}
 		});
 
@@ -176,9 +221,9 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Everybutter biscuit'].basePrice=999999999999999999999999999999999999999999999999999999999999*butterBiscuitMult
 		Game.Upgrades['Personal biscuit'].basePrice=999999999999999999999999999999999999999999999999999999999999999*butterBiscuitMult
 
-
-
-		//custom upgrade
+		/*=====================================================================================
+        Custom upgrade
+        =======================================================================================*/
 		this.createAchievements=function(){
 			this.achievements = []
 			this.achievements.push(new Game.Upgrade('Golden sugar',(" Sugar lumps mature <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
