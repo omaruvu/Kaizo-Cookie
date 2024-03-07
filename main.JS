@@ -48,7 +48,7 @@ Game.registerMod("Kaizo Cookies", {
 		});
 
         //Garden changes
-		M=Game.Objects['Farm'].minigame//declaring M.soilsById so computeEffs work (this took hours to figure out)
+		M=Game.Objects['Farm'].minigame//Declaring M.soilsById so computeEffs works (this took hours to figure out)
 		M.soilsById.soilsById = [];
 		var n = 0;
 		for (var i in M.soils) {
@@ -58,21 +58,59 @@ Game.registerMod("Kaizo Cookies", {
 		n++;
 		} 
 
+		M.harvestAll=function(type,mature,mortal)//Declaring harvestAll so M.convert works
+		{
+			var harvested=0;
+			for (var i=0;i<2;i++)//we do it twice to take care of whatever spawns on kill
+			{
+				for (var y=0;y<6;y++)
+				{
+					for (var x=0;x<6;x++)
+					{
+						if (M.plot[y][x][0]>=1)
+						{
+							var doIt=true;
+							var tile=M.plot[y][x];
+							var me=M.plantsById[tile[0]-1];
+							if (type && me!=type) doIt=false;
+							if (mortal && me.immortal) doIt=false;
+							if (mature && tile[1]<me.mature) doIt=false;
+							
+							if (doIt) harvested+=M.harvest(x,y)?1:0;
+						}
+					}
+				}
+			}
+			if (harvested>0) setTimeout(function(){PlaySound('snd/harvest1.mp3',1,0.2);},50);
+			if (harvested>2) setTimeout(function(){PlaySound('snd/harvest2.mp3',1,0.2);},150);
+			if (harvested>6) setTimeout(function(){PlaySound('snd/harvest3.mp3',1,0.2);},250);
+		}
+
 		Game.registerHook('check', () => {
 			if (Game.Objects['Farm'].minigameLoaded) {
-				// Changing some plants mutations
+				//Changing some plants mutations
 				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['cronerice',0.01]);","if (neighsM['bakerWheat']>=1 && neighsM['wrinklegill']>=1) muts.push(['cronerice',0.01]);"));
 				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['cronerice']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);","if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);"));
-				
+
+				//Nerfing some plants effects
 				eval("Game.Objects['Farm'].minigame.computeEffs="+Game.Objects['Farm'].minigame.computeEffs.toString().replace("effs.cursorCps+=0.01*mult","effs.cursorCps+=0.005*mult"));
 				eval("Game.Objects['Farm'].minigame.computeEffs="+Game.Objects['Farm'].minigame.computeEffs.toString().replace("else if (name=='whiskerbloom') effs.milk+=0.002*mult;","else if (name=='whiskerbloom') effs.milk+=0.0005*mult;"));
-			          	 
+
+				eval("Game.Objects['Farm'].minigame.convert="+Game.Objects['Farm'].minigame.convert.toString().replace("Game.gainLumps(10);","Game.gainLumps(15);"));//Changing how much saccing gives
+
+			    //Desc   	 
 				Game.Objects['Farm'].minigame.plants['bakerWheat'].children=['bakerWheat','thumbcorn','cronerice','gildmillet','bakeberry','clover','goldenClover','chocoroot','tidygrass'];
 				Game.Objects['Farm'].minigame.plants['thumbcorn'].children=['bakerWheat','thumbcorn','gildmillet','glovemorel'];
 				Game.Objects['Farm'].minigame.plants['wrinklegill'].children=['cronerice','elderwort','shriekbulb'];
-		
+
+		        //Effect desc
 				Game.Objects['Farm'].minigame.plants['whiskerbloom'].effsStr='<div class="green">&bull; '+loc("milk effects")+' +0.005%</div>';
 				Game.Objects['Farm'].minigame.plants['glovemorel'].effsStr='<div class="green">&bull; '+loc("cookies/click")+' +4%</div><div class="green">&bull; '+loc("%1 CpS",Game.Objects['Cursor'].single)+' +0.5%</div><div class="red">&bull; '+loc("CpS")+' -1%</div>';
+
+                //Sac desc
+				Game.Objects['Farm'].minigame.tools['convert'].desc=loc("A swarm of sugar hornets comes down on your garden, <span class=\"red\">destroying every plant as well as every seed you've unlocked</span> - leaving only a %1 seed.<br>In exchange, they will grant you <span class=\"green\">%2</span>.<br>This action is only available with a complete seed log.",[loc("Baker's wheat"),loc("%1 sugar lump",LBeautify(15))]);
+				eval("Game.Objects['Farm'].minigame.askConvert="+Game.Objects['Farm'].minigame.askConvert.toString().replace("10","15"));
+				eval("Game.Objects['Farm'].minigame.convert="+Game.Objects['Farm'].minigame.convert.toString().replace("10","15"));
 			}
 		});
 		
@@ -111,14 +149,27 @@ Game.registerMod("Kaizo Cookies", {
 		/*=====================================================================================
         Upgrades
         =======================================================================================*/
-		eval('Game.mouseCps='+Game.mouseCps.toString().replace("if (Game.Has('Unshackled cursors')) add*=	25;","if (Game.Has('Unshackled cursors')) add*=	20;"))
-		eval("Game.Objects['Cursor'].cps="+Game.Objects['Cursor'].cps.toString().replace("if (Game.Has('Unshackled cursors')) add*=	25;","if (Game.Has('Unshackled cursors')) add*=	20;"))
+		eval('Game.mouseCps='+Game.mouseCps.toString().replace("if (Game.Has('Unshackled cursors')) add*=	25;","if (Game.Has('Unshackled cursors')) add*=	20;"))//Changing how much unshackled cursors give
+		eval("Game.Objects['Cursor'].cps="+Game.Objects['Cursor'].cps.toString().replace("if (Game.Has('Unshackled cursors')) add*=	25;","if (Game.Has('Unshackled cursors')) add*=	20;"))//changing how much unshackled cursors buffs cursors
 
-		var getStrThousandFingersGain=function(x)
+		var getStrThousandFingersGain=function(x)//Variable for the desc of unshackled cursor 
 		{return loc("Multiplies the gain from %1 by <b>%2</b>.",[getUpgradeName("Thousand fingers"),x]);}
-		Game.Upgrades['Unshackled cursors'].ddesc=getStrThousandFingersGain(20);
+		Game.Upgrades['Unshackled cursors'].ddesc=getStrThousandFingersGain(20)+'<q>These hands tell a story.</q>';//Changing the desc to reflect all the changes
 
-		eval('Game.GetTieredCpsMult='+Game.GetTieredCpsMult.toString().replace("tierMult+=me.id==1?0.5:(20-me.id)*0.1;","tierMult+=me.id==1?0.5:(20-me.id)*0.09;"))
+		eval('Game.GetTieredCpsMult='+Game.GetTieredCpsMult.toString().replace("tierMult+=me.id==1?0.5:(20-me.id)*0.1;","tierMult+=me.id==1?0.45:(20-me.id)*0.09;"))//All unshackled upgrades produce 10% less
+
+        for (var i in Game.Objects) {//This is used so we can change the message that appears on all tired upgrades when a unshackled buiding is bought
+            for (var ii in Game.Objects[i].tieredUpgrades) {
+                var me=Game.Objects[i].tieredUpgrades[ii];
+                if (!(ii=='fortune')&&me.descFunc){eval('me.descFunc='+me.descFunc.toString().replace('this.buildingTie.id==1?0.5:(20-this.buildingTie.id)*0.1)*100','this.buildingTie.id==1?0.45:(20-this.buildingTie.id)*0.09)*100'));}
+            }
+        }  
+
+        for (var i in Game.Objects) {//This is used so we can change the desc of all unshackled upgrades
+            var s=Game.Upgrades['Unshackled '+Game.Objects[i].plural];
+            var id=Game.Objects[i].id;
+            if (!(i=='Cursor')) {s.ddesc=s.ddesc.replace(s.ddesc.slice(0,s.ddesc.indexOf('<q>')),'Tiered upgrades for <b>'+i+'</b> provide an extra <b>'+(id==1?'45':(20-id)*9)+'%</b> production.<br>Only works with unshackled upgrade tiers.');}
+        }                     
 
 		Game.Upgrades['Wrinkly cookies'].power=15;
 		Game.Upgrades['Wrinkly cookies'].ddesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>'
