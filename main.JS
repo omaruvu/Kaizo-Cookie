@@ -48,12 +48,24 @@ Game.registerMod("Kaizo Cookies", {
 		});
 
         //Garden changes
+		M=Game.Objects['Farm'].minigame//declaring M.soilsById so computeEffs work (this took hours to figure out)
+		M.soilsById.soilsById = [];
+		var n = 0;
+		for (var i in M.soils) {
+		M.soils[i].id = n;
+		M.soils[i].key = i;
+		M.soilsById[n] = M.soils[i];
+		n++;
+		} 
+
 		Game.registerHook('check', () => {
 			if (Game.Objects['Farm'].minigameLoaded) {
 				// Changing some plants mutations
 				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['cronerice',0.01]);","if (neighsM['bakerWheat']>=1 && neighsM['wrinklegill']>=1) muts.push(['cronerice',0.01]);"));
 				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['cronerice']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);","if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);"));
-						 
+				
+				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("effs.cursorCps+=0.01*mult","effs.cursorCps+=0.005*mult"));
+				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("else if (name=='whiskerbloom') effs.milk+=0.002*mult;","else if (name=='whiskerbloom') effs.milk+=0.0005*mult;"));
 			          	 
 				Game.Objects['Farm'].minigame.plants['bakerWheat'].children=['bakerWheat','thumbcorn','cronerice','gildmillet','bakeberry','clover','goldenClover','chocoroot','tidygrass'];
 				Game.Objects['Farm'].minigame.plants['thumbcorn'].children=['bakerWheat','thumbcorn','gildmillet','glovemorel'];
@@ -105,6 +117,8 @@ Game.registerMod("Kaizo Cookies", {
 		var getStrThousandFingersGain=function(x)
 		{return loc("Multiplies the gain from %1 by <b>%2</b>.",[getUpgradeName("Thousand fingers"),x]);}
 		Game.Upgrades['Unshackled cursors'].ddesc=getStrThousandFingersGain(20);
+
+		eval('Game.GetTieredCpsMult='+Game.GetTieredCpsMult.toString().replace("tierMult+=me.id==1?0.5:(20-me.id)*0.1;","tierMult+=me.id==1?0.5:(20-me.id)*0.09;"))
 
 		Game.Upgrades['Wrinkly cookies'].power=15;
 		Game.Upgrades['Wrinkly cookies'].ddesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>'
