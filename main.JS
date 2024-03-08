@@ -87,11 +87,7 @@ Game.registerMod("Kaizo Cookies", {
 			        if (harvested>2) setTimeout(function(){PlaySound('snd/harvest2.mp3',1,0.2);},150);
 			        if (harvested>6) setTimeout(function(){PlaySound('snd/harvest3.mp3',1,0.2);},250);
 		        }
-			}
-		});
 
-		Game.registerHook('check', () => {
-			if (Game.Objects['Farm'].minigameLoaded) {
 				//Changing some plants mutations
 				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['cronerice',0.01]);","if (neighsM['bakerWheat']>=1 && neighsM['wrinklegill']>=1) muts.push(['cronerice',0.01]);"));
 				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['cronerice']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);","if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);"));
@@ -117,9 +113,7 @@ Game.registerMod("Kaizo Cookies", {
 				eval("Game.Objects['Farm'].minigame.convert="+Game.Objects['Farm'].minigame.convert.toString().replace("10","15"));
 			}
 		});
-
-		                                         
-		
+	
 		//CBG buff
 		new Game.buffType('haggler dream', function(time, pow) {
 			return {
