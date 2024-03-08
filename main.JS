@@ -48,43 +48,47 @@ Game.registerMod("Kaizo Cookies", {
 		});
 
         //Garden changes
-		M=Game.Objects['Farm'].minigame//Declaring M.soilsById so computeEffs works (this took hours to figure out)
-		M.soilsById.soilsById = [];
-		var n = 0;
-		for (var i in M.soils) {
-		M.soils[i].id = n;
-		M.soils[i].key = i;
-		M.soilsById[n] = M.soils[i];
-		n++;
-		} 
+		Game.registerHook('check', () => {
+			if (Game.Objects['Farm'].minigameLoaded) {
+		        M=Game.Objects['Farm'].minigame//Declaring M.soilsById so computeEffs works (this took hours to figure out)
+		        M.soilsById.soilsById = [];
+		        var n = 0;
+		        for (var i in M.soils) {
+		        M.soils[i].id = n;
+		        M.soils[i].key = i;
+		        M.soilsById[n] = M.soils[i];
+		        n++;
+		        } 
 
-		M.harvestAll=function(type,mature,mortal)//Declaring harvestAll so M.convert works
-		{
-			var harvested=0;
-			for (var i=0;i<2;i++)//we do it twice to take care of whatever spawns on kill
-			{
-				for (var y=0;y<6;y++)
-				{
-					for (var x=0;x<6;x++)
-					{
-						if (M.plot[y][x][0]>=1)
-						{
-							var doIt=true;
-							var tile=M.plot[y][x];
-							var me=M.plantsById[tile[0]-1];
-							if (type && me!=type) doIt=false;
-							if (mortal && me.immortal) doIt=false;
-							if (mature && tile[1]<me.mature) doIt=false;
+		        M.harvestAll=function(type,mature,mortal)//Declaring harvestAll so M.convert works
+		        {
+			        var harvested=0;
+			        for (var i=0;i<2;i++)//we do it twice to take care of whatever spawns on kill
+			        {
+				        for (var y=0;y<6;y++)
+				        {
+					        for (var x=0;x<6;x++)
+					        {
+						        if (M.plot[y][x][0]>=1)
+						        {
+							        var doIt=true;
+							        var tile=M.plot[y][x];
+							        var me=M.plantsById[tile[0]-1];
+							        if (type && me!=type) doIt=false;
+							        if (mortal && me.immortal) doIt=false;
+							        if (mature && tile[1]<me.mature) doIt=false;
 							
-							if (doIt) harvested+=M.harvest(x,y)?1:0;
-						}
-					}
-				}
+							        if (doIt) harvested+=M.harvest(x,y)?1:0;
+						        }
+					        }
+				        }
+			        }
+			        if (harvested>0) setTimeout(function(){PlaySound('snd/harvest1.mp3',1,0.2);},50);
+			        if (harvested>2) setTimeout(function(){PlaySound('snd/harvest2.mp3',1,0.2);},150);
+			        if (harvested>6) setTimeout(function(){PlaySound('snd/harvest3.mp3',1,0.2);},250);
+		        }
 			}
-			if (harvested>0) setTimeout(function(){PlaySound('snd/harvest1.mp3',1,0.2);},50);
-			if (harvested>2) setTimeout(function(){PlaySound('snd/harvest2.mp3',1,0.2);},150);
-			if (harvested>6) setTimeout(function(){PlaySound('snd/harvest3.mp3',1,0.2);},250);
-		}
+		});
 
 		Game.registerHook('check', () => {
 			if (Game.Objects['Farm'].minigameLoaded) {
@@ -104,8 +108,8 @@ Game.registerMod("Kaizo Cookies", {
 				Game.Objects['Farm'].minigame.plants['wrinklegill'].children=['cronerice','elderwort','shriekbulb'];
 
 		        //Effect desc
-				Game.Objects['Farm'].minigame.plants['whiskerbloom'].effsStr='<div class="green">&bull; '+loc("milk effects")+' +0.05%</div>';
-				Game.Objects['Farm'].minigame.plants['glovemorel'].effsStr='<div class="green">&bull; '+loc("cookies/click")+' +4%</div><div class="green">&bull; '+loc("%1 CpS",Game.Objects['Cursor'].single)+' +0.5%</div><div class="red">&bull; '+loc("CpS")+' -1%</div>';
+				Game.Objects['Farm'].minigame.plants['whiskerbloom'].effsStr='<div class="green">&bull;'+loc("milk effects")+'+0.05%</div>';
+				Game.Objects['Farm'].minigame.plants['glovemorel'].effsStr='<div class="green">&bull;'+loc("cookies/click")+'+4%</div><div class="green">&bull; '+loc("%1 CpS",Game.Objects['Cursor'].single)+' +0.5%</div><div class="red">&bull; '+loc("CpS")+' -1%</div>';
 
                 //Sac desc
 				Game.Objects['Farm'].minigame.tools['convert'].desc=loc("A swarm of sugar hornets comes down on your garden, <span class=\"red\">destroying every plant as well as every seed you've unlocked</span> - leaving only a %1 seed.<br>In exchange, they will grant you <span class=\"green\">%2</span>.<br>This action is only available with a complete seed log.",[loc("Baker's wheat"),loc("%1 sugar lump",LBeautify(15))]);
@@ -113,6 +117,8 @@ Game.registerMod("Kaizo Cookies", {
 				eval("Game.Objects['Farm'].minigame.convert="+Game.Objects['Farm'].minigame.convert.toString().replace("10","15"));
 			}
 		});
+
+		                                         
 		
 		//CBG buff
 		new Game.buffType('haggler dream', function(time, pow) {
