@@ -104,7 +104,7 @@ Game.registerMod("Kaizo Cookies", {
 				Game.Objects['Farm'].minigame.plants['wrinklegill'].children=['cronerice','elderwort','shriekbulb'];
 
 		        //Effect desc
-				Game.Objects['Farm'].minigame.plants['whiskerbloom'].effsStr='<div class="green">&bull; '+loc("milk effects")+' +0.005%</div>';
+				Game.Objects['Farm'].minigame.plants['whiskerbloom'].effsStr='<div class="green">&bull; '+loc("milk effects")+' +0.05%</div>';
 				Game.Objects['Farm'].minigame.plants['glovemorel'].effsStr='<div class="green">&bull; '+loc("cookies/click")+' +4%</div><div class="green">&bull; '+loc("%1 CpS",Game.Objects['Cursor'].single)+' +0.5%</div><div class="red">&bull; '+loc("CpS")+' -1%</div>';
 
                 //Sac desc
