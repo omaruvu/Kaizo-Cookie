@@ -25,10 +25,11 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0002;'))//Making it so wrinklers spawn outside of gpoc
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/12;'))//Changing Wrinkler movement speed
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'))
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','me.sucked-=((Math.sqrt((Game.cookies/Game.fps))*Game.cpsSucked));//suck the cookies'))
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked-=((Game.cookies/Game.fps/2)*Game.cpsSucked); } //suck the cookies'))
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
+		eval('Game.getWrinklersMax='+Game.getWrinklersMax.toString().replace(`n+=Math.round(Game.auraMult('Dragon Guts')*2);`, ''));
 		
 		//Shimmer pool
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes['golden'].popFunc.toString().replace("if (me.wrath>0) list.push('clot','multiply cookies','ruin cookies');","if (me.wrath>0) list.push('clot','ruin cookies');"));//Removing lucky from the wrath cookie pool
@@ -169,7 +170,31 @@ Game.registerMod("Kaizo Cookies", {
             var s=Game.Upgrades['Unshackled '+Game.Objects[i].plural];
             var id=Game.Objects[i].id;
             if (!(i=='Cursor')) {s.ddesc=s.ddesc.replace(s.ddesc.slice(0,s.ddesc.indexOf('<q>')),'Tiered upgrades for <b>'+i+'</b> provide an extra <b>'+(id==1?'45':(20-id)*9)+'%</b> production.<br>Only works with unshackled upgrade tiers.');}
-        }                     
+        }
+
+        Game.Upgrades['Pure heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000
+        Game.Upgrades['Ardent heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000
+        Game.Upgrades['Sour heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000
+        Game.Upgrades['Weeping heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000000
+        Game.Upgrades['Golden heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000000000
+		Game.Upgrades['Eternal heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000000000000
+		Game.Upgrades['Prism heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000000000000000
+
+		Game.Upgrades['Kitten helpers'].basePrice=9000000000
+		Game.Upgrades['Kitten workers'].basePrice=9000000000000
+		Game.Upgrades['Kitten engineers'].basePrice=900000000000000000
+		Game.Upgrades['Kitten overseers'].basePrice=90000000000000000000
+		Game.Upgrades['Kitten managers'].basePrice=900000000000000000000000
+		Game.Upgrades['Kitten accountants'].basePrice=9000000000000000000000000000
+		Game.Upgrades['Kitten specialists'].basePrice=900000000000000000000000000000
+		Game.Upgrades['Kitten experts'].basePrice=900000000000000000000000000000000
+		Game.Upgrades['Kitten consultants'].basePrice=9000000000000000000000000000000000000
+		Game.Upgrades['Kitten assistants to the regional manager'].basePrice=900000000000000000000000000000000000000
+		Game.Upgrades['Kitten marketeers'].basePrice=900000000000000000000000000000000000000000
+		Game.Upgrades['Kitten analysts'].basePrice=9000000000000000000000000000000000000000000000
+		Game.Upgrades['Kitten executives'].basePrice=900000000000000000000000000000000000000000000000
+		Game.Upgrades['Kitten admins'].basePrice=900000000000000000000000000000000000000000000000000
+		Game.Upgrades['Kitten strategists'].basePrice=9000000000000000000000000000000000000000000000000000000
 
 		Game.Upgrades['Wrinkly cookies'].power=15;
 		Game.Upgrades['Wrinkly cookies'].ddesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>'
@@ -177,15 +202,21 @@ Game.registerMod("Kaizo Cookies", {
 		/*=====================================================================================
         Dragon auras
         =======================================================================================*/
+        eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("milkMult*=1+Game.auraMult('Breath of Milk')*0.05;","milkMult*=1+Game.auraMult('Breath of Milk')*0.025;"));//Changing BOM from 5% to 2.5%
+
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("mult*=1+Game.auraMult('Radiant Appetite');","mult*=0.5+Game.auraMult('Radiant Appetite');"));//Changing RA from 2.0 to 1.5
 
 		eval('Game.Upgrade.prototype.getPrice='+Game.Upgrade.prototype.getPrice.toString().replace("price*=1-Game.auraMult('Master of the Armory')*0.02;","price*=1-Game.auraMult('Master of the Armory')*0.10;"));
 
 		eval('Game.modifyBuildingPrice='+Game.modifyBuildingPrice.toString().replace("price*=1-Game.auraMult('Fierce Hoarder')*0.02;","price*=1-Game.auraMult('Fierce Hoarder')*0.05;"));
 
-		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777);`,`buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777*(1+(Game.auraMult('Dragon Cursor')*0.3)));`));//Dragon Cursor making CF stronger by 30%
+        //Dragon Cursor making all clicking buffs 50% stronger
+		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777);`,`buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777*(1+(Game.auraMult('Dragon Cursor')*0.5)));`));//Dragon Cursor making CF stronger by 50%
+		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`buff=Game.gainBuff('dragonflight',Math.ceil(10*effectDurMod),1111);`,`buff=Game.gainBuff('dragonflight',Math.ceil(10*effectDurMod),1111*(1+(Game.auraMult('Dragon Cursor')*0.5)));`));//Dragon Cursor making CF stronger by 50%
 
 		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`list.push('blood frenzy','chain cookie','cookie storm');`,`if (Math.random()<Game.auraMult('Unholy Dominion')){list.push('blood frenzy')}if (Game.auraMult('Unholy Dominion')>1) {if (Math.random()<Game.auraMult('Unholy Dominion')-1){list.push('blood frenzy')}}`));//Unholy Dominion pushes another EF to the pool making to so they are twice as common
+
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`suckRate*=1+Game.auraMult('Dragon Guts')*0.2;`, 'if (Game.auraMult("Dragon Guts")) { suckRate = 1; }'));
 
 		eval('Game.GetHeavenlyMultiplier='+Game.GetHeavenlyMultiplier.toString().replace("heavenlyMult*=1+Game.auraMult('Dragon God')*0.05;","heavenlyMult*=1+Game.auraMult('Dragon God')*0.20;"));
 
@@ -201,10 +232,11 @@ Game.registerMod("Kaizo Cookies", {
         Game.dragonAuras[2].desc="Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy is <b>30%</b> more powerful.";
 		Game.dragonAuras[6].desc="All upgrades are <b>10% cheaper</b>.";
 		Game.dragonAuras[7].desc="All buildings are <b>5% cheaper</b>.";
-        Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS.";
+        Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS. Wrinklers approach the big cookie <b>5 times</b> slower.";
         Game.dragonAuras[11].desc="Golden cookies give <b>10%</b> more cookies."+'<br>'+"Golden cookies may trigger a <b>Dragon\'s hoard</b>.";
 		Game.dragonAuras[12].desc="Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy appear <b>twice as often</b>.";
         Game.dragonAuras[15].desc="All cookie production <b>multiplied by 1.5</b>.";
+		Game.dragonAuras[21].desc="Each wrinkler always wither 100% of your CpS, but wrinklers no longer lose cookies on pop."
 
 		/*=====================================================================================
         because Cookiemains wanted so
@@ -224,6 +256,11 @@ Game.registerMod("Kaizo Cookies", {
 		        eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("if (Game.BuildingsOwned>=10 && Math.random()<0.25) choices.push('building special');","if (Game.BuildingsOwned>=10 && Math.random()<0.10) choices.push('building special');"))//Changing building special to 10%
 			}
 		});
+
+		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`if (Math.random()<0.8) Game.killBuff('Click frenzy');`,`Game.killBuff('Click frenzy');`));
+
+		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`Game.ObjectsById[obj].amount/10+1;`,`Game.ObjectsById[obj].amount/1;`));
+
 
         //Buffing Muridal
 		eval('Game.mouseCps='+Game.mouseCps.toString().replace("if (godLvl==1) mult*=1.15;","if (godLvl==1) mult*=1.25;"))
@@ -300,6 +337,118 @@ Game.registerMod("Kaizo Cookies", {
 		/*=====================================================================================
         Custom upgrade
         =======================================================================================*/
+
+		//Cursedor upgrade function (thank you for helping me btw cursed)
+		//I didnt add all the effects yet btw, i removed lucky and all similar effects
+		Game.registerHook('click',function(){
+			if (Math.random()<1/10) { Game.HardReset(2);Game.WriteSave();}
+			//select an effect
+			var list=[];
+			list.push('clot','frenzy');
+			list.push('blood frenzy');
+			list.push('everything must go');
+			list.push('click frenzy');
+			list.push('cursed finger');
+			list.push('building special');
+			list.push('dragon harvest');
+			list.push('dragonflight');
+			
+			var choice=choose(list);
+			
+			
+			this.last=choice;
+			
+			//create buff for effect
+			//buff duration multiplier
+			var effectDurMod=1;
+			if (Game.Has('Get lucky')) effectDurMod*=2;
+			if (Game.Has('Lasting fortune')) effectDurMod*=1.1;
+			if (Game.Has('Lucky digit')) effectDurMod*=1.01;
+			if (Game.Has('Lucky number')) effectDurMod*=1.01;
+			if (Game.Has('Green yeast digestives')) effectDurMod*=1.01;
+			if (Game.Has('Lucky payout')) effectDurMod*=1.01;
+			//if (Game.hasAura('Epoch Manipulator')) effectDurMod*=1.05;
+			effectDurMod*=1+Game.auraMult('Epoch Manipulator')*0.05;
+			
+			if (Game.hasGod)
+			{
+				var godLvl=Game.hasGod('decadence');
+				if (godLvl==1) effectDurMod*=1.07;
+				else if (godLvl==2) effectDurMod*=1.05;
+				else if (godLvl==3) effectDurMod*=1.02;
+			}
+			
+			//effect multiplier (from lucky etc)
+			var mult=1;
+			//if (me.wrath>0 && Game.hasAura('Unholy Dominion')) mult*=1.1;
+			//else if (me.wrath==0 && Game.hasAura('Ancestral Metamorphosis')) mult*=1.1;
+		
+			if (Game.Has('Green yeast digestives')) mult*=1.01;
+			if (Game.Has('Dragon fang')) mult*=1.03;
+			
+			
+			var popup='';
+			var buff=0;
+			
+			if (choice=='building special')
+			{
+				var time=Math.ceil(30*effectDurMod);
+				var list=[];
+				for (var i in Game.Objects)
+				{
+					if (Game.Objects[i].amount>=10) list.push(Game.Objects[i].id);
+				}
+				if (list.length==0) {choice='frenzy';}//default to frenzy if no proper building
+				else
+				{
+					var obj=choose(list);
+					var pow=Game.ObjectsById[obj].amount/10+1;
+					if (Math.random()<0.3)
+					{
+						buff=Game.gainBuff('building debuff',time,pow,obj);
+					}
+					else
+					{
+						buff=Game.gainBuff('building buff',time,pow,obj);
+					}
+				}
+			}
+			
+			if (choice=='frenzy')
+			{
+				buff=Game.gainBuff('frenzy',Math.ceil(77*effectDurMod),7);
+			}
+			else if (choice=='dragon harvest')
+			{
+				buff=Game.gainBuff('dragon harvest',Math.ceil(60*effectDurMod),15);
+			}
+			else if (choice=='everything must go')
+			{
+				buff=Game.gainBuff('everything must go',Math.ceil(8*effectDurMod),5);
+			}
+			else if (choice=='blood frenzy')
+			{
+				buff=Game.gainBuff('blood frenzy',Math.ceil(6*effectDurMod),666);
+			}
+			else if (choice=='clot')
+			{
+				buff=Game.gainBuff('clot',Math.ceil(66*effectDurMod),0.5);
+			}
+			else if (choice=='cursed finger')
+			{
+				buff=Game.gainBuff('cursed finger',Math.ceil(10*effectDurMod),Game.cookiesPs*Math.ceil(10*effectDurMod));
+			}
+			else if (choice=='click frenzy')
+			{
+				buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777);
+			}
+			else if (choice=='dragonflight')
+			{
+				buff=Game.gainBuff('dragonflight',Math.ceil(10*effectDurMod),1111);
+				if (Math.random()<0.8) Game.killBuff('Click frenzy');
+			}
+		});
+
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
 			this.achievements.push(new Game.Upgrade('Golden sugar',(" Sugar lumps mature <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
