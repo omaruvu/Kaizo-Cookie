@@ -75,7 +75,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
 		decay.getDec = function() {
-			var num = (1 - decay.cpsList[0] / decay.cpsList[decay.cpsList.length - 1]) * 100;
+			var num = (1 - decay.cpsList[decay.cpsList.length - 1] / decay.cpsList[0]) * 100;
 			var str = num.toFixed(2);
 			if (str.includes('-')) {
 				str = str.replace('-', '+');
