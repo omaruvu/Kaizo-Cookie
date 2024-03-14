@@ -161,7 +161,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.storeToRefresh=1;
 		}
 		Game.Upgrades['Elder Pledge'].priceFunc = function() {
-			return Game.cookiesPsRawHighest * 10 * Game.pow(Game.pledges, 3) * (Game.Has('Sacrifical rolling pins')?0.1:1);
+			return Game.cookiesPsRawHighest * 10 * Math.pow(Game.pledges, 3) * (Game.Has('Sacrifical rolling pins')?0.1:1);
 		}
 		Game.getPledgeDuration = function() {
 			var dur = Game.fps*2.5;
