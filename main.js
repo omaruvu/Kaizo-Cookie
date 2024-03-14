@@ -41,7 +41,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.drawT % 3) {
 				Game.recalculateGains = 1;	
 			}
-			decay.cpsList.push(Game.unbuffedCpS);
+			decay.cpsList.push(Game.unbuffedCps);
 			if (decay.cpsList.length > Game.fps) {
 				decay.cpsList.shift();
 			}
