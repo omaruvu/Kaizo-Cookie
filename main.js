@@ -1,3 +1,4 @@
+var decay = {};
 Game.registerMod("Kaizo Cookies", { 
 	init: function() { 
 //Special thanks to Cursed, Yeetdragon, Lookas for helping me with the code, Fififoop for quality control & suggestions, Rubik for suggestions
@@ -7,8 +8,74 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.`, [21,32],10,1);
 
 		/*=====================================================================================
-        Wrinklers
+        Decay & Wrinklers
         =======================================================================================*/
+		//the decay object is declared outside of the mod object for conveience purposes
+		//decay: a decreasing multiplier to buildings, and theres a different mult for each building. The mult decreases the same way for each building tho
+		decay.mults = []; for (let i in Game.Objects) { decay.mults.push(1); } 
+		decay.mults.push(1); //the "general multiplier", is just used for checks elsewhere
+		decay.incMult = 0.08; //decay mult is decreased by this multiplicative every second
+		decay.min = 0.15; //the minimum power that the update function uses
+		decay.halt = 1; //simulates decay stopping from clicking
+		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
+		decay.haltFactor = 0.5;
+		decay.wrinklerSpawnThreshold = 0.8;
+		decay.wrinklerSpawnFactor = 0.8;
+		decay.update = function(buildId) { 
+    		decay.mults[buildId] *= 1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (1 - Math.min(Math.pow(decay.halt, decay.haltFactor), 1));
+		}
+		decay.updateAll = function() {
+			for (let i in decay.mults) {
+				decay.update(i);
+			}
+			decay.regainAcc();
+			if (Game.drawT % 3) {
+				Game.recalculateGains = 1;	
+			}
+		}
+		decay.refresh = function(buildId, to) { 
+   			decay.mults[buildId] = to;
+		}
+		decay.refreshAll = function(to) {
+			for (let i in decay.mults) {
+				decay.refresh(i);
+			}
+			Game.recalculateGains = 1;
+		}
+		decay.regainAcc = function() { 
+    		decay.halt = Math.max(0, decay.halt - decay.decHalt / Game.fps);
+		}
+		decay.stop = function(val) {
+			decay.halt = val;
+		}
+ 		decay.get = function(buildId) {
+			return decay.mults[buildId];
+		}
+		decay.gen = function() {
+			return decay.mults[20];
+		}
+		
+		Game.registerHook('logic', decay.updateAll);
+		for (let i in Game.Objects) {
+			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
+		}
+
+		Game.registerHook('cps', function(m) { return m * 4; });
+
+		//ways to refresh/stop decay
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.refreshAll(2);'));
+		decay.clickBCStop = function() {
+			decay.stop(1.05);
+		}
+		Game.registerHook('click', decay.clickBCStop);
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(2);`));
+		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.refreshAll(5);'));
+		decay.reincarnateBoost = function() {
+			decay.stop(20);
+			decay.refreshAll(10);
+		}
+		Game.registerHook('reincarnate', decay.reincarnateBoost);
+
 
         function inRect(x,y,rect)
 		{
@@ -24,7 +91,7 @@ Game.registerMod("Kaizo Cookies", {
 			return false;
 		}
 
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0002;'))//Making it so wrinklers spawn outside of gpoc
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen(), decay.wrinklerSpawnFactor); if (decay.gen() >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'))
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked-=((Game.cookies/Game.fps/2)*Game.cpsSucked); } //suck the cookies'))
@@ -340,6 +407,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		//Cursedor upgrade function (thank you for helping me btw cursed)
 		//I didnt add all the effects yet btw, i removed lucky and all similar effects
+		/*
 		Game.registerHook('click',function(){
 			if (Math.random()<1/10) { Game.HardReset(2);Game.WriteSave();}
 			//select an effect
@@ -448,10 +516,22 @@ Game.registerMod("Kaizo Cookies", {
 				if (Math.random()<0.8) Game.killBuff('Click frenzy');
 			}
 		});
+  		*/
 
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
 			this.achievements.push(new Game.Upgrade('Golden sugar',(" Sugar lumps mature <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
+			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect but there is a 14% chance of deleting the savefile.")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,20]),Game.last.pool='prestige');
+			Game.Upgrades['Cursedor'].parents=[Game.Upgrades['Luminous gloves']]
+			Game.PrestigeUpgrades.push(Game.Upgrades['Cursedor'])
+			Game.last.posY=-810,Game.last.posX=-144
+
+			
+		    this.achievements.push(new Game.Upgrade('Cursedor [off]',("Turning this on will give you a random <b>Effect</b> if you click the big cookie, but there is a 14% chance of your savefile being deleted every time you click."),0,[0,20]));
+			Game.last.pool='toggle';Game.last.toggleInto='Cursedor [on]';
+
+			this.achievements.push(new Game.Upgrade('Cursedor [on]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of deleting the savefile.<br>Turning it off will revert those effects.<br>"),0,[0,20]));
+		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [off]';
 			for(let i of this.achievements){i.order=350045;}
 			LocalizeUpgradesAndAchievs()
 		}
