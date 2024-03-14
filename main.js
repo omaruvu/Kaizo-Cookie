@@ -14,8 +14,8 @@ Game.registerMod("Kaizo Cookies", {
 		//decay: a decreasing multiplier to buildings, and theres a different mult for each building. The mult decreases the same way for each building tho
 		decay.mults = []; for (let i in Game.Objects) { decay.mults.push(1); } 
 		decay.mults.push(1); //the "general multiplier", is just used for checks elsewhere
-		decay.incMult = 0.08; //decay mult is decreased by this multiplicative every second
-		decay.min = 0.15; //the minimum power that the update function uses
+		decay.incMult = 0.04; //decay mult is decreased by this multiplicative every second
+		decay.min = 0.15; //the minimum power that the update function uses; the lower it is, the slower the decay will pick up
 		decay.halt = 1; //simulates decay stopping from clicking
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5;
@@ -25,6 +25,7 @@ Game.registerMod("Kaizo Cookies", {
     		decay.mults[buildId] *= 1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (1 - Math.min(Math.pow(decay.halt, decay.haltFactor), 1));
 		}
 		decay.updateAll = function() {
+			if (Game.cookiesEarned - Game.cookiesReset <= 1000) { return false; } 
 			for (let i in decay.mults) {
 				decay.update(i);
 			}
@@ -54,13 +55,29 @@ Game.registerMod("Kaizo Cookies", {
 		decay.gen = function() {
 			return decay.mults[20];
 		}
+
+		//decay scaling
+		decay.setRates = function() {
+			var d = 1 - 0.005;
+			var c = Game.cookiesEarned - Game.cookiesReset;
+			d *= Math.pow(0.987, Math.log10(c));
+			d *= Math.pow(0.98, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
+			d *= Math.pow(0.98, Math.max(Math.sqrt(Game.achievementsOwned) - 4, 0))
+			if (Game.Has('Lucky day')) { d *= 0.95; }
+			if (Game.Has('Serendipity')) { d *= 0.95; }
+			if (Game.Has('Get Lucky')) { d *= 0.95; }
+			
+			decay.incMult = 1 - d;
+		}
+		decay.setRates();
+		Game.registerHook('check', decay.setRates);
 		
 		Game.registerHook('logic', decay.updateAll);
 		for (let i in Game.Objects) {
 			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
 		}
 
-		Game.registerHook('cps', function(m) { return m * 4; });
+		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
 		//ways to refresh/stop decay
 		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.refreshAll(2);'));
