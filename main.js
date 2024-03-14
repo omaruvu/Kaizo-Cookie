@@ -101,8 +101,8 @@ Game.registerMod("Kaizo Cookies", {
 			var d = 1;
 			var c = Game.cookiesEarned;
 			d *= Math.pow(0.999, Math.log10(c));
-			d *= Math.pow(0.9985, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
-			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
+			d *= Math.pow(0.99825, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
+			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
 			if (Game.Has('Lucky day')) { d *= 0.99; }
 			if (Game.Has('Serendipity')) { d *= 0.99; }
 			if (Game.Has('Get Lucky')) { d *= 0.99; }
@@ -149,19 +149,20 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Communal brainsweep', 'Each grandma gains another <b>+0.0<span></span>2 base CpS per grandma</b>, and makes the Elder Pledge purify for twice as much time.<q>Burns the corruption with the worker\'s might.</q>');
 		replaceDesc('Arcane sugar', 'Cookie production multiplier <b>+5%</b>, and <b>halves</b> the Elder Pledge cooldown, and halves the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
 		replaceDesc('Elder Pact', 'Each grandma gains <b>+0.0<span></span>5 base CpS per portal</b>, and makes the Elder Pledge twice as powerful.<q>Questionably unethical.</q>');
-		replaceDesc('Sacrificial rolling pins', 'The Elder Pledge is 10 times cheaper.<q>As its name suggests, it suffers so that everyone can live tomorrow.</q>');
+		replaceDesc('Sacrificial rolling pins', 'The Elder Pledge is <b>10 times</b> cheaper.<q>As its name suggests, it suffers so that everyone can live tomorrow.</q>');
 		Game.Upgrades['One mind'].clickFunction = function() { };
 		Game.Upgrades['Elder Pact'].clickFunction = function() { };
-		replaceDesc('Elder Pledge', 'Purifies the decay, at least for a short, short while.<q>Although, yes - the cost is uncapped; the scaling is now much, much weaker.</q>');
+		replaceDesc('Elder Pledge', 'Purifies the decay, at least for a short, short while.<br>Price also scales with highest raw CpS this ascend.<q>Although, yes - the cost is now uncapped; the scaling is now much, much weaker.</q>');
 		//dont know what to do with the covenant yet
 		Game.Upgrades['Elder Pledge'].buyFunction = function() {
 			Game.pledges++;
 			Game.pledgeT=Game.getPledgeDuration();
 			Game.Unlock('Elder Covenant');
+			decay.stop(10);
 			Game.storeToRefresh=1;
 		}
 		Game.Upgrades['Elder Pledge'].priceFunc = function() {
-			return Game.cookiesPsRawHighest * 10 * Math.pow(Game.pledges, 3) * (Game.Has('Sacrifical rolling pins')?0.1:1);
+			return Game.cookiesPsRawHighest * 10 * Math.pow(Game.pledges, 4) * (Game.Has('Sacrificial rolling pins')?0.1:1);
 		}
 		Game.getPledgeDuration = function() {
 			var dur = Game.fps*2.5;
@@ -175,6 +176,12 @@ Game.registerMod("Kaizo Cookies", {
 			var str = 1; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
 			return (str * Math.sqrt(T / originT)) / Game.fps;
+		}
+		Game.getPledgeCooldown = function() {
+			var c = Game.fps * 10 * 60;
+			if (Game.Has('Exotic nuts')) { c /= 2; }
+			if (Game.Has('Arcane sugar')) { c /= 2; }
+			return c;
 		}
 		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString().replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")'));
         function inRect(x,y,rect)
