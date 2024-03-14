@@ -25,6 +25,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltKeep = 0.2; //the fraction of halt time that is kept when halted again
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
+		decay.curCpS = 0; decay.lastCpS = 0;
 		decay.update = function(buildId) { 
     		decay.mults[buildId] *= 1 - (
 				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 0.6)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
@@ -67,6 +68,19 @@ Game.registerMod("Kaizo Cookies", {
 		decay.gen = function() {
 			return decay.mults[20];
 		}
+
+		decay.getDec = function() {
+			var str = ''; 
+			var str += (1 - (decay.curCpS * 100) / decay.lastCpS).toFixed(2);
+			if (str.includes('-')) {
+				str = str.replace('-', '+');
+			} else {
+				str = '-' + str;
+			}
+			return ' (' + str + '%)';
+		}
+		eval('Game.Draw='+Game.Draw.toString().replace(`ify(Game.cookiesPs*(1-Game.cpsSucked),1)+'</div>';`, `ify(Game.cookiesPs*(1-Game.cpsSucked),1)+'</div>'; str += decay.getDec();`));
+		eval('Game.calculateGains='+Game.calculateGains.toString().replace('Game.recalculateGains=0;', 'Game.recalculateGains=0; decay.lastCpS = decay.curCpS; decay.curCpS = Game.unbuffedCps;'));
 
 		//decay scaling
 		decay.setRates = function() {
