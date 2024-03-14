@@ -70,8 +70,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
 		decay.getDec = function() {
-			var str = ''; 
-			var str += (1 - (decay.curCpS * 100) / decay.lastCpS).toFixed(2);
+			var str = (1 - (decay.curCpS * 100) / decay.lastCpS).toFixed(2);
 			if (str.includes('-')) {
 				str = str.replace('-', '+');
 			} else {
