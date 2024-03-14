@@ -38,7 +38,7 @@ Game.registerMod("Kaizo Cookies", {
 			) * (
 				Math.max(1, Math.pow(decay.gen(), 0.6)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
 			);
-			decay.mults[buildId] *= justMult;
+			decay.mults[buildId] *= decay.justMult;
 			if (Game.pledgeT > 0) {
 				decay.mults[buildId] += Game.getPledgeStrength();
 			}
