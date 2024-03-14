@@ -185,6 +185,15 @@ Game.registerMod("Kaizo Cookies", {
 				return '<div style="text-align:center;">'+loc("Elder Pledge will be usable again in:")+'<br><b>'+Game.sayTime(Game.pledgeC,-1)+'</b></div>';
 			}
 		}
+		Game.Upgrades['Elder Pledge'].timerDisplay = function() {
+			if (!Game.Upgrades['Elder Pledge'].bought) {
+				return -1; 
+			} else if (Game.pledgeT > 0) { 
+				return 1-Game.pledgeT/Game.getPledgeDuration(); 
+			} else {
+				return 1-Game.pledgeC/Game.getPledgeCooldown(); 
+			}
+		}
 		Game.getPledgeDuration = function() {
 			var dur = Game.fps*7.5;
 			if (Game.Has('Communal brainsweep')) {
