@@ -37,7 +37,7 @@ Game.registerMod("Kaizo Cookies", {
 				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 0.6)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
 			);
 			if (Game.pledgeT > 0) {
-				decay.mults[buildId] += Game.getPledgeStrength(Game.pledgeT);
+				decay.mults[buildId] += Game.getPledgeStrength();
 			}
 		}
 		decay.updateAll = function() {
@@ -103,6 +103,8 @@ Game.registerMod("Kaizo Cookies", {
 			d *= Math.pow(0.999, Math.log10(c));
 			d *= Math.pow(0.99825, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
 			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
+			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
+			d *= Math.pow(0.9975, Math.max(Math.pow(Game.BuildingsOwned, 0.33) - 10, 0));
 			if (Game.Has('Lucky day')) { d *= 0.99; }
 			if (Game.Has('Serendipity')) { d *= 0.99; }
 			if (Game.Has('Get Lucky')) { d *= 0.99; }
@@ -129,7 +131,7 @@ Game.registerMod("Kaizo Cookies", {
 			decay.stop(1);
 		}
 		Game.registerHook('click', decay.clickBCStop);
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(2);`));
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(1);`));
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.refreshAll(3);'));
 		decay.reincarnateBoost = function() {
 			decay.stop(20);
@@ -137,7 +139,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.registerHook('reincarnate', decay.reincarnateBoost);
 		
-
+		//more gpoc stuff
 		for (let i in Game.UpgradesByPool['tech']) {
 			Game.UpgradesByPool['tech'][i].basePrice /= 1000000;
 		}
@@ -171,11 +173,10 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			return dur;
 		}
-		Game.getPledgeStrength = function(T) {
-			var originT = Game.getPledgeDuration();
+		Game.getPledgeStrength = function() {
 			var str = 1; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
-			return (str * Math.sqrt(T / originT)) / Game.fps;
+			return str / Game.fps;
 		}
 		Game.getPledgeCooldown = function() {
 			var c = Game.fps * 10 * 60;
