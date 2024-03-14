@@ -243,6 +243,8 @@ Game.registerMod("Kaizo Cookies", {
 			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
 			 .replace(`Game.Unlock('Elder Pledge');`, '')
 		);
+
+		eval("Game.shimmerTypes['golden'].initFunc="+Game.shimmerTypes['golden'].initFunc.toString().replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ''));
 		
         function inRect(x,y,rect)
 		{
