@@ -178,6 +178,13 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Elder Pledge'].priceFunc = function() {
 			return Game.cookiesPsRawHighest * 10 * Math.pow(Game.pledges, 4) * (Game.Has('Sacrificial rolling pins')?0.1:1);
 		}
+		Game.Upgrades['Elder Pledge'].displayFuncWhenOwned = function() {
+			if (Game.pledgeT > 0) {
+				return '<div style="text-align:center;">'+loc("Time remaining until pledge runs out:")+'<br><b>'+Game.sayTime(Game.pledgeT,-1)+'</b></div>';
+			} else {
+				return '<div style="text-align:center;">'+loc("Elder Pledge will be usable again in:")+'<br><b>'+Game.sayTime(Game.pledgeC,-1)+'</b></div>';
+			}
+		}
 		Game.getPledgeDuration = function() {
 			var dur = Game.fps*7.5;
 			if (Game.Has('Communal brainsweep')) {
