@@ -33,7 +33,7 @@ Game.registerMod("Kaizo Cookies", {
 			);
 		}
 		decay.updateAll = function() {
-			if (Game.cookiesEarned - Game.cookiesReset <= 1000) { return false; } 
+			if (Game.cookiesEarned <= 1000) { return false; } 
 			for (let i in decay.mults) {
 				decay.update(i);
 			}
@@ -91,7 +91,7 @@ Game.registerMod("Kaizo Cookies", {
 		//decay scaling
 		decay.setRates = function() {
 			var d = 1;
-			var c = Game.cookiesEarned - Game.cookiesReset;
+			var c = Game.cookiesEarned;
 			d *= Math.pow(0.999, Math.log10(c));
 			d *= Math.pow(0.9875, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
 			d *= Math.pow(0.985, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0))
