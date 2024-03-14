@@ -116,7 +116,7 @@ Game.registerMod("Kaizo Cookies", {
 				str += '<small>-</small>'; 
 				str += Beautify(((1 - decay.gen()) * 100), 3);
 			}
-			str += '<small>%</small>';
+			str += '%';
 			return str;
 		}
 
@@ -158,7 +158,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen())) } else { buff.time--; }'));
 
-		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div class="listing">'+decay.diffStr()+'</div>'`));
+		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div class="listing">'+decay.diffStr()+'</div>'+`));
 
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
