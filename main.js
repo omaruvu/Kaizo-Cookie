@@ -70,14 +70,14 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
 		decay.getDec = function() {
-			var num = (1 - (decay.curCpS) / decay.lastCpS) * 100;
+			var num = (1 - (decay.curCpS) / decay.lastCpS) * 100 * Game.fps;
 			var str = num.toFixed(2);
 			if (str.includes('-')) {
 				str = str.replace('-', '+');
 			} else {
 				str = '-' + str;
 			}
-			return ' (' + str + '%)';
+			return ' (' + str + '%/s)';
 		}
 		eval('Game.Draw='+Game.Draw.toString().replace(`ify(Game.cookiesPs*(1-Game.cpsSucked),1)+'</div>';`, `ify(Game.cookiesPs*(1-Game.cpsSucked),1)+decay.getDec()+'</div>';`));
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('Game.recalculateGains=0;', 'Game.recalculateGains=0; decay.lastCpS = decay.curCpS; decay.curCpS = Game.unbuffedCps;'));
