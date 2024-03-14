@@ -117,6 +117,8 @@ Game.registerMod("Kaizo Cookies", {
 			w *= Math.pow(0.99, Math.log10(c));
 			decay.wrinklerSpawnFactor = 1 - w;
 			decay.wrinklerSpawnThreshold = 1 - w * 3.5;
+
+			decay.min = Math.min(0.95, 0.15 + (1 - d) * 2.5);
 		}
 		decay.setRates();
 		Game.registerHook('check', decay.setRates);
