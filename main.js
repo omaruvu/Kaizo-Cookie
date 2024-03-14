@@ -39,7 +39,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.refreshAll = function(to) {
 			for (let i in decay.mults) {
-				decay.refresh(i);
+				decay.refresh(i, to);
 			}
 			Game.recalculateGains = 1;
 		}
