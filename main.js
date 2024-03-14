@@ -190,6 +190,7 @@ Game.registerMod("Kaizo Cookies", {
 			return c;
 		}
 		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString().replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")'));
+		//eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString().replace(`Game.Lock('Elder Pledge');`,'').replace(`Game.Unlock('Elder Pledge');`, ''));
         function inRect(x,y,rect)
 		{
 			//find out if the point x,y is in the rotated rectangle rect{w,h,r,o} (width,height,rotation in radians,y-origin) (needs to be normalized)
