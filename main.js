@@ -25,6 +25,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltKeep = 0.2; //the fraction of halt time that is kept when halted again
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
+		decay.cpsList = [];
 		decay.curCpS = 0; decay.lastCpS = 0;
 		decay.update = function(buildId) { 
     		decay.mults[buildId] *= 1 - (
@@ -39,6 +40,10 @@ Game.registerMod("Kaizo Cookies", {
 			decay.regainAcc();
 			if (Game.drawT % 3) {
 				Game.recalculateGains = 1;	
+			}
+			decay.cpsList.push(Game.unbuffedCpS);
+			if (decay.cpsList.length > Game.fps) {
+				cpsList.shift();
 			}
 		}
 		decay.refresh = function(buildId, to) { 
@@ -70,7 +75,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
 		decay.getDec = function() {
-			var num = (1 - (decay.curCpS) / decay.lastCpS) * 100 * Game.fps;
+			var num = (1 - decay.cpsList[0] / decay.cpsList[decay.cpsList.length - 1]) * 100;
 			var str = num.toFixed(2);
 			if (str.includes('-')) {
 				str = str.replace('-', '+');
