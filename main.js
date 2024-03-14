@@ -20,7 +20,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5;
 		decay.wrinklerSpawnThreshold = 0.8;
-		decay.wrinklerSpawnFactor = 0.8;
+		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.update = function(buildId) { 
     		decay.mults[buildId] *= 1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (1 - Math.min(Math.pow(decay.halt, decay.haltFactor), 1));
 		}
@@ -62,12 +62,16 @@ Game.registerMod("Kaizo Cookies", {
 			var c = Game.cookiesEarned - Game.cookiesReset;
 			d *= Math.pow(0.987, Math.log10(c));
 			d *= Math.pow(0.98, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
-			d *= Math.pow(0.98, Math.max(Math.sqrt(Game.achievementsOwned) - 4, 0))
+			d *= Math.pow(0.98, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0))
 			if (Game.Has('Lucky day')) { d *= 0.95; }
 			if (Game.Has('Serendipity')) { d *= 0.95; }
 			if (Game.Has('Get Lucky')) { d *= 0.95; }
-			
 			decay.incMult = 1 - d;
+
+			var w = 1 - 0.8;
+			w *= Math.pow(0.99, Math.log10(c));
+			decay.wrinklerSpawnFactor = 1 - w;
+			decay.wrinklerSpawnThreshold = 1 - w * 3.5;
 		}
 		decay.setRates();
 		Game.registerHook('check', decay.setRates);
