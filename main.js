@@ -53,6 +53,8 @@ Game.registerMod("Kaizo Cookies", {
     		decay.halt = Math.max(0, decay.halt - decay.decHalt / Game.fps);
 			if (decay.halt == 0) {
 				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt / Game.fps);
+			} else {
+				decay.haltOvertime = Math.max(0, decay.haltOvertime - (decay.decHalt / 2) / Game.fps);
 			}
 		}
 		decay.stop = function(val) {
