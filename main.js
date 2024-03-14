@@ -56,6 +56,13 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.cpsList.length > Game.fps) {
 				decay.cpsList.shift();
 			}
+			if (Game.pledgeC > 0) {
+				Game.pledgeC--;
+				if (Game.pledgeC == 0) {
+					Game.Lock('Elder Pledge');
+					Game.Unlock('Elder Pledge');
+				}
+			}
 		}
 		decay.refresh = function(buildId, to) { 
    			decay.mults[buildId] = Math.max(to, decay.mults[buildId]);
@@ -172,14 +179,14 @@ Game.registerMod("Kaizo Cookies", {
 			return Game.cookiesPsRawHighest * 10 * Math.pow(Game.pledges, 4) * (Game.Has('Sacrificial rolling pins')?0.1:1);
 		}
 		Game.getPledgeDuration = function() {
-			var dur = Game.fps*2.5;
+			var dur = Game.fps*7.5;
 			if (Game.Has('Communal brainsweep')) {
 				dur *= 2;
 			}
 			return dur;
 		}
 		Game.getPledgeStrength = function() {
-			var str = 1; 
+			var str = 0.2; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
 			return str / Game.fps;
 		}
@@ -189,8 +196,13 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Arcane sugar')) { c /= 2; }
 			return c;
 		}
-		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString().replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")'));
-		//eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString().replace(`Game.Lock('Elder Pledge');`,'').replace(`Game.Unlock('Elder Pledge');`, ''));
+		Game.pledgeC = 0;
+		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString()
+			 .replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")')
+			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
+			 .replace(`Game.Unlock('Elder Pledge');`, '')
+		);
+		
         function inRect(x,y,rect)
 		{
 			//find out if the point x,y is in the rotated rectangle rect{w,h,r,o} (width,height,rotation in radians,y-origin) (needs to be normalized)
