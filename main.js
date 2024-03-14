@@ -19,6 +19,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.halt = 1; //simulates decay stopping from clicking
 		decay.haltOvertime = 0;
 		decay.haltOTLimit = 2; //OT stands for overtime
+		decay.haltOTApplyFactor = 0.05;
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5;
 		decay.haltKeep = 0.2; //the fraction of halt time that is kept when halted again
@@ -56,7 +57,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.stop = function(val) {
 			decay.halt = val;
-			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * 0.2); 
+			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltOTApplyFactor); 
 		}
  		decay.get = function(buildId) {
 			return decay.mults[buildId];
