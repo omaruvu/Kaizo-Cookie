@@ -31,11 +31,14 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.cpsList = [];
-		decay.curCpS = 0; decay.lastCpS = 0;
+		decay.justMult = 0; //debugging use
 		decay.update = function(buildId) { 
-    		decay.mults[buildId] *= 1 - (
-				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 0.6)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
+    		decay.justMult = 1 - (
+				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))
+			) * (
+				Math.max(1, Math.pow(decay.gen(), 0.6)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
 			);
+			decay.mults[buildId] *= justMult;
 			if (Game.pledgeT > 0) {
 				decay.mults[buildId] += Game.getPledgeStrength();
 			}
