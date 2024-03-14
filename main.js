@@ -17,13 +17,16 @@ Game.registerMod("Kaizo Cookies", {
 		decay.incMult = 0.04; //decay mult is decreased by this multiplicative every second
 		decay.min = 0.15; //the minimum power that the update function uses; the lower it is, the slower the decay will pick up
 		decay.halt = 1; //simulates decay stopping from clicking
+		decay.haltOvertime = 0;
+		decay.haltOTLimit = 2; //OT stands for overtime
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5;
+		decay.haltKeep = 0.2; //the fraction of halt time that is kept when halted again
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.update = function(buildId) { 
     		decay.mults[buildId] *= 1 - (
-				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 0.75)) - Math.min(Math.pow(decay.halt, decay.haltFactor), 1)
+				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 0.75)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
 			);
 		}
 		decay.updateAll = function() {
@@ -47,9 +50,13 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.regainAcc = function() { 
     		decay.halt = Math.max(0, decay.halt - decay.decHalt / Game.fps);
+			if (decay.halt == 0) {
+				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt / Game.fps);
+			}
 		}
 		decay.stop = function(val) {
 			decay.halt = val;
+			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * 0.2); 
 		}
  		decay.get = function(buildId) {
 			return decay.mults[buildId];
@@ -88,7 +95,7 @@ Game.registerMod("Kaizo Cookies", {
 		//ways to refresh/stop decay
 		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.refreshAll(2);'));
 		decay.clickBCStop = function() {
-			decay.stop(1.05);
+			decay.stop(1);
 		}
 		Game.registerHook('click', decay.clickBCStop);
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(2);`));
