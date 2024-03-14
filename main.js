@@ -1,4 +1,9 @@
 var decay = {};
+function replaceDesc(name, toReplaceWith) {
+	Game.Upgrades[name].baseDesc = toReplaceWith;
+	Game.Upgrades[name].desc = toReplaceWith;
+	Game.Upgrades[name].ddesc = toReplaceWith;
+}
 Game.registerMod("Kaizo Cookies", { 
 	init: function() { 
 //Special thanks to Cursed, Yeetdragon, Lookas for helping me with the code, Fififoop for quality control & suggestions, Rubik for suggestions
@@ -22,7 +27,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltOTApplyFactor = 0.05;
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5;
-		decay.haltKeep = 0.2; //the fraction of halt time that is kept when halted again
+		decay.haltKeep = 0.15; //the fraction of halt time that is kept when halted again
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.cpsList = [];
@@ -31,6 +36,9 @@ Game.registerMod("Kaizo Cookies", {
     		decay.mults[buildId] *= 1 - (
 				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 0.6)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
 			);
+			if (Game.pledgeT > 0) {
+				decay.mults[buildId] += Game.getPledgeStrength(Game.pledgeT);
+			}
 		}
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 1000) { return false; } 
@@ -93,11 +101,11 @@ Game.registerMod("Kaizo Cookies", {
 			var d = 1;
 			var c = Game.cookiesEarned;
 			d *= Math.pow(0.999, Math.log10(c));
-			d *= Math.pow(0.9875, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
-			d *= Math.pow(0.985, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0))
-			if (Game.Has('Lucky day')) { d *= 0.95; }
-			if (Game.Has('Serendipity')) { d *= 0.95; }
-			if (Game.Has('Get Lucky')) { d *= 0.95; }
+			d *= Math.pow(0.9985, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
+			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
+			if (Game.Has('Lucky day')) { d *= 0.99; }
+			if (Game.Has('Serendipity')) { d *= 0.99; }
+			if (Game.Has('Get Lucky')) { d *= 0.99; }
 			decay.incMult = 1 - d;
 
 			var w = 1 - 0.8;
@@ -128,8 +136,47 @@ Game.registerMod("Kaizo Cookies", {
 			decay.refreshAll(10);
 		}
 		Game.registerHook('reincarnate', decay.reincarnateBoost);
+		
 
-
+		for (let i in Game.UpgradesByPool['tech']) {
+			Game.UpgradesByPool['tech'][i].basePrice /= 1000000;
+		}
+		Game.registerHook('check', function() {
+			if (Game.Objects['Grandma'].amount>=25) { Game.Unlock('Bingo center/Research facility'); }
+		});
+		replaceDesc('One mind', 'Each grandma gains <b>+0.0<span></span>2 base CpS per grandma</b>.<br>Also unlocks the <b>Elder Pledge</b>, which slowly purifies the decay for some cookies.<q>Repels the ancient evil with industrial magic.</q>');
+		replaceDesc('Exotic nuts', 'Cookie production multiplier <b>+4%</b>, and <b>halves</b> the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
+		replaceDesc('Communal brainsweep', 'Each grandma gains another <b>+0.0<span></span>2 base CpS per grandma</b>, and makes the Elder Pledge purify for twice as much time.<q>Burns the corruption with the worker\'s might.</q>');
+		replaceDesc('Arcane sugar', 'Cookie production multiplier <b>+5%</b>, and <b>halves</b> the Elder Pledge cooldown, and halves the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
+		replaceDesc('Elder Pact', 'Each grandma gains <b>+0.0<span></span>5 base CpS per portal</b>, and makes the Elder Pledge twice as powerful.<q>Questionably unethical.</q>');
+		replaceDesc('Sacrificial rolling pins', 'The Elder Pledge is 10 times cheaper.<q>As its name suggests, it suffers so that everyone can live tomorrow.</q>');
+		Game.Upgrades['One mind'].clickFunction = function() { };
+		Game.Upgrades['Elder Pact'].clickFunction = function() { };
+		replaceDesc('Elder Pledge', 'Purifies the decay, at least for a short, short while.<q>Although, yes - the cost is uncapped; the scaling is now much, much weaker.</q>');
+		//dont know what to do with the covenant yet
+		Game.Upgrades['Elder Pledge'].buyFunction = function() {
+			Game.pledges++;
+			Game.pledgeT=Game.getPledgeDuration();
+			Game.Unlock('Elder Covenant');
+			Game.storeToRefresh=1;
+		}
+		Game.Upgrades['Elder Pledge'].priceFunc = function() {
+			return Game.cookiesPsRawHighest * 10 * Game.pow(Game.pledges, 3) * (Game.Has('Sacrifical rolling pins')?0.1:1);
+		}
+		Game.getPledgeDuration = function() {
+			var dur = Game.fps*2.5;
+			if (Game.Has('Communal brainsweep')) {
+				dur *= 2;
+			}
+			return dur;
+		}
+		Game.getPledgeStrength = function(T) {
+			var originT = Game.getPledgeDuration();
+			var str = 1; 
+			if (Game.Has('Elder Pact')) { str *= 2; }
+			return (str * Math.sqrt(T / originT)) / Game.fps;
+		}
+		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString().replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")'));
         function inRect(x,y,rect)
 		{
 			//find out if the point x,y is in the rotated rectangle rect{w,h,r,o} (width,height,rotation in radians,y-origin) (needs to be normalized)
@@ -349,7 +396,7 @@ Game.registerMod("Kaizo Cookies", {
 			popup=("Dragon\'s hoard!")+'<br><small>'+("+%1!",("%1 cookie",LBeautify(valn)))+'</small>';
         }else if (choice=='blood frenzy')`));//When Ancestral Metamorphosis is seclected it pushes a effect called Dragon's hoard that gives 24 hours worth of CpS
 
-        Game.dragonAuras[2].desc="Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy is <b>30%</b> more powerful.";
+        Game.dragonAuras[2].desc="Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy and Dragonflight is <b>50%</b> more powerful.";
 		Game.dragonAuras[6].desc="All upgrades are <b>10% cheaper</b>.";
 		Game.dragonAuras[7].desc="All buildings are <b>5% cheaper</b>.";
         Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS. Wrinklers approach the big cookie <b>5 times</b> slower.";
