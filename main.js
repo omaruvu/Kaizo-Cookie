@@ -22,7 +22,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.update = function(buildId) { 
-    		decay.mults[buildId] *= 1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (1 - Math.min(Math.pow(decay.halt, decay.haltFactor), 1));
+    		decay.mults[buildId] *= 1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen, 0.75)) - Math.min(Math.pow(decay.halt, decay.haltFactor), 1));
 		}
 		decay.updateAll = function() {
 			if (Game.cookiesEarned - Game.cookiesReset <= 1000) { return false; } 
@@ -58,11 +58,11 @@ Game.registerMod("Kaizo Cookies", {
 
 		//decay scaling
 		decay.setRates = function() {
-			var d = 1 - 0.005;
+			var d = 1;
 			var c = Game.cookiesEarned - Game.cookiesReset;
-			d *= Math.pow(0.987, Math.log10(c));
-			d *= Math.pow(0.98, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
-			d *= Math.pow(0.98, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0))
+			d *= Math.pow(0.999, Math.log10(c));
+			d *= Math.pow(0.9875, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
+			d *= Math.pow(0.985, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0))
 			if (Game.Has('Lucky day')) { d *= 0.95; }
 			if (Game.Has('Serendipity')) { d *= 0.95; }
 			if (Game.Has('Get Lucky')) { d *= 0.95; }
@@ -90,7 +90,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.registerHook('click', decay.clickBCStop);
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(2);`));
-		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.refreshAll(5);'));
+		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.refreshAll(3);'));
 		decay.reincarnateBoost = function() {
 			decay.stop(20);
 			decay.refreshAll(10);
