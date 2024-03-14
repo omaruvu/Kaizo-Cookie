@@ -43,7 +43,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			decay.cpsList.push(Game.unbuffedCpS);
 			if (decay.cpsList.length > Game.fps) {
-				cpsList.shift();
+				decay.cpsList.shift();
 			}
 		}
 		decay.refresh = function(buildId, to) { 
