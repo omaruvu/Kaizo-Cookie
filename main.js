@@ -27,10 +27,11 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltOTApplyFactor = 0.05;
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5;
-		decay.haltKeep = 0.15; //the fraction of halt time that is kept when halted again
+		decay.haltKeep = 0.05; //the fraction of halt time that is kept when halted again
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.cpsList = [];
+		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery'];
 		decay.justMult = 0; //debugging use
 		decay.update = function(buildId) { 
     		decay.justMult = 1 - (
@@ -115,6 +116,8 @@ Game.registerMod("Kaizo Cookies", {
 			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
 			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
 			d *= Math.pow(0.9975, Math.max(Math.pow(Game.BuildingsOwned, 0.33) - 10, 0));
+			d *= Math.pow(0.997, Math.log2(Math.max(Game.lumpsTotal, 1)));
+			d *= Math.pow(0.9999, Math.log2(Math.max(Date.now()-Game.startDate - 100000, 1))); //hopefully not too bruh
 			if (Game.Has('Lucky day')) { d *= 0.99; }
 			if (Game.Has('Serendipity')) { d *= 0.99; }
 			if (Game.Has('Get Lucky')) { d *= 0.99; }
@@ -125,7 +128,12 @@ Game.registerMod("Kaizo Cookies", {
 			decay.wrinklerSpawnFactor = 1 - w;
 			decay.wrinklerSpawnThreshold = 1 - w * 3.5;
 
-			decay.min = Math.min(0.95, 0.15 + (1 - d) * 2.5);
+			decay.min = Math.min(1, 0.15 + (1 - d) * 3.5);
+
+			var dh = 0.33;
+			dh *= Math.pow(1.012, Math.log10(c));
+			dh *= 1 / d;
+			decay.decHalt = dh;
 		}
 		decay.setRates();
 		Game.registerHook('check', decay.setRates);
@@ -135,7 +143,7 @@ Game.registerMod("Kaizo Cookies", {
 			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
 		}
 
-		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','buff.time -= 1 / (Math.min(1, decay.gen()))'))
+		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen())) } else { buff.time--; }'))
 
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
