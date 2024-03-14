@@ -22,7 +22,9 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.update = function(buildId) { 
-    		decay.mults[buildId] *= 1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen, 0.75)) - Math.min(Math.pow(decay.halt, decay.haltFactor), 1));
+    		decay.mults[buildId] *= 1 - (
+				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 0.75)) - Math.min(Math.pow(decay.halt, decay.haltFactor), 1)
+			);
 		}
 		decay.updateAll = function() {
 			if (Game.cookiesEarned - Game.cookiesReset <= 1000) { return false; } 
@@ -35,7 +37,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		decay.refresh = function(buildId, to) { 
-   			decay.mults[buildId] = to;
+   			decay.mults[buildId] = Math.max(to, decay.mults[buildId]);
 		}
 		decay.refreshAll = function(to) {
 			for (let i in decay.mults) {
