@@ -135,6 +135,8 @@ Game.registerMod("Kaizo Cookies", {
 			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
 		}
 
+		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','buff.time -= 1 / (Math.min(1, decay.gen()))'))
+
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
 		//ways to refresh/stop decay
