@@ -1,10 +1,16 @@
 var decay = {};
-var gp = Game.Objects['Wizard tower'].minigame //acts as proxy for the replaced functions
 function replaceDesc(name, toReplaceWith) {
 	Game.Upgrades[name].baseDesc = toReplaceWith;
 	Game.Upgrades[name].desc = toReplaceWith;
 	Game.Upgrades[name].ddesc = toReplaceWith;
 }
+
+Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
+	if (Game.Objects['Wizard tower'].minigameLoaded) {
+		var gp = Game.Objects['Wizard tower'].minigame //acts as proxy for the replaced functions
+	}
+});
+
 Game.registerMod("Kaizo Cookies", { 
 	init: function() { 
 //Special thanks to Cursed, Yeetdragon, Lookas for helping me with the code, Fififoop for quality control & suggestions, Rubik for suggestions
@@ -756,7 +762,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		});
 
-		
+
 
 	},
 	save: function(){
