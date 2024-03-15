@@ -27,7 +27,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltOTApplyFactor = 0.05;
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5; //how quickly decay recovers from halt
-		decay.haltKeep = 0.05; //the fraction of halt time that is kept when halted again
+		decay.haltKeep = 0.15; //the fraction of halt time that is kept when halted again
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
@@ -181,7 +181,7 @@ Game.registerMod("Kaizo Cookies", {
 		//ways to purify/refresh/stop decay
 		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.3, 1.5); decay.stop(4);'));
 		decay.clickBCStop = function() {
-			decay.stop(1);
+			decay.stop(0.5);
 		}
 		Game.registerHook('click', decay.clickBCStop);
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(2);`));
