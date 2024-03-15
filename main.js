@@ -118,6 +118,7 @@ Game.registerMod("Kaizo Cookies", {
 			return decay.mults[20];
 		}
 
+		//ui and display and stuff
 		decay.getDec = function() {
 			if (decay.cpsList.length < Game.fps * 1.5) { return ''; }
 			var num = ((decay.cpsList[decay.cpsList.length - 1] + decay.cpsList[decay.cpsList.length - 2] + decay.cpsList[decay.cpsList.length - 3]) / 3);
@@ -136,6 +137,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		eval('Game.Draw='+Game.Draw.toString().replace(`ify(Game.cookiesPs*(1-Game.cpsSucked),1)+'</div>';`, `ify(Game.cookiesPs*(1-Game.cpsSucked),1)+decay.getDec()+'</div>';`));
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('Game.recalculateGains=0;', 'Game.recalculateGains=0; decay.lastCpS = decay.curCpS; decay.curCpS = Game.unbuffedCps;'));
+		Game.registerHook('draw', function() { if (Game.drawT % 3) { Game.updateMenu(); } }); //feels like stretching the bounds of my computer a bit here
 
 		decay.diffStr = function() {
 			var str = '<b>CpS multiplier from decay: </b>';
