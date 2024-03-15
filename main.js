@@ -35,7 +35,6 @@ Game.registerMod("Kaizo Cookies", {
 		decay.halt = 1; //simulates decay stopping from clicking
 		decay.haltOvertime = 0;
 		decay.haltOTLimit = 2; //OT stands for overtime
-		decay.haltOTApplyFactor = 0.05;
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5; //how quickly decay recovers from halt
 		decay.haltKeep = 0.2; //the fraction of halt time that is kept when halted again
@@ -106,7 +105,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.stop = function(val) {
 			decay.halt = val;
-			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltOTApplyFactor); 
+			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltKeep); 
 		}
  		decay.get = function(buildId) {
 			return decay.mults[buildId];
@@ -228,7 +227,7 @@ Game.registerMod("Kaizo Cookies", {
 		//ways to purify/refresh/stop decay
 		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.3, 1.5); decay.stop(4);'));
 		decay.clickBCStop = function() {
-			decay.stop(0.3);
+			decay.stop(0.5);
 		}
 		Game.registerHook('click', decay.clickBCStop);
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(2 * Math.max((1 - Game.auraMult('Dragon Guts')), 0)); `));
