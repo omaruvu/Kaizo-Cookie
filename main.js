@@ -19,6 +19,10 @@ Game.registerMod("Kaizo Cookies", {
         // notification!
 		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.`, [21,32],10,1);
 
+		// creating custImg variable
+		custImg=App?this.dir+"/img.png":"https://rawcdn.githack.com/omaruvu/Kaizo-Cookie/31e897b5368c125efc1e319dbb3203f96fcc792a/modicons.png"
+
+
 		/*=====================================================================================
         Decay & Wrinklers
         =======================================================================================*/
@@ -198,14 +202,22 @@ Game.registerMod("Kaizo Cookies", {
 			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
 		}
 		locStrings['+%1/min'] = '+%1/min';
-		var M = gp;
-		eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.sqrt(Math.min(2, decay.gen())) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
-		eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
-		eval('gp.draw='+M.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
-												 `Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,3))+')'):'')`)
-		    .replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
-			     `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from decay: "+decay.effectStrs([function(n, i) { return Math.sqrt(Math.min(2, n))}]); `));
-		eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));
+		Game.registerHook('check', () => {
+			if (Game.Objects['Wizard tower'].minigameLoaded) {
+				var gp = Game.Objects['Wizard tower'].minigame
+				var M = gp;
+				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.sqrt(Math.min(2, decay.gen())) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
+				eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
+				eval('gp.draw='+M.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
+														 `Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,3))+')'):'')`)
+					.replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
+						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from decay: "+decay.effectStrs([function(n, i) { return Math.sqrt(Math.min(2, n))}]); `));
+				eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));		
+				
+			}
+		});
+		
+		
 
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen())) } else { buff.time--; }'));
 
@@ -641,16 +653,16 @@ Game.registerMod("Kaizo Cookies", {
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
 			this.achievements.push(new Game.Upgrade('Golden sugar',(" Sugar lumps mature <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
-			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 14% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,20]),Game.last.pool='prestige');
+			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 50% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,1,custImg]),Game.last.pool='prestige');
 			Game.Upgrades['Cursedor'].parents=[Game.Upgrades['Luminous gloves']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Cursedor'])
 			Game.last.posY=-810,Game.last.posX=-144
 
 			
-		    this.achievements.push(new Game.Upgrade('Cursedor [inactive]',("Activating this will give you a <b>random Effect</b> if you click the big cookie.<div class=\"warning\">But there is a 14% chance of you ascending every time you click the big cookie.</div>"),0,[0,20]));
+		    this.achievements.push(new Game.Upgrade('Cursedor [inactive]',("Activating this will give you a <b>random Effect</b> if you click the big cookie.<div class=\"warning\">But there is a 50% chance of you ascending every time you click the big cookie.</div>"),0,[0,1,custImg]));
 			Game.last.pool='toggle';Game.last.toggleInto='Cursedor [active]';
 
-			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of you ascending.<br>Turning it off will revert those effects.<br>"),0,[0,20]));
+			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of you ascending.<br>Turning it off will revert those effects.<br>"),0,[0,1,custImg]));
 		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [inactive]';Game.last.timerDisplay=function(){if (!Game.Upgrades['Cursedor [inactive]'].bought) return -1; else return 1-Game.fps*60*60*60*60*60*60;};
 			
 			Game.Upgrades['Golden sugar'].order=350045
@@ -662,6 +674,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		this.checkAchievements=function(){//Adding the unlock condition
 			if (Game.cookiesEarned>=1000000000) Game.Unlock('Golden sugar')
+
 			if (Game.Has('Cursedor')) Game.Unlock('Cursedor [inactive]');
 		}
 		if(Game.ready) this.createAchievements()
@@ -672,7 +685,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		Game.registerHook('click',function() {
 			if (Game.Has("Cursedor [inactive]")) {
-				if (Math.random()<1/7) { 
+				if (Math.random()<1/2) { 
 					Game.Ascend(1)
 				}    
 				//select an effect
