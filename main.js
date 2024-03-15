@@ -139,7 +139,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		decay.effectStrs = function(funcs) {
 			var num = decay.gen();
-			if (Array.isArray(func)) { 
+			if (Array.isArray(funcs)) { 
 				for (let i in funcs) {
 					num = funcs[i](num, i);
 				}
