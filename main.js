@@ -882,6 +882,7 @@ Game.registerMod("Kaizo Cookies", {
         return str;
     },
     load: function(str){
+		Game.Upgrades['Elder Pledge'].bought = 0; Game.pledgeT = 0; //just wait until I implement the saving system
         for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
           this.achievements[i].unlocked=Number(str[2*i]); //multiplied by 2 because 2 values for each upgrade
           this.achievements[i].bought=Number(str[(2*i)+1]); //+1 for the second value
