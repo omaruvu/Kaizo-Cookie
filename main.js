@@ -107,7 +107,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.getDec = function() {
 			if (decay.cpsList.length < Game.fps * 1.5) { return ''; }
 			var num = ((decay.cpsList[decay.cpsList.length - 1] + decay.cpsList[decay.cpsList.length - 2] + decay.cpsList[decay.cpsList.length - 3]) / 3);
-			for (let i = Game.fps / 2 - 1; i < Game.fps * 1.5; i++) {
+			for (let i = Game.fps / 2 + 1; i < Game.fps * 1.5; i++) {
 				num += decay.cpsList[i];
 			}
 			num /= 30;
