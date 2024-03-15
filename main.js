@@ -665,7 +665,7 @@ Game.registerMod("Kaizo Cookies", {
 		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [inactive]';Game.last.timerDisplay=function(){if (!Game.Upgrades['Cursedor [inactive]'].bought) return -1; else return 1-Game.fps*60*60*60*60*60*60;};
 			
 			Game.Upgrades['Golden sugar'].order=350045
-			Game.Upgrades['Cursedor'].order=253
+			Game.Upgrades['Cursedor'].order=253.004200000
 			Game.Upgrades['Cursedor [inactive]'].order=14000
 			Game.Upgrades['Cursedor [active]'].order=14000
 			LocalizeUpgradesAndAchievs()
@@ -773,8 +773,6 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 		});
-
-
 
 	},
 	save: function(){
