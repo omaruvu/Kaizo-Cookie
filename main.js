@@ -316,11 +316,11 @@ Game.registerMod("Kaizo Cookies", {
 			return dur;
 		}
 		Game.getPledgeStrength = function() {
-			var str = 0.25; 
+			var str = 0.2; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
 			var cap = 5;
 			if (Game.Has('Elder Pact')) { cap *= 2; }
-			return [1 + (str / Game.fps), 0.5 / (Game.getPledgeDuration() * cap), cap];
+			return [1 + (str / Game.fps), 0.4 / (Game.getPledgeDuration() * cap), cap];
 		}
 		Game.getPledgeCooldown = function() {
 			var c = Game.fps * 10 * 60;
