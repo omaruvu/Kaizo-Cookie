@@ -139,14 +139,19 @@ Game.registerMod("Kaizo Cookies", {
 
 		decay.diffStr = function() {
 			var str = '<b>CpS multiplier from decay: </b>';
-			if (decay.gen() > 1) { 
-				str += '<small>+</small>'; 
-				str += Beautify(((decay.gen() - 1) * 100), 3);
+			if (decay.gen() < 0.00001) {
+				str += '1 / ';
+				str += Beautify(1 / decay.gen());
 			} else { 
-				str += '<small>-</small>'; 
-				str += Beautify(((1 - decay.gen()) * 100), 3);
+				if (decay.gen() > 1) { 
+					str += '<small>+</small>'; 
+					str += Beautify(((decay.gen() - 1) * 100), 3);
+				} else { 
+					str += '<small>-</small>'; 
+					str += Beautify(((1 - decay.gen()) * 100), 3);
+				}
+				str += '%';
 			}
-			str += '%';
 			return str;
 		}
 
@@ -168,7 +173,7 @@ Game.registerMod("Kaizo Cookies", {
 			str += '%';
 			return str;
 		}
-
+		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div class="listing">'+decay.diffStr()+'</div>'+`));
 		
 		//decay scaling
 		decay.setRates = function() {
@@ -247,7 +252,6 @@ Game.registerMod("Kaizo Cookies", {
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
 		eval('Game.getWrinklersMax='+Game.getWrinklersMax.toString().replace(`n+=Math.round(Game.auraMult('Dragon Guts')*2);`, ''));
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen())) } else { buff.time--; }'));
-		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div class="listing">'+decay.diffStr()+'</div>'+`));
 
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
@@ -320,7 +324,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Elder Pact')) { str *= 2; }
 			var cap = 5;
 			if (Game.Has('Elder Pact')) { cap *= 2; }
-			return [1 + (str / Game.fps), 0.4 / (Game.getPledgeDuration() * cap), cap];
+			return [1 + (str / Game.fps), 0.5 / (Game.getPledgeDuration() * cap), cap];
 		}
 		Game.getPledgeCooldown = function() {
 			var c = Game.fps * 10 * 60;
