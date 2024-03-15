@@ -65,6 +65,17 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 		}
+		decay.purify = function(buildId, mult, close, cap) {
+			mults[buildId] *= mult;
+			if (mults[buildId] >= cap) { return true; }
+			mults[buildId] *= Math.pow(10, (Math.log10(cap) - Math.log10(mults[buildId]) * close));
+			if (mults[buildId] > cap) { mults[buildId] = cap; }
+		}
+		decay.purifyAll = function(mult, close, cap) {
+			for (let i in decay.mults) {
+				decay.purify(i, mult, close, cap);
+			}
+		}
 		decay.refresh = function(buildId, to) { 
    			decay.mults[buildId] = Math.max(to, decay.mults[buildId]);
 		}
@@ -162,14 +173,14 @@ Game.registerMod("Kaizo Cookies", {
 
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
-		//ways to refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.refreshAll(1.5);'));
+		//ways to purify/refresh/stop decay
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3, 0.6, 1.5);'));
 		decay.clickBCStop = function() {
 			decay.stop(1);
 		}
 		Game.registerHook('click', decay.clickBCStop);
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(1);`));
-		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.refreshAll(3);'));
+		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(10, 0.8, 3);'));
 		decay.reincarnateBoost = function() {
 			decay.stop(20);
 			decay.refreshAll(10);
@@ -227,7 +238,7 @@ Game.registerMod("Kaizo Cookies", {
 			return dur;
 		}
 		Game.getPledgeStrength = function() {
-			var str = 0.15; 
+			var str = 0.10; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
 			return str / Game.fps;
 		}
