@@ -255,6 +255,13 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Elder Covenant'].priceFunc = function() {
 			return Math.max(Game.Upgrades['Elder Covenant'].basePrice, Game.cookiesPsRawHighest * 3600 * 24);
 		}
+		Game.Upgrades['Elder Covenant'].buyFunction = function() {
+			Game.Win('Elder calm');
+			Game.Lock('Revoke Elder Covenant');
+			Game.Unlock('Revoke Elder Covenant');
+			Game.storeToRefresh=1;
+		}
+		
 		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString()
 			 .replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")')
 			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
