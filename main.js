@@ -54,7 +54,7 @@ Game.registerMod("Kaizo Cookies", {
 				Game.recalculateGains = 1;	
 			}
 			decay.cpsList.push(Game.unbuffedCps);
-			if (decay.cpsList.length > Game.fps) {
+			if (decay.cpsList.length > Game.fps * 1.5) {
 				decay.cpsList.shift();
 			}
 			if (Game.pledgeC > 0) {
@@ -105,8 +105,13 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
 		decay.getDec = function() {
-			if (decay.cpsList.length < 8) { return ''; }
-			var num = (1 - ((decay.cpsList[decay.cpsList.length - 1] + decay.cpsList[decay.cpsList.length - 2] + decay.cpsList[decay.cpsList.length - 3]) / 3) / decay.cpsList[0]) * 100;
+			if (decay.cpsList.length < Game.fps * 1.5) { return ''; }
+			var num = ((decay.cpsList[decay.cpsList.length - 1] + decay.cpsList[decay.cpsList.length - 2] + decay.cpsList[decay.cpsList.length - 3]) / 3);
+			for (let i = Game.fps / 2; i <= Game.fps * 1.5; i++) {
+				num += decay.cpsList[i];
+			}
+			num /= 30;
+			var num = (1 - num / decay.cpsList[0]) * 100;
 			var str = num.toFixed(2);
 			if (str.includes('-')) {
 				str = str.replace('-', '+');
