@@ -351,7 +351,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilMaxHP = 1000;
 		Game.setVeilMaxHP = function() {
 			var h = 100;
-			if (Game.Has('Reinforced membrane') h *= 2; )
+			if (Game.Has('Reinforced membrane')) { h *= 2; }
 			Game.veilMaxHP = h;
 		}
 		Game.registerHook('reincarnate', function() { Game.setVeilMaxHP(); Game.veilHP = Game.veilMaxHP; });
