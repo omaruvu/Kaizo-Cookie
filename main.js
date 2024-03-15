@@ -316,7 +316,7 @@ Game.registerMod("Kaizo Cookies", {
 			return dur;
 		}
 		Game.getPledgeStrength = function() {
-			var str = 0.25; 
+			var str = 0.025; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
 			var cap = 5;
 			if (Game.Has('Elder Pact')) { cap *= 2; }
