@@ -57,8 +57,8 @@ Game.registerMod("Kaizo Cookies", {
 		decay.update = function(buildId) { 
 			var c = decay.mults[buildId];
     		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), 1 + Game.Has('Elder Covenant') * 0.5);
-			if (isFinite(1 / c)) { decay.mults[buildId] = c; } else { decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; }
-		}
+			if (isFinite(1 / c)) { decay.mults[buildId] = c; } else { if (buildId == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; }
+		} 
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 1000) { return false; } 
 			for (let i in decay.mults) {
@@ -125,7 +125,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.onInf = function() {
 			if (decay.prefs.wipeOnInf) { Game.HardReset(2); decay.setRates(); }
-			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notice('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [22, 25], Game.fps * 3600 * 24 * 365, false, 1); }
+			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notify('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [22, 25], Game.fps * 3600 * 24 * 365, false, 1); }
 		}
 
 		//ui and display and stuff
