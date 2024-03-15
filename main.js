@@ -175,10 +175,10 @@ Game.registerMod("Kaizo Cookies", {
 		locStrings['+%1/min'] = '+%1/min';
 		var M = gp;
 		eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.sqrt(Math.min(1.5, decay.gen())) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;'));
-		eval('gp.logic='+replaceAll('M','gp',gp.logic.toString()));
+		eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
 		eval('gp.draw='+M.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
 												 `Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,2))+')'):'')`));
-		eval('gp.draw='+replaceAll('M','gp',gp.draw.toString()));
+		eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));
 
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen())) } else { buff.time--; }'));
 
