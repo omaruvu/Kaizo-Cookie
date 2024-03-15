@@ -179,12 +179,12 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.3, 1.5);'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.3, 1.5); decay.stop(4);'));
 		decay.clickBCStop = function() {
 			decay.stop(1);
 		}
 		Game.registerHook('click', decay.clickBCStop);
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(1);`));
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(2);`));
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(10, 0.8, 3);'));
 		decay.reincarnateBoost = function() {
 			decay.stop(20);
@@ -208,7 +208,6 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['One mind'].clickFunction = function() { };
 		Game.Upgrades['Elder Pact'].clickFunction = function() { };
 		replaceDesc('Elder Pledge', 'Purifies the decay, at least for a short, short while.<br>Price also scales with highest raw CpS this ascend.<q>Although, yes - the cost is now uncapped; the scaling is now much, much weaker.</q>');
-		//dont know what to do with the covenant yet
 		Game.Upgrades['Elder Pledge'].buyFunction = function() {
 			Game.pledges++;
 			Game.pledgeT=Game.getPledgeDuration();
