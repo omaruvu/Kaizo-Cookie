@@ -57,7 +57,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.update = function(buildId) { 
 			var c = decay.mults[buildId];
     		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), 1 + Game.Has('Elder Covenant') * 0.5);
-			if (isFinite(1 / c)) { decay.mults[buildId] = c; } else { if (buildId == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; }
+			if (isFinite(1 / c) && (!isNaN(1 / c))) { decay.mults[buildId] = c; } else { if (buildId == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; }
 		} 
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 1000) { return false; } 
@@ -125,7 +125,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.onInf = function() {
 			if (decay.prefs.wipeOnInf) { Game.HardReset(2); decay.setRates(); }
-			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notify('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [22, 25], Game.fps * 3600 * 24 * 365, false, 1); }
+			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notify('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [21, 25], Game.fps * 3600 * 24 * 365, false, 1); }
 		}
 
 		//ui and display and stuff
@@ -185,7 +185,18 @@ Game.registerMod("Kaizo Cookies", {
 			str += '%';
 			return str;
 		}
-		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div class="listing">'+decay.diffStr()+'</div>'+`));
+
+		decay.updateStats = function() {
+			if (Game.drawT % 2) { 
+				document.getElementById('decayMultD').innerHTML = decay.diffStr();
+				document.getElementById('CpSD').innerHTML = loc("Cookies per second:")+'</b> '+Beautify(Game.cookiesPs,1)+' <small>'+'('+loc("multiplier:")+' '+Beautify(Math.round(Game.globalCpsMult*100),1)+'%)'+(Game.cpsSucked>0?' <span class="warning">('+loc("withered:")+' '+Beautify(Math.round(Game.cpsSucked*100),1)+'%</span>':'')+'</small>';
+				document.getElementById('RawCpSD').innerHTML = loc("Raw cookies per second:")+'</b> '+Beautify(Game.cookiesPsRaw,1)+' <small>'+'('+loc("highest this ascension:")+' '+Beautify(Game.cookiesPsRawHighest,1)+')'+'</small>';
+				document.getElementById('CpCD').innerHTML = loc("Cookies per click:")+'</b> '+Beautify(Game.computedMouseCps,1);
+			}
+		}
+		Game.registerHook('draw', decay.updateStats);
+		//"D" stands for display, mainly just dont want to conflict with any other id and lazy to check
+		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div id="decayMultD" class="listing">'+decay.diffStr()+'</div>'+`).replace(`'<div class="listing"><b>'+loc("Cookies per second:")`,`'<div id="CpSD" class="listing"><b>'+loc("Cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Raw cookies per second:")`,`'<div id="RawCpSD" class="listing"><b>'+loc("Raw cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Cookies per click:")`,`'<div id="CpCD" class="listing"><b>'+loc("Cookies per click:")`));
 		
 		//decay scaling
 		decay.setRates = function() {
