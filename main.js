@@ -26,20 +26,20 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltOTLimit = 2; //OT stands for overtime
 		decay.haltOTApplyFactor = 0.05;
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
-		decay.haltFactor = 0.5;
+		decay.haltFactor = 0.5; //how quickly decay recovers from halt
 		decay.haltKeep = 0.05; //the fraction of halt time that is kept when halted again
 		decay.wrinklerSpawnThreshold = 0.8;
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
+		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery'];
 		decay.justMult = 0; //debugging use
 		decay.update = function(buildId) { 
-    		decay.justMult = 1 - (
+    		decay.mults[buildId] *= Math.pow(1 - (
 				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))
 			) * (
 				Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
-			);
-			decay.mults[buildId] *= decay.justMult;
+			), 1 + Game.Has('Elder Covenant'));
 			if (Game.pledgeT > 0) {
 				decay.mults[buildId] += Game.getPledgeStrength();
 			}
@@ -174,7 +174,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3, 0.6, 1.5);'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.3, 1.5);'));
 		decay.clickBCStop = function() {
 			decay.stop(1);
 		}
@@ -249,13 +249,20 @@ Game.registerMod("Kaizo Cookies", {
 			return c;
 		}
 		Game.pledgeC = 0;
+		replaceDesc('Elder Covenant', 'Stops Wrath Cookies from spawning with decay, at the cost of the decay propagating twice as fast.<q></q>');
+		replaceDesc('Revoke Elder Covenant', 'Decay propagation speed will return to normal, but Wrath Cookies will resume spawning with decay.');
+		Game.Upgrades('Elder Covenant').basePrice = 666.66e+33;
+		Game.Upgrades('Elder Covenant').priceFunc = function() {
+			return Math.max(Game.Upgrades('Elder Covenant').basePrice, Game.cookiesPsRawHighest * 3600 * 24);
+		}
 		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString()
 			 .replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")')
 			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
 			 .replace(`Game.Unlock('Elder Pledge');`, '')
 		);
 
-		eval("Game.shimmerTypes['golden'].initFunc="+Game.shimmerTypes['golden'].initFunc.toString().replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ''));
+		eval("Game.shimmerTypes['golden'].initFunc="+Game.shimmerTypes['golden'].initFunc.toString()
+			 .replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ' || ((!Game.Has("Elder Covenant")) && Math.random() > Math.pow(decay.gen(), decay.wcPow)'));
 		
         function inRect(x,y,rect)
 		{
