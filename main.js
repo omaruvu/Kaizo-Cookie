@@ -25,6 +25,8 @@ Game.registerMod("Kaizo Cookies", {
 		// creating custImg variable
 		custImg=App?this.dir+"/img.png":"https://raw.githack.com/omaruvu/Kaizo-Cookie/main/modicons.png"
 
+		//overriding notification so some really important notifs can last for any amount of time even with quick notes on
+		eval('Game.Notify='+Game.Notify.toString().replace('quick,noLog', 'quick,noLog,forceStay').replace('if (Game.prefs.notifs)', 'if (Game.prefs.notifs && (!forceStay))'));
 
 		/*=====================================================================================
         Decay & GPOC
@@ -47,13 +49,15 @@ Game.registerMod("Kaizo Cookies", {
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery'];
 		decay.justMult = 0; //debugging use
+		decay.infReached = false;
+		decay.prefs = {
+			ascendOnInf: 1,
+			wipeOnInf: 0,
+		}
 		decay.update = function(buildId) { 
-			if (decay.mults[buildId] <= 1 / 1e304) { decay.mults[buildId] = 1 / 1e304; return false; }
-    		decay.mults[buildId] *= Math.pow(1 - (
-				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))
-			) * (
-				Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
-			), 1 + Game.Has('Elder Covenant') * 0.5);
+			var c = decay.mults[buildId];
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), 1 + Game.Has('Elder Covenant') * 0.5);
+			if (isFinite(1 / c)) { decay.mults[buildId] = c; } else { decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; }
 		}
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 1000) { return false; } 
@@ -79,6 +83,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
+			if (decay.infReached) { decay.onInf(); }
 		}
 		decay.purify = function(buildId, mult, close, cap) {
 			decay.mults[buildId] *= mult;
@@ -117,6 +122,10 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.gen = function() {
 			return decay.mults[20];
+		}
+		decay.onInf = function() {
+			if (decay.prefs.wipeOnInf) { Game.HardReset(2); decay.setRates(); }
+			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notice('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [22, 25], Game.fps * 3600 * 24 * 365, false, 1); }
 		}
 
 		//ui and display and stuff
