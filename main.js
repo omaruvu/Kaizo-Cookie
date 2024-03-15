@@ -48,6 +48,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery'];
 		decay.justMult = 0; //debugging use
 		decay.update = function(buildId) { 
+			if (decay.mults[buildId] <= 1 / 1e304) { decay.mults[buildId] = 1 / 1e304; return false; }
     		decay.mults[buildId] *= Math.pow(1 - (
 				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))
 			) * (
