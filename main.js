@@ -52,7 +52,7 @@ Game.registerMod("Kaizo Cookies", {
 				1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))
 			) * (
 				Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
-			), 1 + Game.Has('Elder Covenant'));
+			), 1 + Game.Has('Elder Covenant') * 0.5);
 			if (Game.pledgeT > 0) {
 				decay.mults[buildId] += Game.getPledgeStrength();
 			}
@@ -326,7 +326,7 @@ Game.registerMod("Kaizo Cookies", {
 			return c;
 		}
 		Game.pledgeC = 0;
-		replaceDesc('Elder Covenant', 'Stops Wrath Cookies from spawning with decay, at the cost of the decay propagating twice as fast.<q></q>');
+		replaceDesc('Elder Covenant', 'Stops Wrath Cookies from spawning with decay, at the cost of the decay propagating <b>50%</b> faster.<q>Blocks an outlet for decay, which naturally, causes it to spread faster due to increased concentration.</q>');
 		replaceDesc('Revoke Elder Covenant', 'Decay propagation speed will return to normal, but Wrath Cookies will resume spawning with decay.');
 		Game.Upgrades['Elder Covenant'].basePrice = 666.66e+33;
 		Game.Upgrades['Elder Covenant'].priceFunc = function() {
@@ -346,6 +346,15 @@ Game.registerMod("Kaizo Cookies", {
 
 		
 		//decay halt: shimmering veil
+		Game.veilHP = 1000;
+		Game.veilCollapseAt = 1;
+		Game.veilMaxHP = 1000;
+		Game.setVeilMaxHP = function() {
+			var h = 100;
+			if (Game.Has('Reinforced membrane') h *= 2; )
+			Game.veilMaxHP = h;
+		}
+		Game.registerHook('reincarnate', function() { Game.setVeilMaxHP(); Game.veilHP = Game.veilMaxHP; });
 		replaceDesc('Shimmering veil', 'Unlocks the <b>Shimmering veil</b>, which is a toggleable veil that <b>absorbs</b> your decay when on; however, if it absorbs too much, it may collapse and temporarily massively increase your rate of decay. The veil heals over time while off.');
 		Game.getVeilBoost = function() {
 			//this time it is for the fraction of decay that the veil takes on
@@ -375,6 +384,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Reinforced Membrane')) { r *= 0.75; }
 			if (Game.Has('Delicate touch')) { r *= 0.85; }
 			if (Game.Has('Steadfast murmur')) { r *= 0.85; }
+			return r;
 		}
 		addLoc('This Shimmering Veil is currently taking on %1 of your decay. <br><br>If it collapses, turning it back on will require <b>%2</b> times more cookies than usual, and you must wait for at least <b>%3/b> before doing so. <br>In addition, it will return <b>%4</b> of the decay it absorbed back onto you when it collapses.');
 		Game.Upgrades['Shimmering veil [on]'].descFunc = function(){
