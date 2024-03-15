@@ -374,9 +374,9 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.getVeilCooldown = function() {
 			var c = Game.fps * 60 * 12;
-			if (Game.Has('Reinforced membrane')) { n /= 2; }
-			if (Game.Has('Delicate touch')) { n -= 120 * Game.fps; }
-			if (Game.Has('Steadfast murmur')) { n -= 120 * Game.fps; }
+			if (Game.Has('Reinforced membrane')) { c /= 2; }
+			if (Game.Has('Delicate touch')) { c -= 120 * Game.fps; }
+			if (Game.Has('Steadfast murmur')) { c -= 120 * Game.fps; }
 			return c;
 		}
 		Game.getVeilReturn = function() {
