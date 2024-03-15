@@ -251,9 +251,9 @@ Game.registerMod("Kaizo Cookies", {
 		Game.pledgeC = 0;
 		replaceDesc('Elder Covenant', 'Stops Wrath Cookies from spawning with decay, at the cost of the decay propagating twice as fast.<q></q>');
 		replaceDesc('Revoke Elder Covenant', 'Decay propagation speed will return to normal, but Wrath Cookies will resume spawning with decay.');
-		Game.Upgrades('Elder Covenant').basePrice = 666.66e+33;
-		Game.Upgrades('Elder Covenant').priceFunc = function() {
-			return Math.max(Game.Upgrades('Elder Covenant').basePrice, Game.cookiesPsRawHighest * 3600 * 24);
+		Game.Upgrades['Elder Covenant'].basePrice = 666.66e+33;
+		Game.Upgrades['Elder Covenant'].priceFunc = function() {
+			return Math.max(Game.Upgrades['Elder Covenant'].basePrice, Game.cookiesPsRawHighest * 3600 * 24);
 		}
 		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString()
 			 .replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")')
