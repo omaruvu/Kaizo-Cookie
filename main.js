@@ -53,9 +53,6 @@ Game.registerMod("Kaizo Cookies", {
 			) * (
 				Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)
 			), 1 + Game.Has('Elder Covenant') * 0.5);
-			if (Game.pledgeT > 0) {
-				decay.mults[buildId] += Game.getPledgeStrength();
-			}
 		}
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 1000) { return false; } 
@@ -69,6 +66,10 @@ Game.registerMod("Kaizo Cookies", {
 			decay.cpsList.push(Game.unbuffedCps);
 			if (decay.cpsList.length > Game.fps * 1.5) {
 				decay.cpsList.shift();
+			}
+			if (Game.pledgeT > 0) {
+				var strength = Game.getPledgeStrength();
+				decay.purifyAll(strength[0], strength[1], strength[2]);
 			}
 			if (Game.pledgeC > 0) {
 				Game.pledgeC--;
@@ -315,9 +316,11 @@ Game.registerMod("Kaizo Cookies", {
 			return dur;
 		}
 		Game.getPledgeStrength = function() {
-			var str = 0.10; 
+			var str = 0.25; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
-			return str / Game.fps;
+			var cap = 5;
+			if (Game.Has('Elder Pact')) { cap *= 2; }
+			return [1 + (str / Game.fps), 0.5 / Game.getPledgeDuration(), cap];
 		}
 		Game.getPledgeCooldown = function() {
 			var c = Game.fps * 10 * 60;
