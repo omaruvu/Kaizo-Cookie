@@ -82,7 +82,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.purify = function(buildId, mult, close, cap) {
 			decay.mults[buildId] *= mult;
 			if (decay.mults[buildId] >= cap) { return true; }
-			decay.mults[buildId] *= Math.pow(10, (Math.log10(cap) - Math.log10(decay.mults[buildId]) * close));
+			decay.mults[buildId] *= Math.pow(10, (Math.log10(cap) - Math.log10(decay.mults[buildId])) * close);
 			if (decay.mults[buildId] > cap) { decay.mults[buildId] = cap; }
 		}
 		decay.purifyAll = function(mult, close, cap) {
@@ -316,11 +316,11 @@ Game.registerMod("Kaizo Cookies", {
 			return dur;
 		}
 		Game.getPledgeStrength = function() {
-			var str = 0.025; 
+			var str = 0.25; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
 			var cap = 5;
 			if (Game.Has('Elder Pact')) { cap *= 2; }
-			return [1 + (str / Game.fps), 0.5 / Game.getPledgeDuration(), cap];
+			return [1 + (str / Game.fps), 0.5 / (Game.getPledgeDuration() * cap), cap];
 		}
 		Game.getPledgeCooldown = function() {
 			var c = Game.fps * 10 * 60;
