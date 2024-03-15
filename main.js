@@ -171,7 +171,7 @@ Game.registerMod("Kaizo Cookies", {
 		for (let i in Game.Objects) {
 			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
 		}
-		var M = Game.Objects['Wizard Tower'].minigame
+		var M = Game.Objects['Wizard tower'].minigame
 		eval('M.logic='+M.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.sqrt(Math.min(1.5, decay.gen())) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;'));
 		eval('M.draw='+M.draw.toString().replace(`(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')')`,`(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,3))+')'`));
 
