@@ -632,144 +632,131 @@ Game.registerMod("Kaizo Cookies", {
         Custom upgrade
         =======================================================================================*/
 
-		//Cursedor upgrade function (thank you for helping me btw cursed)
-		//I didnt add all the effects yet btw, i removed lucky and all similar effects
-		/*
-		Game.registerHook('click',function(){
-			if (Math.random()<1/10) { Game.HardReset(2);Game.WriteSave();}
-			//select an effect
-			var list=[];
-			list.push('clot','frenzy');
-			list.push('blood frenzy');
-			list.push('everything must go');
-			list.push('click frenzy');
-			list.push('cursed finger');
-			list.push('building special');
-			list.push('dragon harvest');
-			list.push('dragonflight');
-			
-			var choice=choose(list);
-			
-			
-			this.last=choice;
-			
-			//create buff for effect
-			//buff duration multiplier
-			var effectDurMod=1;
-			if (Game.Has('Get lucky')) effectDurMod*=2;
-			if (Game.Has('Lasting fortune')) effectDurMod*=1.1;
-			if (Game.Has('Lucky digit')) effectDurMod*=1.01;
-			if (Game.Has('Lucky number')) effectDurMod*=1.01;
-			if (Game.Has('Green yeast digestives')) effectDurMod*=1.01;
-			if (Game.Has('Lucky payout')) effectDurMod*=1.01;
-			//if (Game.hasAura('Epoch Manipulator')) effectDurMod*=1.05;
-			effectDurMod*=1+Game.auraMult('Epoch Manipulator')*0.05;
-			
-			if (Game.hasGod)
-			{
-				var godLvl=Game.hasGod('decadence');
-				if (godLvl==1) effectDurMod*=1.07;
-				else if (godLvl==2) effectDurMod*=1.05;
-				else if (godLvl==3) effectDurMod*=1.02;
-			}
-			
-			//effect multiplier (from lucky etc)
-			var mult=1;
-			//if (me.wrath>0 && Game.hasAura('Unholy Dominion')) mult*=1.1;
-			//else if (me.wrath==0 && Game.hasAura('Ancestral Metamorphosis')) mult*=1.1;
-		
-			if (Game.Has('Green yeast digestives')) mult*=1.01;
-			if (Game.Has('Dragon fang')) mult*=1.03;
-			
-			
-			var popup='';
-			var buff=0;
-			
-			if (choice=='building special')
-			{
-				var time=Math.ceil(30*effectDurMod);
-				var list=[];
-				for (var i in Game.Objects)
-				{
-					if (Game.Objects[i].amount>=10) list.push(Game.Objects[i].id);
-				}
-				if (list.length==0) {choice='frenzy';}//default to frenzy if no proper building
-				else
-				{
-					var obj=choose(list);
-					var pow=Game.ObjectsById[obj].amount/10+1;
-					if (Math.random()<0.3)
-					{
-						buff=Game.gainBuff('building debuff',time,pow,obj);
-					}
-					else
-					{
-						buff=Game.gainBuff('building buff',time,pow,obj);
-					}
-				}
-			}
-			
-			if (choice=='frenzy')
-			{
-				buff=Game.gainBuff('frenzy',Math.ceil(77*effectDurMod),7);
-			}
-			else if (choice=='dragon harvest')
-			{
-				buff=Game.gainBuff('dragon harvest',Math.ceil(60*effectDurMod),15);
-			}
-			else if (choice=='everything must go')
-			{
-				buff=Game.gainBuff('everything must go',Math.ceil(8*effectDurMod),5);
-			}
-			else if (choice=='blood frenzy')
-			{
-				buff=Game.gainBuff('blood frenzy',Math.ceil(6*effectDurMod),666);
-			}
-			else if (choice=='clot')
-			{
-				buff=Game.gainBuff('clot',Math.ceil(66*effectDurMod),0.5);
-			}
-			else if (choice=='cursed finger')
-			{
-				buff=Game.gainBuff('cursed finger',Math.ceil(10*effectDurMod),Game.cookiesPs*Math.ceil(10*effectDurMod));
-			}
-			else if (choice=='click frenzy')
-			{
-				buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777);
-			}
-			else if (choice=='dragonflight')
-			{
-				buff=Game.gainBuff('dragonflight',Math.ceil(10*effectDurMod),1111);
-				if (Math.random()<0.8) Game.killBuff('Click frenzy');
-			}
-		});
-  		*/
-
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
 			this.achievements.push(new Game.Upgrade('Golden sugar',(" Sugar lumps mature <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
-			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect but there is a 14% chance of deleting the savefile.")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,20]),Game.last.pool='prestige');
+			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 14% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,20]),Game.last.pool='prestige');
 			Game.Upgrades['Cursedor'].parents=[Game.Upgrades['Luminous gloves']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Cursedor'])
 			Game.last.posY=-810,Game.last.posX=-144
 
 			
-		    this.achievements.push(new Game.Upgrade('Cursedor [off]',("Turning this on will give you a random <b>Effect</b> if you click the big cookie, but there is a 14% chance of your savefile being deleted every time you click."),0,[0,20]));
-			Game.last.pool='toggle';Game.last.toggleInto='Cursedor [on]';
+		    this.achievements.push(new Game.Upgrade('Cursedor [inactive]',("Activating this will give you a <b>random Effect</b> if you click the big cookie.<div class=\"warning\">But there is a 14% chance of you ascending every time you click the big cookie.</div>"),0,[0,20]));
+			Game.last.pool='toggle';Game.last.toggleInto='Cursedor [active]';
 
-			this.achievements.push(new Game.Upgrade('Cursedor [on]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of deleting the savefile.<br>Turning it off will revert those effects.<br>"),0,[0,20]));
-		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [off]';
-			for(let i of this.achievements){i.order=350045;}
+			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of you ascending.<br>Turning it off will revert those effects.<br>"),0,[0,20]));
+		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [inactive]';Game.last.timerDisplay=function(){if (!Game.Upgrades['Cursedor [inactive]'].bought) return -1; else return 1-Game.fps*60*60*60*60*60*60;};
+			
+			Game.Upgrades['Golden sugar'].order=350045
+			Game.Upgrades['Cursedor'].order=253
+			Game.Upgrades['Cursedor [inactive]'].order=14000
+			Game.Upgrades['Cursedor [active]'].order=14000
 			LocalizeUpgradesAndAchievs()
+	
 		}
 		this.checkAchievements=function(){//Adding the unlock condition
 			if (Game.cookiesEarned>=1000000000) Game.Unlock('Golden sugar')
+			if (Game.Has('Cursedor')) Game.Unlock('Cursedor [inactive]');
 		}
 		if(Game.ready) this.createAchievements()
 		else Game.registerHook("create", this.createAchievements)
 		Game.registerHook("check", this.checkAchievements)
 
 		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} if (Game.Has("Golden sugar")) { Game.lumpMatureAge-=(hour*8); }'));//Adding the effect of the upgrade
+
+		Game.registerHook('click',function() {
+			if (Game.Has("Cursedor [inactive]")) {
+				if (Math.random()<1/7) { 
+					Game.Ascend(1)
+				}    
+				//select an effect
+				var list = [];
+				list.push('clot', 'frenzy');
+				list.push('blood frenzy');
+				list.push('everything must go');
+				list.push('click frenzy');
+				list.push('cursed finger');
+				list.push('building special');
+				list.push('dragon harvest');
+				list.push('dragonflight');
+				
+				var choice = choose(list);
+				
+				this.last = choice;
+				
+				//create buff for effect
+				//buff duration multiplier
+				var effectDurMod = 1;
+				if (Game.Has('Get lucky')) effectDurMod *= 2;
+				if (Game.Has('Lasting fortune')) effectDurMod *= 1.1;
+				if (Game.Has('Lucky digit')) effectDurMod *= 1.01;
+				if (Game.Has('Lucky number')) effectDurMod *= 1.01;
+				if (Game.Has('Green yeast digestives')) effectDurMod *= 1.01;
+				if (Game.Has('Lucky payout')) effectDurMod *= 1.01;
+				//if (Game.hasAura('Epoch Manipulator')) effectDurMod *= 1.05;
+				effectDurMod *= 1 + Game.auraMult('Epoch Manipulator') * 0.05;
+				
+				if (Game.hasGod) {
+					var godLvl = Game.hasGod('decadence');
+					if (godLvl == 1) effectDurMod *= 1.07;
+					else if (godLvl == 2) effectDurMod *= 1.05;
+					else if (godLvl == 3) effectDurMod *= 1.02;
+				}
+				
+				//effect multiplier (from lucky etc)
+				var mult = 1;
+				//if (me.wrath>0 && Game.hasAura('Unholy Dominion')) mult*=1.1;
+				//else if (me.wrath==0 && Game.hasAura('Ancestral Metamorphosis')) mult*=1.1;
+			
+				if (Game.Has('Green yeast digestives')) mult *= 1.01;
+				if (Game.Has('Dragon fang')) mult *= 1.03;
+				
+				
+				var popup = '';
+				var buff = 0;
+				
+				if (choice == 'building special') {
+					var time = Math.ceil(30 * effectDurMod);
+					var list = [];
+					for (var i in Game.Objects) {
+						if (Game.Objects[i].amount >= 10) list.push(Game.Objects[i].id);
+					}
+					if (list.length == 0) {
+						choice = 'frenzy';
+					} //default to frenzy if no proper building
+					else {
+						var obj = choose(list);
+						var pow = Game.ObjectsById[obj].amount / 10 + 1;
+						if (Math.random() < 0.3) {
+							buff = Game.gainBuff('building debuff', time, pow, obj);
+						} else {
+							buff = Game.gainBuff('building buff', time, pow, obj);
+						}
+					}
+				}
+				
+				if (choice == 'frenzy') {
+					buff = Game.gainBuff('frenzy', Math.ceil(77 * effectDurMod), 7);
+				} else if (choice == 'dragon harvest') {
+					buff = Game.gainBuff('dragon harvest', Math.ceil(60 * effectDurMod), 15);
+				} else if (choice == 'everything must go') {
+					buff = Game.gainBuff('everything must go', Math.ceil(8 * effectDurMod), 5);
+				} else if (choice == 'blood frenzy') {
+					buff = Game.gainBuff('blood frenzy', Math.ceil(6 * effectDurMod), 666);
+				} else if (choice == 'clot') {
+					buff = Game.gainBuff('clot', Math.ceil(66 * effectDurMod), 0.5);
+				} else if (choice == 'cursed finger') {
+					buff = Game.gainBuff('cursed finger', Math.ceil(10 * effectDurMod), Game.cookiesPs * Math.ceil(10 * effectDurMod));
+				} else if (choice == 'click frenzy') {
+					buff = Game.gainBuff('click frenzy', Math.ceil(13 * effectDurMod), 777);
+				} else if (choice == 'dragonflight') {
+					buff = Game.gainBuff('dragonflight', Math.ceil(10 * effectDurMod), 1111);
+					if (Math.random() < 0.8) Game.killBuff('Click frenzy');
+				}
+			}
+		});
+
+		
 
 	},
 	save: function(){
