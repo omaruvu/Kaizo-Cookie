@@ -57,7 +57,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.update = function(buildId) { 
 			var c = decay.mults[buildId];
     		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), 1 + Game.Has('Elder Covenant') * 0.5);
-			if (isFinite(1 / c) && (!isNaN(1 / c))) { decay.mults[buildId] = c; } else { if (buildId == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; }
+			if (isFinite(1 / c) || isNaN(1 / c)) { decay.mults[buildId] = c; } else { if (buildId == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; }
 		} 
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 1000) { return false; } 
