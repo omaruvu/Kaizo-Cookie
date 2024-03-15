@@ -20,7 +20,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.`, [21,32],10,1);
 
 		// creating custImg variable
-		custImg=App?this.dir+"/img.png":"https://rawcdn.githack.com/omaruvu/Kaizo-Cookie/31e897b5368c125efc1e319dbb3203f96fcc792a/modicons.png"
+		custImg=App?this.dir+"/img.png":"https://raw.githack.com/omaruvu/Kaizo-Cookie/main/modicons.png"
 
 
 		/*=====================================================================================
