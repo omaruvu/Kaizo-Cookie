@@ -66,10 +66,10 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		decay.purify = function(buildId, mult, close, cap) {
-			mults[buildId] *= mult;
-			if (mults[buildId] >= cap) { return true; }
-			mults[buildId] *= Math.pow(10, (Math.log10(cap) - Math.log10(mults[buildId]) * close));
-			if (mults[buildId] > cap) { mults[buildId] = cap; }
+			decay.mults[buildId] *= mult;
+			if (decay.mults[buildId] >= cap) { return true; }
+			decay.mults[buildId] *= Math.pow(10, (Math.log10(cap) - Math.log10(decay.mults[buildId]) * close));
+			if (decay.mults[buildId] > cap) { decay.mults[buildId] = cap; }
 		}
 		decay.purifyAll = function(mult, close, cap) {
 			for (let i in decay.mults) {
