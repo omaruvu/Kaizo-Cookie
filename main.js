@@ -1,5 +1,5 @@
 var decay = {};
-var kaizoCookiesVer = 'v1.1'
+var kaizoCookiesVer = 'v1.1.1'
 function replaceDesc(name, toReplaceWith) {
 	Game.Upgrades[name].baseDesc = toReplaceWith;
 	Game.Upgrades[name].desc = toReplaceWith;
@@ -7,6 +7,13 @@ function replaceDesc(name, toReplaceWith) {
 }
 function addLoc(str) {
 	locStrings[str] = str;
+}
+function getVer(str) {
+	if (str[0] !== 'v') { return false; }
+	str = str.slice(1, str.length);
+	str = str.split('.');
+	for (let i in str) { str[i] = parseFloat(str[i]); }
+	return str;
 }
 
 Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
@@ -487,7 +494,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		eval('Game.Logic='+Game.Logic.toString().replace(`if (Game.Has('Shimmering veil') && !Game.Has('Shimmering veil [off]') && !Game.Has('Shimmering veil [on]'))`, `if (Game.Has('Shimmering veil') && !Game.veilOn() && !Game.veilOff() && !Game.veilBroken())`));
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`));
-		Game.veilAbsorbFactor = 4; //the more it is, the longer lasting the veil will be against decay
+		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
 			if (Game.veilOn()) { 
@@ -988,13 +995,26 @@ Game.registerMod("Kaizo Cookies", {
 		str = str.slice(0, str.length - 1);
 		str += '/' + decay.halt + ',' + decay.haltOvertime + '/';
 		str += Game.pledgeT + ',' + Game.pledgeC;
+		str += '/' + Game.veilHP + ',';
+		if (Game.Has('Shimmering veil')) {
+			if (Game.veilOn()) {
+				str += 'on';
+			} else if (Game.veilOff()) {
+				str += 'off';
+			} else if (Game.veilBroken()) {
+				str += 'broken';
+			}
+		}
+		str += ',';
+		str += Game.veilRestoreC + ',' + Game.veilPreviouslyCollapsed;
         return str;
     },
     load: function(str){
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
-		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC]
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed]
 		if (str[0][0] == 'v') {
+			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
             	this.achievements[i / 2].unlocked=Number(str[1][i]); 
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
@@ -1011,6 +1031,26 @@ Game.registerMod("Kaizo Cookies", {
 			Game.pledgeT = parseFloat(strIn[0]);
 			Game.pledgeC = parseFloat(strIn[1]);
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
+			if (version[0] == 1 && version[1] == 1 && version[2] == 1) {
+				strIn = str[5].split(',');
+				Game.veilHP = parseFloat(strIn[0]); 
+				if (Game.Has('Shimmering veil')) { 
+					if (strIn[1] == 'on') {
+						Game.Upgrades['Shimmering veil [off]'].earn();
+						Game.Lock('Shimmering veil [on]'); Game.Unlock('Shimmering veil [on]'); 
+						Game.Lock('Shimmering veil [broken]');
+					} else if (strIn[1] == 'off') {
+						Game.Upgrades['Shimmering veil [on]'].earn();
+						Game.Lock('Shimmering veil [off]'); Game.Unlock('Shimmering veil [off]'); 
+						Game.Lock('Shimmering veil [broken]');
+					} else {
+						Game.Lock('Shimmering veil [on]'); Game.Lock('Shimmering veil [off]');
+						Game.Upgrades['Shimmering veil [broken]'].earn();
+					}
+				}
+				Game.veilRestoreC = parseFloat(strIn[2]);
+				Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
+			}
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
