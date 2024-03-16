@@ -480,13 +480,13 @@ Game.registerMod("Kaizo Cookies", {
 			return ((!Game.Has('Shimmering veil [off]')) && (!Game.Has('Shimmering veil [on]')));
 		}
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`));
-		Game.veilAbsorbFactor = 4; //the more it is, the longer lasting the veil will be against decay
+		Game.veilAbsorbFactor = 10; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
-				Game.veilHP *= (decay.update(20, share) / decay.get(20));
-				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
+				Game.veilHP *= Math.pow(decay.update(20, share) / decay.get(20), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
+				//Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
 				if (Game.veilHP < Game.veilCollapseAt) {
 					Game.veilHP = Game.veilCollapseAt;
 					Game.collapseVeil(); 
@@ -517,7 +517,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Lock('Shimmering veil [on]');
 			Game.Lock('Shimmering veil [off]');
 			Game.Upgrades['Shimmering veil [broken]'].earn();
-			Game.veilC = Game.getVeilCooldown();
+			Game.veilRestoreC = Game.getVeilCooldown();
 			Game.veilPreviouslyCollapsed = true;
 			decay.purify(Math.pow(Game.veilHP / Game.veilMaxHP, Game.veilAbsorbFactor * Game.getVeilReturn()), 0, 1);
 			Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [29, 5]);
