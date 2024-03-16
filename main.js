@@ -735,7 +735,7 @@ Game.registerMod("Kaizo Cookies", {
         {
 			var valn=Math.max(7,Math.min(Game.cookies*1.0,Game.cookiesPs*60*60*24));
 			Game.Earn(valn);
-			popup=("Dragon\'s hoard!")+'<br><small>'+("+%1!",("%1 cookie",LBeautify(valn)))+'</small>';
+			popup=loc("Dragon\'s hoard!")+'<br><small>'+loc("+%1!",loc("%1 cookie",LBeautify(valn)))+'</small>';
         }else if (choice=='blood frenzy')`));//When Ancestral Metamorphosis is seclected it pushes a effect called Dragon's hoard that gives 24 hours worth of CpS
 
         Game.dragonAuras[2].desc="Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy and Dragonflight is <b>50%</b> more powerful.";
@@ -863,7 +863,7 @@ Game.registerMod("Kaizo Cookies", {
 			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of you ascending.<br>Turning it off will revert those effects.<br>"),0,[0,1,custImg]));
 		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [inactive]';Game.last.timerDisplay=function(){if (!Game.Upgrades['Cursedor [inactive]'].bought) return -1; else return 1-Game.fps*60*60*60*60*60*60;};
 
-			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
+			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker.". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
 			this.achievements.push(new Game.Upgrade('Purity vaccines', '<b>Stops all decay.</b><q>Developed for the time of need.</q>', 7, [20, 6])); Game.last.pool='debug'; Game.UpgradesByPool['debug'].push(Game.last);
 			
 			Game.Upgrades['Golden sugar'].order=350045
