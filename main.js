@@ -393,7 +393,6 @@ Game.registerMod("Kaizo Cookies", {
 		
 		//decay halt: shimmering veil
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`Game.Has('Shimmering veil [off]')`, 'false'));
-		eval('Game.Logic='+Game.Logic.toString().replace(`if (Game.Has('Shimmering veil') && !Game.Has('Shimmering veil [off]') && !Game.Has('Shimmering veil [on]'))`, `if (Game.Has('Shimmering veil') && !Game.veilOn() && !Game.veilOff() && !Game.veilBroken())`));
 		Game.veilHP = 1000;
 		Game.veilCollapseAt = 0.1;
 		Game.veilMaxHP = 1000;
@@ -461,7 +460,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Shimmering veil [off]'].buyFunction = function() {
 			Game.veilPreviouslyCollapsed = false;
 		}
-		replaceDesc('Reinforced Membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and <b>doubles</b> the amount of health it has.<q>A consistency between jellyfish and cling wrap.</q>');
+		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and <b>doubles</b> the amount of health it has.<q>A consistency between jellyfish and cling wrap.</q>');
 		replaceDesc('Delicate touch', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>It breaks so easily.</q>');
 		replaceDesc('Steadfast murmur', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>Lend an ear and listen.</q>');
 		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>15%</b> more decay.<q>Just within reach, yet at what cost?</q>');
@@ -486,6 +485,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilBroken = function() {
 			return ((!Game.Has('Shimmering veil [off]')) && (!Game.Has('Shimmering veil [on]')));
 		}
+		eval('Game.Logic='+Game.Logic.toString().replace(`if (Game.Has('Shimmering veil') && !Game.Has('Shimmering veil [off]') && !Game.Has('Shimmering veil [on]'))`, `if (Game.Has('Shimmering veil') && !Game.veilOn() && !Game.veilOff() && !Game.veilBroken())`));
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`));
 		Game.veilAbsorbFactor = 4; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
