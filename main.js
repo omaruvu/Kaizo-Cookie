@@ -894,11 +894,12 @@ Game.registerMod("Kaizo Cookies", {
     },
     load: function(str){
 		//resetting stuff
+		console.log('Kaizo Cookies loaded. Save string: '+str);
 		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC]
 		if (str[0][0] == 'v') {
 			for(let i=0;i<str[1].length;i += 2) { 
-            	this.achievements[i].unlocked=Number(str[1][i]); 
-            	this.achievements[i].bought=Number(str[1][i + 1]); 
+            	this.achievements[i / 2].unlocked=Number(str[1][i]); 
+            	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
