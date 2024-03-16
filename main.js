@@ -896,9 +896,9 @@ Game.registerMod("Kaizo Cookies", {
 		//resetting stuff
 		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC]
 		if (str[0][0] == 'v') {
-			for(let i=0;i<str[1].length;i++) { 
-            	this.achievements[i].unlocked=Number(str[1][2*i]); 
-            	this.achievements[i].bought=Number(str[1][(2*i)+1]); 
+			for(let i=0;i<str[1].length;i += 2) { 
+            	this.achievements[i].unlocked=Number(str[1][i]); 
+            	this.achievements[i].bought=Number(str[1][i + 1]); 
 			}
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
