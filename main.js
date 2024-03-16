@@ -877,7 +877,7 @@ Game.registerMod("Kaizo Cookies", {
 
 	},
 	save: function(){
-        let str = kaizoCookieVer + '/';
+        let str = kaizoCookiesVer + '/';
         for(let i of this.achievements) {
           str+=i.unlocked; //using comma works like that in python but not js
           str+=i.bought; //seperating them otherwise it adds 1+1 and not "1"+"1"
