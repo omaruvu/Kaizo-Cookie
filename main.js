@@ -1,5 +1,5 @@
 var decay = {};
-var kaizoCookiesVer = 'v1.1'
+var kaizoCookiesVer = 'v1.1.1'
 function replaceDesc(name, toReplaceWith) {
 	Game.Upgrades[name].baseDesc = toReplaceWith;
 	Game.Upgrades[name].desc = toReplaceWith;
@@ -7,6 +7,13 @@ function replaceDesc(name, toReplaceWith) {
 }
 function addLoc(str) {
 	locStrings[str] = str;
+}
+function getVer(str) {
+	if (str[0] !== 'v') { return false; }
+	str = str.slice(1, str.length);
+	str = str.split('.');
+	for (let i in str) { str[i] = parseFloat(str[i]); }
+	return str;
 }
 
 Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
@@ -57,15 +64,18 @@ Game.registerMod("Kaizo Cookies", {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
 		}
-		decay.update = function(buildId) { 
+		decay.update = function(buildId, tickSpeed) { 
+			if (Game.Has('Purity vaccines')) { return 1; }
 			var c = decay.mults[buildId];
-    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), 1 + Game.Has('Elder Covenant') * 0.5);
-			if (isFinite(1 / c)) { decay.mults[buildId] = c; } else { if (!isNaN(c)) { if (buildId == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
+			var godz = Game.hasBuff('Devastation').arg2; if (!godz) { godz = 1; }
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * tickSpeed);
+			return c;
 		} 
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 1000) { return false; } 
 			for (let i in decay.mults) {
-				decay.update(i);
+				var c = decay.update(i, (Game.veilOn()?(1 - Game.getVeilBoost()):1));
+				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
 			}
 			decay.regainAcc();
 			if (Game.T % 4) {
@@ -86,11 +96,13 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
+			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
 		decay.purify = function(buildId, mult, close, cap) {
-			decay.mults[buildId] *= mult;
 			if (decay.mults[buildId] >= cap) { return true; }
+			decay.mults[buildId] *= mult;
+			if (decay.mults[buildId] >= cap) { decay.mults[buildId] = cap; return true; }
 			decay.mults[buildId] *= Math.pow(10, (Math.log10(cap) - Math.log10(decay.mults[buildId])) * close);
 			if (decay.mults[buildId] > cap) { decay.mults[buildId] = cap; }
 		}
@@ -132,6 +144,11 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
 		//ui and display and stuff
+		decay.term = function(mult) {
+			if (mult > 1) { return 'purity'; }
+			return 'decay';
+		}
+		
 		decay.getDec = function() {
 			if (decay.cpsList.length < Game.fps * 1.5) { return ''; }
 			var num = ((decay.cpsList[decay.cpsList.length - 1] + decay.cpsList[decay.cpsList.length - 2] + decay.cpsList[decay.cpsList.length - 3]) / 3);
@@ -153,7 +170,7 @@ Game.registerMod("Kaizo Cookies", {
 		if (false) { Game.registerHook('draw', function() { if (Game.drawT % 3) { Game.UpdateMenu(); } }); } //feels like stretching the bounds of my computer a bit here
 
 		decay.diffStr = function() {
-			var str = '<b>CpS multiplier from decay: </b>';
+			var str = '<b>CpS multiplier from '+decay.term(decay.gen())+': </b>';
 			if (decay.gen() < 0.00001) {
 				str += '1 / ';
 				str += Beautify(1 / decay.gen());
@@ -242,6 +259,7 @@ Game.registerMod("Kaizo Cookies", {
 		for (let i in Game.Objects) {
 			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
 		}
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`{Game.cookiesPs+=9;Game.cookiesPsByType['"egg"']=9;}`,`{Game.cookiesPs+=9*decay.gen();Game.cookiesPsByType['"egg"']=9*decay.gen();}`));
 		eval("Game.shimmerTypes['golden'].initFunc="+Game.shimmerTypes['golden'].initFunc.toString()
 			 .replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ' || ((!Game.Has("Elder Covenant")) && Math.random() > Math.pow(decay.gen(), decay.wcPow))'));
 		addLoc('+%1/min');
@@ -254,7 +272,7 @@ Game.registerMod("Kaizo Cookies", {
 				eval('gp.draw='+M.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
 														 `Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,3))+')'):'')`)
 					.replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
-						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from decay: "+decay.effectStrs([function(n, i) { return Math.pow(Math.min(2, n), 0.3)}]); `));
+						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from "+decay.term(decay.gen())+": "+decay.effectStrs([function(n, i) { return Math.pow(Math.min(2, n), 0.3)}]); `));
 				eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));		
 				
 			}
@@ -381,27 +399,29 @@ Game.registerMod("Kaizo Cookies", {
 
 		
 		//decay halt: shimmering veil
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`Game.Has('Shimmering veil [off]')`, 'false'));
 		Game.veilHP = 1000;
-		Game.veilCollapseAt = 1;
+		Game.veilCollapseAt = 0.1;
 		Game.veilMaxHP = 1000;
 		Game.setVeilMaxHP = function() {
-			var h = 100;
+			var h = 1000;
 			if (Game.Has('Reinforced membrane')) { h *= 2; }
 			Game.veilMaxHP = h;
 		}
+		Game.setVeilMaxHP();
 		Game.registerHook('reincarnate', function() { Game.setVeilMaxHP(); Game.veilHP = Game.veilMaxHP; });
 		replaceDesc('Shimmering veil', 'Unlocks the <b>Shimmering veil</b>, which is a toggleable veil that <b>absorbs</b> your decay when on; however, if it absorbs too much, it may collapse and temporarily massively increase your rate of decay. The veil heals over time while off.');
 		Game.getVeilBoost = function() {
 			//this time it is for the fraction of decay that the veil takes on
-			var n = 0.75;
-			if (Game.Has('Glittering edge')) { n += 0.1; }
+			var n = 0.6;
+			if (Game.Has('Glittering edge')) { n += 0.15; }
 			return n;
 		}
 		Game.getVeilCost = function(fromCollapse) {
-			var n = 20 * 60;
+			var n = 60;
 			if (Game.Has('Reinforced membrane')) { n /= 2; }
 			if (fromCollapse) {
-				n *= 366;
+				n *= 7777;
 				if (Game.Has('Delicate touch')) { n /= 2; }
 				if (Game.Has('Steadfast murmur')) { n /= 2; }
 			}
@@ -410,36 +430,112 @@ Game.registerMod("Kaizo Cookies", {
 		Game.getVeilCooldown = function() {
 			var c = Game.fps * 60 * 12;
 			if (Game.Has('Reinforced membrane')) { c /= 2; }
-			if (Game.Has('Delicate touch')) { c -= 120 * Game.fps; }
-			if (Game.Has('Steadfast murmur')) { c -= 120 * Game.fps; }
 			return c;
 		}
 		Game.getVeilReturn = function() {
-			var r = 1.8;
-			if (Game.Has('Reinforced Membrane')) { r *= 0.75; }
+			//the amount of decay that the veil returns on collapse
+			var r = 2.89;
+			if (Game.Has('Reinforced membrane')) { r *= 0.75; }
 			if (Game.Has('Delicate touch')) { r *= 0.85; }
 			if (Game.Has('Steadfast murmur')) { r *= 0.85; }
 			return r;
 		}
+		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
+			if (veilHPInput == veilMaxInput) { return veilMaxInput; }
+			var hmult = 0.05 / Game.fps;
+			var hadd = 1 / Game.fps;
+			var hpow = 1;
+			if (Game.Has('Reinforced membrane')) { hadd *= 2; hmult *= 1.25; }
+			if (Game.Has('Delicate touch')) { hpow *= 0.75; }
+			if (Game.Has('Steadfast murmur')) { hpow *= 0.75; }
+			veilHPInput += hadd * Math.pow(veilHPInput / veilMaxInput, hpow);
+			veilHPInput = Math.min((1 + hmult) * veilHPInput, veilHPInput + hmult * (veilMaxInput - veilHPInput))
+			return Math.min(veilHPInput, veilMaxInput);
+		}
 		addLoc('This Shimmering Veil is currently taking on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.');
 		Game.Upgrades['Shimmering veil [on]'].descFunc = function(){
-			return (this.name=='Shimmering veil [on]'?'<div style="text-align:center;">'+loc("Active.")+'</div><div class="line"></div>':'')+loc("This Shimmering Veil is currently taking on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.",[Beautify(Game.getVeilBoost()*100), (Game.getVeilCost(true)/Game.getVeilCost(false)).toFixed(2), Game.sayTime(Game.getVeilCooldown(),2), Beautify(Game.getVeilReturn() * 100, 2)]);
+			return (this.name=='Shimmering veil [on]'?'<div style="text-align:center;">'+loc("Active.")+'</div><div class="line"></div>':'')+loc('This Shimmering Veil is currently taking on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.',[Beautify(Game.getVeilBoost()*100), Beautify(Game.getVeilCost(true)/Game.getVeilCost(false), 2), Game.sayTime(Game.getVeilCooldown(),2), Beautify(Game.getVeilReturn() * 100, 2)]);
 		}
 		addLoc('This Shimmering Veil is slowly healing itself. If activated, this veil will take on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.');
+		addLoc('Your veil has previously collapsed, so this activation will require <b>%1x</b> more cookies than usual.');
 		Game.Upgrades['Shimmering veil [off]'].descFunc = function(){
-			return (this.name=='Shimmering veil [on]'?'<div style="text-align:center;">'+loc("Active.")+'</div><div class="line"></div>':'')+loc("This Shimmering Veil is slowly healing itself. If activated, this veil will take on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.",[Beautify(Game.getVeilBoost()*100), (Game.getVeilCost(true)/Game.getVeilCost(false)).toFixed(2), Game.sayTime(Game.getVeilCooldown(),2), Beautify(Game.getVeilReturn() * 100, 2)]);
+			return (this.name=='Shimmering veil [on]'?'<div style="text-align:center;">'+loc("Active.")+'</div><div class="line"></div>':'')+loc('This Shimmering Veil is slowly healing itself. If activated, this veil will take on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.', [Beautify(Game.getVeilBoost()*100), Beautify(Game.getVeilCost(true)/Game.getVeilCost(false), 2), Game.sayTime(Game.getVeilCooldown(),2), Beautify(Game.getVeilReturn() * 100, 2)])+' '+(Game.veilPreviouslyCollapsed?('<div class="line"></div>'+loc('Your veil has previously collapsed, so this activation will require <b>%1x</b> more cookies than usual.', [Beautify(Game.getVeilCost(true)/Game.getVeilCost(false), 2)])):'');
 		} 
-		var brokenVeil = new Game.Upgrade('Shimmering veil [broken]', '', 0, [9, 10]);
-		addLoc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take %1 times more cookies than usual.');
-		Game.veilRestoreT = 0;
-		brokenVeil.descFunc = function() {
-			return loc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take %1 times more cookies than usual.', [Beautify(Game.getVeilCost(true))]);
+		Game.Upgrades['Shimmering veil [off]'].priceFunc = function() {
+			return Game.getVeilCost(Game.veilPreviouslyCollapsed);
 		}
+		Game.Upgrades['Shimmering veil [off]'].buyFunction = function() {
+			Game.veilPreviouslyCollapsed = false;
+		}
+		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and <b>doubles</b> the amount of health it has.<q>A consistency between jellyfish and cling wrap.</q>');
+		replaceDesc('Delicate touch', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>It breaks so easily.</q>');
+		replaceDesc('Steadfast murmur', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>Lend an ear and listen.</q>');
+		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>15%</b> more decay.<q>Just within reach, yet at what cost?</q>');
+		var brokenVeil = new Game.Upgrade('Shimmering veil [broken]', '', 0, [9, 10]); brokenVeil.pool = ['toggle']; Game.UpgradesByPool['toggle'].push(brokenVeil); brokenVeil.order = 40005;
+		addLoc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1x</b> more cookies than usual.');
+		brokenVeil.descFunc = function() {
+			return loc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1x</b> more cookies than usual.', [Beautify(Game.getVeilCost(true)/Game.getVeilCost(false))]);
+		}
+		addLoc('This Shimmering Veil will be restored in: ');
 		brokenVeil.displayFuncWhenOwned = function() {
-			return '<div style="text-align:center;">'+loc("This Shimmering Veil will be restored in: ")+'<br><b>'+Game.sayTime(Game.veilRestoreT,-1)+'</b></div>';
+			return '<div style="text-align:center;">'+loc('This Shimmering Veil will be restored in: ')+'<br><b>'+Game.sayTime(Game.veilRestoreC,-1)+'</b></div>';
 		}
 		brokenVeil.timerDisplay = function() {
-			if (!Game.Upgrades['Shimmering veil [broken]'].bought) { return -1; } else { return 1-Game.veilRestoreT/Game.getVeilCooldown(); }
+			if (!Game.Upgrades['Shimmering veil [broken]'].bought) { return -1; } else { return 1-Game.veilRestoreC/Game.getVeilCooldown(); }
+		}
+		Game.veilOn = function() {
+			return (Game.Has('Shimmering veil [off]') && (!Game.Has('Shimmering veil [broken]')));
+		}
+		Game.veilOff = function() {
+			return (Game.Has('Shimmering veil [on]') && (!Game.Has('Shimmering veil [broken]')));
+		}
+		Game.veilBroken = function() {
+			return ((!Game.Has('Shimmering veil [off]')) && (!Game.Has('Shimmering veil [on]')));
+		}
+		eval('Game.Logic='+Game.Logic.toString().replace(`if (Game.Has('Shimmering veil') && !Game.Has('Shimmering veil [off]') && !Game.Has('Shimmering veil [on]'))`, `if (Game.Has('Shimmering veil') && !Game.veilOn() && !Game.veilOff() && !Game.veilBroken())`));
+		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`));
+		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
+		Game.updateVeil = function() {
+			if (!Game.Has('Shimmering veil')) { return false; }
+			if (Game.veilOn()) { 
+				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
+				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
+				Game.veilHP -= (Game.veilMaxHP * Math.min(Math.sqrt(Game.veilMaxHP / Game.veilHP), 10)) / (500 * Game.fps);
+				if (Game.veilHP < Game.veilCollapseAt) {
+					Game.veilHP = Game.veilCollapseAt;
+					Game.collapseVeil(); 
+				}
+				return true;
+			} 
+			if (Game.veilOff()) {
+				Game.veilHP = Game.getVeilHeal(Game.veilHP, Game.veilMaxHP);
+				return true;
+			}
+			if (Game.veilBroken()) {
+				Game.veilRestoreC--;
+				if (Game.veilRestoreC <= 0) {
+					Game.veilRestoreC = 0;
+					Game.veilHP = Game.veilMaxHP;
+					Game.Lock('Shimmering veil [broken]');
+					Game.Unlock('Shimmering veil [off]');
+					Game.Unlock('Shimmering veil [on]');
+					Game.Upgrades['Shimmering veil [on]'].earn();
+					Game.Notify('Veil restored!', 'Your Shimmering Veil has recovered from the collapse, but your next activation will require more cookies.')
+				}
+				return true;
+			}
+		}
+		Game.veilRestoreC = 0;
+		Game.veilPreviouslyCollapsed = false;
+		Game.collapseVeil = function() {
+			Game.Lock('Shimmering veil [on]');
+			Game.Lock('Shimmering veil [off]');
+			Game.Upgrades['Shimmering veil [broken]'].earn();
+			Game.veilRestoreC = Game.getVeilCooldown();
+			Game.veilPreviouslyCollapsed = true;
+			decay.purify(Math.pow(Game.veilHP / Game.veilMaxHP, Game.veilAbsorbFactor * Game.getVeilReturn()), 0, 1);
+			Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [30, 5]);
+			PlaySound('snd/spellFail.mp3',1);
 		}
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
@@ -625,7 +721,7 @@ Game.registerMod("Kaizo Cookies", {
 
         //Dragon Cursor making all clicking buffs 50% stronger
 		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777);`,`buff=Game.gainBuff('click frenzy',Math.ceil(13*effectDurMod),777*(1+(Game.auraMult('Dragon Cursor')*0.5)));`));//Dragon Cursor making CF stronger by 50%
-		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`buff=Game.gainBuff('dragonflight',Math.ceil(10*effectDurMod),1111);`,`buff=Game.gainBuff('dragonflight',Math.ceil(10*effectDurMod),1111*(1+(Game.auraMult('Dragon Cursor')*0.5)));`));//Dragon Cursor making CF stronger by 50%
+		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`buff=Game.gainBuff('dragonflight',Math.ceil(10*effectDurMod),1111);`,`buff=Game.gainBuff('dragonflight',Math.ceil(10*effectDurMod),1111*(1+(Game.auraMult('Dragon Cursor')*0.5)));`));//Dragon Cursor making DF stronger by 50%
 
 		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`list.push('blood frenzy','chain cookie','cookie storm');`,`if (Math.random()<Game.auraMult('Unholy Dominion')){list.push('blood frenzy')}if (Game.auraMult('Unholy Dominion')>1) {if (Math.random()<Game.auraMult('Unholy Dominion')-1){list.push('blood frenzy')}}`));//Unholy Dominion pushes another EF to the pool making to so they are twice as common
 
@@ -654,12 +750,6 @@ Game.registerMod("Kaizo Cookies", {
 		/*=====================================================================================
         because Cookiemains wanted so
         =======================================================================================*/
-		for (let i in Game.Objects) {    //Nerfing Godzamok from 1% to 0.5%
-			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);", "if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.005);"));
-			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);", "else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.0025);"));
-			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025);", "if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.00125);"));
-		}
-
 		Game.registerHook('check', () => {
 			if (Game.Objects['Wizard tower'].minigameLoaded) {
 				grimoire=Game.Objects['Wizard tower'].minigame;
@@ -700,16 +790,23 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==2) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"))
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==3) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"))
 
+		//implementing godzamok change will be so annoying
+		for (let i in Game.Objects) {
+			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace(`if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);`, `if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01,1+sold*0.01);`).replace(`else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);`, `else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005,1+sold*0.004);`).replace(`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025);`,`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025,1+sold*0.0015);`));
+		}
+		
+		addLoc('Buff boosts clicks by +%1% for every building sold for %2 seconds, ');
+		addLoc('but also temporarily increases decay propagation by %1% with every building sold.')
 		Game.registerHook('check', () => {
 			if (Game.Objects['Temple'].minigameLoaded) {
 				//Changing the desc
-				Game.Objects['Temple'].minigame.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds.",[0.5,10])+'</span>';
-				Game.Objects['Temple'].minigame.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds.",[0.25,10])+'</span>';
-				Game.Objects['Temple'].minigame.gods['ruin'].desc3='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds.",['0.12.5',10])+'</span>';
+				Game.Objects['Temple'].minigame.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[1])+'</span>';
+				Game.Objects['Temple'].minigame.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.5, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.4])+'</span>';
+				Game.Objects['Temple'].minigame.gods['ruin'].desc3='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.25, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.15])+'</span>';
 
 				Game.Objects['Temple'].minigame.gods['mother'].desc1='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",8)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",20)+'</span>';
-				Game.Objects['Temple'].minigame.gods['mother'].desc2='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",3)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",15)+'</span>';
-				Game.Objects['Temple'].minigame.gods['mother'].desc3='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",1)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",10)+'</span>';
+				Game.Objects['Temple'].minigame.gods['mother'].desc2='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",4)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",15)+'</span>';
+				Game.Objects['Temple'].minigame.gods['mother'].desc3='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",2)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",10)+'</span>';
 
 				Game.Objects['Temple'].minigame.gods['labor'].desc1='<span class="green">'+loc("Clicking is <b>%1%</b> more powerful.",25)+'</span> <span class="red">'+loc("Buildings produce %1% less.",3)+'</span>';
 				Game.Objects['Temple'].minigame.gods['labor'].desc2='<span class="green">'+loc("Clicking is <b>%1%</b> more powerful.",20)+'</span> <span class="red">'+loc("Buildings produce %1% less.",2)+'</span>';
@@ -767,13 +864,15 @@ Game.registerMod("Kaizo Cookies", {
 		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [inactive]';Game.last.timerDisplay=function(){if (!Game.Upgrades['Cursedor [inactive]'].bought) return -1; else return 1-Game.fps*60*60*60*60*60*60;};
 
 			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
+			this.achievements.push(new Game.Upgrade('Purity vaccines', '<b>Stops all decay.</b><q>Developed for the time of need.</q>', 7, [20, 6])); Game.last.pool='debug'; Game.UpgradesByPool['debug'].push(Game.last);
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
 			Game.Upgrades['Cursedor [inactive]'].order=14000
 			Game.Upgrades['Cursedor [active]'].order=14000
 			Game.Upgrades['The ultimate cookie'].order=9999999999
-			LocalizeUpgradesAndAchievs()
+			Game.Upgrades['Purity vaccines'].order=1;
+			LocalizeUpgradesAndAchievs();
 	
 		}
 		this.checkAchievements=function(){//Adding the unlock condition
@@ -896,17 +995,31 @@ Game.registerMod("Kaizo Cookies", {
 		str = str.slice(0, str.length - 1);
 		str += '/' + decay.halt + ',' + decay.haltOvertime + '/';
 		str += Game.pledgeT + ',' + Game.pledgeC;
+		str += '/' + Game.veilHP + ',';
+		if (Game.Has('Shimmering veil')) {
+			if (Game.veilOn()) {
+				str += 'on';
+			} else if (Game.veilOff()) {
+				str += 'off';
+			} else if (Game.veilBroken()) {
+				str += 'broken';
+			}
+		}
+		str += ',';
+		str += Game.veilRestoreC + ',' + Game.veilPreviouslyCollapsed;
         return str;
     },
     load: function(str){
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
-		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC]
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed]
 		if (str[0][0] == 'v') {
+			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
             	this.achievements[i / 2].unlocked=Number(str[1][i]); 
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
+			Game.Lock('Shimmering veil [broken]'); 
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
@@ -918,6 +1031,26 @@ Game.registerMod("Kaizo Cookies", {
 			Game.pledgeT = parseFloat(strIn[0]);
 			Game.pledgeC = parseFloat(strIn[1]);
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
+			if (version[0] == 1 && version[1] == 1 && version[2] == 1) {
+				strIn = str[5].split(',');
+				Game.veilHP = parseFloat(strIn[0]); 
+				if (Game.Has('Shimmering veil')) { 
+					if (strIn[1] == 'on') {
+						Game.Upgrades['Shimmering veil [off]'].earn();
+						Game.Lock('Shimmering veil [on]'); Game.Unlock('Shimmering veil [on]'); 
+						Game.Lock('Shimmering veil [broken]');
+					} else if (strIn[1] == 'off') {
+						Game.Upgrades['Shimmering veil [on]'].earn();
+						Game.Lock('Shimmering veil [off]'); Game.Unlock('Shimmering veil [off]'); 
+						Game.Lock('Shimmering veil [broken]');
+					} else {
+						Game.Lock('Shimmering veil [on]'); Game.Lock('Shimmering veil [off]');
+						Game.Upgrades['Shimmering veil [broken]'].earn();
+					}
+				}
+				Game.veilRestoreC = parseFloat(strIn[2]);
+				Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
+			}
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
@@ -925,5 +1058,6 @@ Game.registerMod("Kaizo Cookies", {
             	this.achievements[i].bought=Number(str[(2*i)+1]); //+1 for the second value	
 			}
 		}
+	    Game.storeToRefresh=1;
     }
 });
