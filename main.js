@@ -395,7 +395,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilCollapseAt = 0.1;
 		Game.veilMaxHP = 1000;
 		Game.setVeilMaxHP = function() {
-			var h = 100;
+			var h = 1000;
 			if (Game.Has('Reinforced membrane')) { h *= 2; }
 			Game.veilMaxHP = h;
 		}
@@ -480,12 +480,12 @@ Game.registerMod("Kaizo Cookies", {
 			return ((!Game.Has('Shimmering veil [off]')) && (!Game.Has('Shimmering veil [on]')));
 		}
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`));
-		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
+		Game.veilAbsorbFactor = 4; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
-				Game.veilHP *= decay.update(20, share);
+				Game.veilHP *= (decay.update(20, share) / decay.get(20));
 				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
 				if (Game.veilHP < Game.veilCollapseAt) {
 					Game.veilHP = Game.veilCollapseAt;
@@ -494,7 +494,8 @@ Game.registerMod("Kaizo Cookies", {
 				return true;
 			} 
 			if (Game.veilOff()) {
-				Game.veilHP = Game.getVeilHeal(Game.veilHP);
+				Game.veilHP = Game.getVeilHeal(Game.veilHP, Game.veilMaxHP);
+				return true;
 			}
 			if (Game.veilBroken()) {
 				Game.veilRestoreC--;
@@ -507,6 +508,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Upgrades['Shimmering veil [on]'].earn();
 					Game.Notify('Veil restored!', 'Your Shimmering Veil has recovered from the collapse, but your next activation will require more cookies.')
 				}
+				return true;
 			}
 		}
 		Game.veilRestoreC = 0;
