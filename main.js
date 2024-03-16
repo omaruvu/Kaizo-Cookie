@@ -391,6 +391,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		
 		//decay halt: shimmering veil
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`Game.Has('Shimmering veil [off]')`, 'false'));
 		Game.veilHP = 1000;
 		Game.veilCollapseAt = 0.1;
 		Game.veilMaxHP = 1000;
@@ -485,8 +486,8 @@ Game.registerMod("Kaizo Cookies", {
 			if (!Game.Has('Shimmering veil')) { return false; }
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
-				Game.veilHP *= Math.pow(decay.update(20, share) / decay.get(20), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
-				//Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
+				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
+				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
 				if (Game.veilHP < Game.veilCollapseAt) {
 					Game.veilHP = Game.veilCollapseAt;
 					Game.collapseVeil(); 
@@ -992,6 +993,7 @@ Game.registerMod("Kaizo Cookies", {
             	this.achievements[i / 2].unlocked=Number(str[1][i]); 
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
+			Game.Lock('Shimmering veil [broken]'); 
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
