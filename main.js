@@ -89,7 +89,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
-			decay.expendVeil();
+			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
 		decay.purify = function(buildId, mult, close, cap) {
@@ -425,11 +425,23 @@ Game.registerMod("Kaizo Cookies", {
 			return c;
 		}
 		Game.getVeilReturn = function() {
+			//the amount of decay that the veil returns on collapse
 			var r = 1.8;
 			if (Game.Has('Reinforced Membrane')) { r *= 0.75; }
 			if (Game.Has('Delicate touch')) { r *= 0.85; }
 			if (Game.Has('Steadfast murmur')) { r *= 0.85; }
 			return r;
+		}
+		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
+			var hmult = 0.3 * Game.fps;
+			var hadd = 1 * Game.fps;
+			var hpow = 1;
+			if (Game.Has('Reinforced Membrane')) { hadd *= 2; hmult *= 1.25; }
+			if (Game.Has('Delicate touch')) { hpow *= 0.75; }
+			if (Game.Has('Steadfast murmur')) { hpow *= 0.75; }
+			veilHPInput += Math.pow(hadd, Math.pow(veilHPInput / veilMaxInput, hpow));
+			veilHPInput *= (1 + hmult);
+			return veilHPInput;
 		}
 		addLoc('This Shimmering Veil is currently taking on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.');
 		Game.Upgrades['Shimmering veil [on]'].descFunc = function(){
@@ -454,11 +466,33 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilOn = function() {
 			return (Game.Has('Shimmering veil [off]') && (!Game.Has('Shimmering veil [broken]')));
 		}
+		Game.veilOff = function() {
+			return (Game.Has('Shimmering veil [on]') && (!Game.Has('Shimmering veil [broken]')));
+		}
+		Game.veilBroken = function() {
+			return (Game.Has('Shimmering veil [off]') && Game.Has('Shimmering veil [on]'));
+		}
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`);
-		decay.expendVeil = function() {
-			if (!Game.veilOn()) { return false; }
-			var share = Math.pow(Game.getVeilBoost(), 2);
-			Game.veilHP *= decay.update(20, share);
+		Game.updateVeil = function() {
+			if (!Game.Has('Shimmering veil')) { return false; }
+			if (Game.veilOn()) { 
+				var share = Math.pow(Game.getVeilBoost(), 2);
+				Game.veilHP *= decay.update(20, share);
+				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
+				if (Game.veilHP < Game.veilCollapseAt) {
+					Game.collapseVeil(); 
+				}
+				return true;
+			} 
+			if (Game.veilOff()) {
+				Game.veilHP = Math.min(Game.veilMaxHP, Game.getVeilHeal(Game.veilHP));
+			}
+		}
+		Game.collapseVeil = function() {
+			Game.Lock('Shimmering veil [on]');
+			Game.Lock('Shimmering veil [off]');
+			Game.Upgrades['Shimmering veil [broken]'].earn();
+			Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [29, 5]);
 		}
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
