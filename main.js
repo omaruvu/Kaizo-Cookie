@@ -436,7 +436,7 @@ Game.registerMod("Kaizo Cookies", {
 			return r;
 		}
 		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
-			if (veilHPInput == veilMaxInput) { return false; }
+			if (veilHPInput == veilMaxInput) { return veilMaxInput; }
 			var hmult = 0.3 * Game.fps;
 			var hadd = 1 * Game.fps;
 			var hpow = 1;
