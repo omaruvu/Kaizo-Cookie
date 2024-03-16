@@ -1,4 +1,5 @@
 var decay = {};
+var kaizoCookiesVer = 'v1.1'
 function replaceDesc(name, toReplaceWith) {
 	Game.Upgrades[name].baseDesc = toReplaceWith;
 	Game.Upgrades[name].desc = toReplaceWith;
@@ -19,6 +20,8 @@ Game.registerMod("Kaizo Cookies", {
 //Special thanks to Cursed, Yeetdragon, Lookas for helping me with the code, Fififoop for quality control & suggestions, Rubik for suggestions
 //and cookiemains for playtesting this mod, you can look at the cookiemains section to see what ideas he suggested
 
+		
+		
         // notification!
 		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.`, [21,32],10,1);
 
@@ -246,12 +249,12 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Objects['Wizard tower'].minigameLoaded) {
 				var gp = Game.Objects['Wizard tower'].minigame
 				var M = gp;
-				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.sqrt(Math.min(2, decay.gen())) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
+				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen()), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
 				eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
 				eval('gp.draw='+M.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
 														 `Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,3))+')'):'')`)
 					.replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
-						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from decay: "+decay.effectStrs([function(n, i) { return Math.sqrt(Math.min(2, n))}]); `));
+						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from decay: "+decay.effectStrs([function(n, i) { return Math.pow(Math.min(2, n), 0.3)}]); `));
 				eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));		
 				
 			}
@@ -750,7 +753,7 @@ Game.registerMod("Kaizo Cookies", {
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
 			this.achievements.push(new Game.Upgrade('Golden sugar',(" Sugar lumps mature <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
-			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 50% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,1,custImg]),Game.last.pool='prestige');
+			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 50% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,1,custImg])); Game.last.pool='prestige';
 			Game.Upgrades['Cursedor'].parents=[Game.Upgrades['Luminous gloves']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Cursedor'])
 			Game.last.posY=-810,Game.last.posX=-144
@@ -874,18 +877,47 @@ Game.registerMod("Kaizo Cookies", {
 
 	},
 	save: function(){
-        let str = "";
+        let str = kaizoCookiesVer + '/';
         for(let i of this.achievements) {
           str+=i.unlocked; //using comma works like that in python but not js
           str+=i.bought; //seperating them otherwise it adds 1+1 and not "1"+"1"
         }
+		str+='/'
+		for (let i in decay.mults) {
+			str += decay.mults[i].toFixed(12); //I hate spending space
+			str += ','
+		}
+		str = str.slice(0, str.length - 1);
+		str += '/' + decay.halt + ',' + decay.haltOvertime + '/';
+		str += Game.pledgeT + ',' + Game.pledgeC;
         return str;
     },
     load: function(str){
-		Game.Upgrades['Elder Pledge'].bought = 0; Game.pledgeT = 0; //just wait until I implement the saving system
-        for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
-          this.achievements[i].unlocked=Number(str[2*i]); //multiplied by 2 because 2 values for each upgrade
-          this.achievements[i].bought=Number(str[(2*i)+1]); //+1 for the second value
-        }
+		//resetting stuff
+		console.log('Kaizo Cookies loaded. Save string: '+str);
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC]
+		if (str[0][0] == 'v') {
+			for(let i=0;i<str[1].length;i += 2) { 
+            	this.achievements[i / 2].unlocked=Number(str[1][i]); 
+            	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
+			}
+			var strIn = str[2].split(',');
+			for (let i in strIn) {
+				decay.mults[i] = parseFloat(strIn[i]);
+			}
+			strIn = str[3].split(',');
+			decay.halt = parseFloat(strIn[0]);
+			decay.haltOvertime = parseFloat(strIn[1]);
+			strIn = str[4].split(',');
+			Game.pledgeT = parseFloat(strIn[0]);
+			Game.pledgeC = parseFloat(strIn[1]);
+			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
+		} else {
+			str = str[0];
+			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
+            	this.achievements[i].unlocked=Number(str[2*i]); //multiplied by 2 because 2 values for each upgrade
+            	this.achievements[i].bought=Number(str[(2*i)+1]); //+1 for the second value	
+			}
+		}
     }
 });
