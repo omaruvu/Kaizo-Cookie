@@ -478,7 +478,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilBroken = function() {
 			return (Game.Has('Shimmering veil [off]') && Game.Has('Shimmering veil [on]'));
 		}
-		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`);
+		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`));
 		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
