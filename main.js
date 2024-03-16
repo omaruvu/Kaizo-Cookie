@@ -489,11 +489,9 @@ Game.registerMod("Kaizo Cookies", {
 			if (!Game.Has('Shimmering veil')) { return false; }
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
-				console.log('pre-decrease veil hp: '+Game.veilHP);
-				console.log('share: '+share);
 				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
 				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
-				console.log('new veil hp: '+Game.veilHP);
+				console.log('new veil hp (dec): '+Game.veilHP);
 				if (Game.veilHP < Game.veilCollapseAt) {
 					Game.veilHP = Game.veilCollapseAt;
 					Game.collapseVeil(); 
@@ -502,6 +500,7 @@ Game.registerMod("Kaizo Cookies", {
 			} 
 			if (Game.veilOff()) {
 				Game.veilHP = Game.getVeilHeal(Game.veilHP, Game.veilMaxHP);
+				console.log('new veil hp (inc): '+Game.veilHP);
 				return true;
 			}
 			if (Game.veilBroken()) {
