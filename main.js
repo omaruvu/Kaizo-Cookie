@@ -407,15 +407,15 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Shimmering veil', 'Unlocks the <b>Shimmering veil</b>, which is a toggleable veil that <b>absorbs</b> your decay when on; however, if it absorbs too much, it may collapse and temporarily massively increase your rate of decay. The veil heals over time while off.');
 		Game.getVeilBoost = function() {
 			//this time it is for the fraction of decay that the veil takes on
-			var n = 0.75;
+			var n = 0.6;
 			if (Game.Has('Glittering edge')) { n += 0.15; }
 			return n;
 		}
 		Game.getVeilCost = function(fromCollapse) {
-			var n = 20 * 60;
+			var n = 60;
 			if (Game.Has('Reinforced membrane')) { n /= 2; }
 			if (fromCollapse) {
-				n *= 366;
+				n *= 7777;
 				if (Game.Has('Delicate touch')) { n /= 2; }
 				if (Game.Has('Steadfast murmur')) { n /= 2; }
 			}
@@ -424,8 +424,6 @@ Game.registerMod("Kaizo Cookies", {
 		Game.getVeilCooldown = function() {
 			var c = Game.fps * 60 * 12;
 			if (Game.Has('Reinforced membrane')) { c /= 2; }
-			if (Game.Has('Delicate touch')) { c -= 120 * Game.fps; }
-			if (Game.Has('Steadfast murmur')) { c -= 120 * Game.fps; }
 			return c;
 		}
 		Game.getVeilReturn = function() {
@@ -438,14 +436,14 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
 			if (veilHPInput == veilMaxInput) { return veilMaxInput; }
-			var hmult = 0.3 / Game.fps;
+			var hmult = 0.15 / Game.fps;
 			var hadd = 1 / Game.fps;
 			var hpow = 1;
 			if (Game.Has('Reinforced Membrane')) { hadd *= 2; hmult *= 1.25; }
 			if (Game.Has('Delicate touch')) { hpow *= 0.75; }
 			if (Game.Has('Steadfast murmur')) { hpow *= 0.75; }
-			veilHPInput += hadd * Math.pow(veilHPInput / veilMaxInput, hpow)
-			veilHPInput *= (1 + hmult);
+			veilHPInput += hadd * Math.pow(veilHPInput / veilMaxInput, hpow);
+			veilHPInput = Math.min((1 + hmult) * Game.veilHPInput, Game.veilHPInput + hmult * (Game.veilMaxInput - Game.veilHPInput))
 			return Math.min(veilHPInput, veilMaxInput);
 		}
 		addLoc('This Shimmering Veil is currently taking on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.');
@@ -463,6 +461,10 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Shimmering veil [off]'].buyFunction = function() {
 			Game.veilPreviouslyCollapsed = false;
 		}
+		replaceDesc('Reinforced Membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and <b>doubles</b> the amount of health it has.<q>A consistency between jellyfish and cling wrap.</q>');
+		replaceDesc('Delicate touch', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>It breaks so easily.</q>');
+		replaceDesc('Steadfast murmur', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>Lend an ear and listen.</q>');
+		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>15%</b> more decay.<q>Just within reach, yet at what cost?</q>');
 		var brokenVeil = new Game.Upgrade('Shimmering veil [broken]', '', 0, [9, 10]); brokenVeil.pool = ['toggle']; Game.UpgradesByPool['toggle'].push(brokenVeil); brokenVeil.order = 40005;
 		addLoc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1x</b> more cookies than usual.');
 		brokenVeil.descFunc = function() {
@@ -491,7 +493,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
 				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
-				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
+				Game.veilHP -= (Game.veilMaxHP * Math.min(Math.sqrt(Game.veilMaxHP / Game.veilHP), 10)) / (500 * Game.fps);
 				if (Game.veilHP < Game.veilCollapseAt) {
 					Game.veilHP = Game.veilCollapseAt;
 					Game.collapseVeil(); 
