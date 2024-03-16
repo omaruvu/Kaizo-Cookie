@@ -656,12 +656,6 @@ Game.registerMod("Kaizo Cookies", {
 		/*=====================================================================================
         because Cookiemains wanted so
         =======================================================================================*/
-		for (let i in Game.Objects) {    //Nerfing Godzamok from 1% to 0.5%
-			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);", "if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.005);"));
-			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);", "else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.0025);"));
-			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace("if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025);", "if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.00125);"));
-		}
-
 		Game.registerHook('check', () => {
 			if (Game.Objects['Wizard tower'].minigameLoaded) {
 				grimoire=Game.Objects['Wizard tower'].minigame;
