@@ -404,7 +404,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.getVeilBoost = function() {
 			//this time it is for the fraction of decay that the veil takes on
 			var n = 0.75;
-			if (Game.Has('Glittering edge')) { n += 0.1; }
+			if (Game.Has('Glittering edge')) { n += 0.15; }
 			return n;
 		}
 		Game.getVeilCost = function(fromCollapse) {
@@ -433,15 +433,16 @@ Game.registerMod("Kaizo Cookies", {
 			return r;
 		}
 		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
+			if (veilHPInput == veilMaxInput) { return false; }
 			var hmult = 0.3 * Game.fps;
 			var hadd = 1 * Game.fps;
 			var hpow = 1;
 			if (Game.Has('Reinforced Membrane')) { hadd *= 2; hmult *= 1.25; }
 			if (Game.Has('Delicate touch')) { hpow *= 0.75; }
 			if (Game.Has('Steadfast murmur')) { hpow *= 0.75; }
-			veilHPInput += Math.pow(hadd, Math.pow(veilHPInput / veilMaxInput, hpow));
+			veilHPInput += hadd * Math.pow(veilHPInput / veilMaxInput, hpow)
 			veilHPInput *= (1 + hmult);
-			return veilHPInput;
+			return Math.min(veilHPInput, veilMaxInput);
 		}
 		addLoc('This Shimmering Veil is currently taking on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.');
 		Game.Upgrades['Shimmering veil [on]'].descFunc = function(){
@@ -476,14 +477,14 @@ Game.registerMod("Kaizo Cookies", {
 			return (Game.Has('Shimmering veil [on]') && (!Game.Has('Shimmering veil [broken]')));
 		}
 		Game.veilBroken = function() {
-			return (Game.Has('Shimmering veil [off]') && Game.Has('Shimmering veil [on]'));
+			return ((!Game.Has('Shimmering veil [off]')) && (!Game.Has('Shimmering veil [on]')));
 		}
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`));
 		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
 			if (Game.veilOn()) { 
-				var share = Math.pow(Game.getVeilBoost(), 2);
+				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
 				Game.veilHP *= decay.update(20, share);
 				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
 				if (Game.veilHP < Game.veilCollapseAt) {
@@ -493,12 +494,13 @@ Game.registerMod("Kaizo Cookies", {
 				return true;
 			} 
 			if (Game.veilOff()) {
-				Game.veilHP = Math.min(Game.veilMaxHP, Game.getVeilHeal(Game.veilHP));
+				Game.veilHP = Game.getVeilHeal(Game.veilHP);
 			}
 			if (Game.veilBroken()) {
 				Game.veilRestoreC--;
 				if (Game.veilRestoreC <= 0) {
 					Game.veilRestoreC = 0;
+					Game.veilHP = Game.veilMaxHP;
 					Game.Lock('Shimmering veil [broken]');
 					Game.Unlock('Shimmering veil [off]');
 					Game.Unlock('Shimmering veil [on]');
