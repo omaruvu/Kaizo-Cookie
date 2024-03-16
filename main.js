@@ -765,11 +765,14 @@ Game.registerMod("Kaizo Cookies", {
 
 			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of you ascending.<br>Turning it off will revert those effects.<br>"),0,[0,1,custImg]));
 		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [inactive]';Game.last.timerDisplay=function(){if (!Game.Upgrades['Cursedor [inactive]'].bought) return -1; else return 1-Game.fps*60*60*60*60*60*60;};
+
+			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
 			Game.Upgrades['Cursedor [inactive]'].order=14000
 			Game.Upgrades['Cursedor [active]'].order=14000
+			Game.Upgrades['The ultimate cookie'].order=9999999999
 			LocalizeUpgradesAndAchievs()
 	
 		}
@@ -777,6 +780,8 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.cookiesEarned>=1000000000) Game.Unlock('Golden sugar')
 
 			if (Game.Has('Cursedor')) Game.Unlock('Cursedor [inactive]');
+
+			if ((Game.AchievementsOwned==622)) Game.Unlock('The ultimate cookie')
 		}
 		if(Game.ready) this.createAchievements()
 		else Game.registerHook("create", this.createAchievements)
