@@ -58,6 +58,7 @@ Game.registerMod("Kaizo Cookies", {
 			wipeOnInf: 0,
 		}
 		decay.update = function(buildId) { 
+			if (Game.Has('Purity vaccines')) { return false; }
 			var c = decay.mults[buildId];
 			var godz = Game.hasBuff('Devastation').arg2; if (!godz) { godz = 1; }
     		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz);
