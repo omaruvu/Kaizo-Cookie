@@ -86,7 +86,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
-			if (decay.infReached) { decay.onInf(); }
+			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
 		decay.purify = function(buildId, mult, close, cap) {
 			decay.mults[buildId] *= mult;
@@ -284,7 +284,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.6, 1.5); decay.stop(4);'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.5 / 1.5, 1.5); decay.stop(4);'));
 		decay.clickBCStop = function() {
 			decay.stop(0.5);
 		}
@@ -376,6 +376,7 @@ Game.registerMod("Kaizo Cookies", {
 			 .replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")')
 			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
 			 .replace(`Game.Unlock('Elder Pledge');`, '')
+			 .replace(`(Game.Has('Elder Pact') && Game.Upgrades['Elder Pledge'].unlocked==0)`, `(Game.Has('One mind') && Game.Upgrades['Elder Pledge'].unlocked==0)`)
 		);
 
 		
@@ -884,7 +885,7 @@ Game.registerMod("Kaizo Cookies", {
         }
 		str+='/'
 		for (let i in decay.mults) {
-			str += decay.mults[i].toFixed(12); //I hate spending space
+			str += decay.mults[i]; 
 			str += ','
 		}
 		str = str.slice(0, str.length - 1);
