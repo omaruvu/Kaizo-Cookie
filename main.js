@@ -428,7 +428,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.getVeilReturn = function() {
 			//the amount of decay that the veil returns on collapse
 			var r = 2.89;
-			if (Game.Has('Reinforced Membrane')) { r *= 0.75; }
+			if (Game.Has('Reinforced membrane')) { r *= 0.75; }
 			if (Game.Has('Delicate touch')) { r *= 0.85; }
 			if (Game.Has('Steadfast murmur')) { r *= 0.85; }
 			return r;
@@ -438,11 +438,11 @@ Game.registerMod("Kaizo Cookies", {
 			var hmult = 0.15 / Game.fps;
 			var hadd = 1 / Game.fps;
 			var hpow = 1;
-			if (Game.Has('Reinforced Membrane')) { hadd *= 2; hmult *= 1.25; }
+			if (Game.Has('Reinforced membrane')) { hadd *= 2; hmult *= 1.25; }
 			if (Game.Has('Delicate touch')) { hpow *= 0.75; }
 			if (Game.Has('Steadfast murmur')) { hpow *= 0.75; }
 			veilHPInput += hadd * Math.pow(veilHPInput / veilMaxInput, hpow);
-			veilHPInput = Math.min((1 + hmult) * Game.veilHPInput, Game.veilHPInput + hmult * (Game.veilMaxInput - Game.veilHPInput))
+			veilHPInput = Math.min((1 + hmult) * veilHPInput, veilHPInput + hmult * (veilMaxInput - veilHPInput))
 			return Math.min(veilHPInput, veilMaxInput);
 		}
 		addLoc('This Shimmering Veil is currently taking on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.');
