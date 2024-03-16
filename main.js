@@ -437,8 +437,8 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
 			if (veilHPInput == veilMaxInput) { return veilMaxInput; }
-			var hmult = 0.3 * Game.fps;
-			var hadd = 1 * Game.fps;
+			var hmult = 0.3 / Game.fps;
+			var hadd = 1 / Game.fps;
 			var hpow = 1;
 			if (Game.Has('Reinforced Membrane')) { hadd *= 2; hmult *= 1.25; }
 			if (Game.Has('Delicate touch')) { hpow *= 0.75; }
@@ -467,7 +467,7 @@ Game.registerMod("Kaizo Cookies", {
 		brokenVeil.descFunc = function() {
 			return loc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1x</b> more cookies than usual.', [Beautify(Game.getVeilCost(true)/Game.getVeilCost(false))]);
 		}
-		addLoc('This Shimmering Veil will be restored in: ')
+		addLoc('This Shimmering Veil will be restored in: ');
 		brokenVeil.displayFuncWhenOwned = function() {
 			return '<div style="text-align:center;">'+loc('This Shimmering Veil will be restored in: ')+'<br><b>'+Game.sayTime(Game.veilRestoreC,-1)+'</b></div>';
 		}
@@ -491,7 +491,6 @@ Game.registerMod("Kaizo Cookies", {
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
 				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
 				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
-				console.log('new veil hp (dec): '+Game.veilHP);
 				if (Game.veilHP < Game.veilCollapseAt) {
 					Game.veilHP = Game.veilCollapseAt;
 					Game.collapseVeil(); 
@@ -500,7 +499,6 @@ Game.registerMod("Kaizo Cookies", {
 			} 
 			if (Game.veilOff()) {
 				Game.veilHP = Game.getVeilHeal(Game.veilHP, Game.veilMaxHP);
-				console.log('new veil hp (inc): '+Game.veilHP);
 				return true;
 			}
 			if (Game.veilBroken()) {
