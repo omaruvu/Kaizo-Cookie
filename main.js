@@ -442,7 +442,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
 			if (veilHPInput == veilMaxInput) { return veilMaxInput; }
-			var hmult = 0.15 / Game.fps;
+			var hmult = 0.05 / Game.fps;
 			var hadd = 1 / Game.fps;
 			var hpow = 1;
 			if (Game.Has('Reinforced membrane')) { hadd *= 2; hmult *= 1.25; }
