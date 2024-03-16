@@ -463,9 +463,9 @@ Game.registerMod("Kaizo Cookies", {
 			Game.veilPreviouslyCollapsed = false;
 		}
 		var brokenVeil = new Game.Upgrade('Shimmering veil [broken]', '', 0, [9, 10]); brokenVeil.pool = ['toggle']; Game.UpgradesByPool['toggle'].push(brokenVeil); brokenVeil.order = 40005;
-		addLoc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1</b> times more cookies than usual.');
+		addLoc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1x</b> more cookies than usual.');
 		brokenVeil.descFunc = function() {
-			return loc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1</b> times more cookies than usual.', [Beautify(Game.getVeilCost(true)/Game.getVeilCost(false))]);
+			return loc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1x</b> more cookies than usual.', [Beautify(Game.getVeilCost(true)/Game.getVeilCost(false))]);
 		}
 		addLoc('This Shimmering Veil will be restored in: ')
 		brokenVeil.displayFuncWhenOwned = function() {
@@ -489,6 +489,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (!Game.Has('Shimmering veil')) { return false; }
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
+				console.log('pre-decrease veil hp: '+Game.veilHP);
 				console.log('share: '+share);
 				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
 				Game.veilHP -= Game.veilMaxHP / (250 * Game.fps);
@@ -526,8 +527,8 @@ Game.registerMod("Kaizo Cookies", {
 			Game.veilRestoreC = Game.getVeilCooldown();
 			Game.veilPreviouslyCollapsed = true;
 			decay.purify(Math.pow(Game.veilHP / Game.veilMaxHP, Game.veilAbsorbFactor * Game.getVeilReturn()), 0, 1);
-			Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [29, 5]);
-			PlaySound('snd/spellFail.mp3',0.75);
+			Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [30, 5]);
+			PlaySound('snd/spellFail.mp3',1);
 		}
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
