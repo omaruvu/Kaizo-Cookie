@@ -454,7 +454,7 @@ Game.registerMod("Kaizo Cookies", {
 		addLoc('This Shimmering Veil is slowly healing itself. If activated, this veil will take on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.');
 		addLoc('Your veil has previously collapsed, so this activation will require <b>%1x</b> more cookies than usual.');
 		Game.Upgrades['Shimmering veil [off]'].descFunc = function(){
-			return (this.name=='Shimmering veil [on]'?'<div style="text-align:center;">'+loc("Active.")+'</div><div class="line"></div>':'')+loc('This Shimmering Veil is slowly healing itself. If activated, this veil will take on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.', [Beautify(Game.getVeilBoost()*100), Beautify(Game.getVeilCost(true)/Game.getVeilCost(false), 2), Game.sayTime(Game.getVeilCooldown(),2), Beautify(Game.getVeilReturn() * 100, 2)])+' '+(Game.veilPreviouslyCollapsed?('<div class="line"></div>'+loc('Your veil has previously collapsed, so this activation will require <b>%1x</b> more cookies than usual.', [Beautify(Game.getVeilCost(true)/Game.getVeilCost(false), 2)]):'');
+			return (this.name=='Shimmering veil [on]'?'<div style="text-align:center;">'+loc("Active.")+'</div><div class="line"></div>':'')+loc('This Shimmering Veil is slowly healing itself. If activated, this veil will take on <b>%1%</b> of your decay. <br><br>If it collapses, turning it back on will require <b>%2x</b> more cookies than usual, and you must wait for at least <b>%3</b> before doing so. <br>In addition, it will return <b>%4%</b> of the decay it absorbed back onto you when it collapses.', [Beautify(Game.getVeilBoost()*100), Beautify(Game.getVeilCost(true)/Game.getVeilCost(false), 2), Game.sayTime(Game.getVeilCooldown(),2), Beautify(Game.getVeilReturn() * 100, 2)])+' '+(Game.veilPreviouslyCollapsed?('<div class="line"></div>'+loc('Your veil has previously collapsed, so this activation will require <b>%1x</b> more cookies than usual.', [Beautify(Game.getVeilCost(true)/Game.getVeilCost(false), 2)])):'');
 		} 
 		Game.Upgrades['Shimmering veil [off]'].priceFunc = function() {
 			return Game.getVeilCost(Game.veilPreviouslyCollapsed);
@@ -462,13 +462,14 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Shimmering veil [off]'].buyFunction = function() {
 			Game.veilPreviouslyCollapsed = false;
 		}
-		var brokenVeil = new Game.Upgrade('Shimmering veil [broken]', '', 0, [9, 10]);
+		var brokenVeil = new Game.Upgrade('Shimmering veil [broken]', '', 0, [9, 10]); brokenVeil.pool = ['toggle']; Game.UpgradesByPool['toggle'].push(brokenVeil); brokenVeil.order = 40005;
 		addLoc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1</b> times more cookies than usual.');
 		brokenVeil.descFunc = function() {
 			return loc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1</b> times more cookies than usual.', [Beautify(Game.getVeilCost(true)/Game.getVeilCost(false))]);
 		}
+		addLoc('This Shimmering Veil will be restored in: ')
 		brokenVeil.displayFuncWhenOwned = function() {
-			return '<div style="text-align:center;">'+loc("This Shimmering Veil will be restored in: ")+'<br><b>'+Game.sayTime(Game.veilRestoreC,-1)+'</b></div>';
+			return '<div style="text-align:center;">'+loc('This Shimmering Veil will be restored in: ')+'<br><b>'+Game.sayTime(Game.veilRestoreC,-1)+'</b></div>';
 		}
 		brokenVeil.timerDisplay = function() {
 			if (!Game.Upgrades['Shimmering veil [broken]'].bought) { return -1; } else { return 1-Game.veilRestoreC/Game.getVeilCooldown(); }
