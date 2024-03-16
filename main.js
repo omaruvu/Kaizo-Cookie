@@ -57,17 +57,18 @@ Game.registerMod("Kaizo Cookies", {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
 		}
-		decay.update = function(buildId) { 
-			if (Game.Has('Purity vaccines')) { return false; }
+		decay.update = function(buildId, tickSpeed) { 
+			if (Game.Has('Purity vaccines')) { return 1; }
 			var c = decay.mults[buildId];
 			var godz = Game.hasBuff('Devastation').arg2; if (!godz) { godz = 1; }
-    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz);
-			if (isFinite(1 / c)) { decay.mults[buildId] = c; } else { if (!isNaN(c)) { if (buildId == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[buildId] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * tickSpeed);
+			return c;
 		} 
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 1000) { return false; } 
 			for (let i in decay.mults) {
-				decay.update(i);
+				var c = decay.update(i, (Game.veilOn()?(1 - Game.getVeilBoost()):1));
+				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
 			}
 			decay.regainAcc();
 			if (Game.T % 4) {
@@ -88,6 +89,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
+			decay.expendVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
 		decay.purify = function(buildId, mult, close, cap) {
@@ -448,6 +450,15 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		brokenVeil.timerDisplay = function() {
 			if (!Game.Upgrades['Shimmering veil [broken]'].bought) { return -1; } else { return 1-Game.veilRestoreT/Game.getVeilCooldown(); }
+		}
+		Game.veilOn = function() {
+			return (Game.Has('Shimmering veil [off]') && (!Game.Has('Shimmering veil [broken]')));
+		}
+		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(`if (Game.Has('Shimmering veil [off]'))`, `if (Game.veilOn())`);
+		decay.expendVeil = function() {
+			if (!Game.veilOn()) { return false; }
+			var share = Math.pow(Game.getVeilBoost(), 2);
+			Game.veilHP *= decay.update(20, share);
 		}
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
