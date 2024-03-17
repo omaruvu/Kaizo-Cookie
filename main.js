@@ -567,6 +567,32 @@ Game.registerMod("Kaizo Cookies", {
 			PlaySound('snd/spellFail.mp3',1);
 		}
 		Game.loseShimmeringVeil = function(c) { } //prevent veil from being lost from traditional methods
+		//veil graphics down below
+		var veilDrawOrigin = selectStatement(Game.DrawBackground.toString(), Game.DrawBackground.toString().indexOf("if (Game.veilOn())"));
+		var veilDraw = veilDrawOrigin;
+		Game.veilOpacity = function() {
+			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.75)
+		}
+		Game.veilParticleFailChance = function() {
+			return 1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.25);
+		}
+		Game.veilRevolveFactor = function() {
+			return 0.05 * Math.pow(Game.veilHP / Game.veilMaxHP, 0.5);
+		}
+		Game.veilParticleSizeMax = function() {
+			return 48 * (Game.veilHP / Game.veilMaxHP);
+		}
+		Game.veilParticleSpeed = function() {
+			return 32 * Math.pow(Game.veilHP / Game.veilMaxHP, 0.5);
+		}
+		veilDraw = veilDraw.replace('ctx.globalAlpha=1;', 'ctx.globalAlpha=Game.veilOpacity();');
+		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
+		veilDraw = veilDraw.replace('for (i=0;i<6;i++)', 'for (i=0;i<10;i++)');
+		veilDraw = veilDraw.replace("ctx.drawImage(Pic('glint.png'),xx-size/2,yy-size/2,size,size);", "if (Math.random() > Game.veilParticleFailChance()) { ctx.drawImage(Pic('glint.png'),xx-size/2,yy-size/2,size,size); }")
+		veilDraw = veilDraw.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilResolveFactor();');
+		veilDraw = veilDraw.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax*(1-Math.pow(r*2-1,2));');
+		veilDraw = veilDraw.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(110+r*Game.veilParticleSpeed());').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(110+r*Game.veilParticleSpeed());');
+		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
 		
