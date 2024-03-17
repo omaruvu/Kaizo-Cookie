@@ -44,8 +44,8 @@ function selectStatement(str, index, beginningCount) {
 function geometricMean(arr) {
 	var exp = 0;
 	for (let i in arr) {
-		exp += Math.floor(Math.log10(arr[i]));
-		arr[i] /= Math.floor(Math.log10(arr[i]));
+		exp += Math.ceil(Math.log10(arr[i]));
+		arr[i] /= Math.ceil(Math.log10(arr[i]));
 	}
 	var mantissa = 1;
 	for (let i in arr) {
