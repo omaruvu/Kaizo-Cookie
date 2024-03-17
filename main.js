@@ -143,7 +143,7 @@ Game.registerMod("Kaizo Cookies", {
 			return c;
 		} 
 		decay.updateAll = function() {
-			if (Game.cookiesEarned <= 1000) { return false; } 
+			if (Game.cookiesEarned <= 1000) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
 			for (let i in decay.mults) {
 				var c = decay.update(i, (Game.veilOn()?(1 - Game.getVeilBoost()):1));
 				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
@@ -212,6 +212,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.prefs.wipeOnInf) { Game.HardReset(2); decay.setRates(); }
 			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notify('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [21, 25], Game.fps * 3600 * 24 * 365, false, 1); }
 		}
+		decay.unlocked = false;
 
 		//this is so the player can actually know what is going on
 		decay.notifs = {
@@ -294,7 +295,8 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.triggerNotif = function(key) {
 			if (eval(decay.notifs[key].pref)) { console.log('Corresponding pref not found.'); return false; }
-			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); return true; } }
+			if (!decay.unlocked) { return false; }
+			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); } }
 			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, (eval(decay.notifs[key].first)?1e21:6), false, true);
 			eval(decay.notifs[key].first+'=0;');
 		}
@@ -304,7 +306,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		decay.checkRefreshes = function() {
-			if (Game.cookiesEarned <= 1000) { decay.notifCalls['initiate'] = 0; }
+			if (decay.unlocked) { decay.notifCalls['initiate'] = 0; }
 			if (decay.gen <= 1.2) { decay.notifCalls['purity'] = 0; }
 			if (decay.gen > 0.5) { decay.notifCalls['gpoc'] = 0; }
 			if (decay.incMult < 0.04) { decay.notifCalls['decayII'] = 0; }
@@ -317,6 +319,18 @@ Game.registerMod("Kaizo Cookies", {
 			return count;
 		}
 		Game.registerHook('check', decay.checkRefreshes);
+		decay.checkTriggerNotifs = function() {
+			if (Game.drawT % 10 != 0) { return false; }
+			if (decay.unlocked) { decay.triggerNotif('initiate'); }
+			if (decay.gen > 1.2) { decay.triggerNotif('purity'); }
+			if (decay.gen <= 0.5) { decay.triggerNotif('gpoc'); }
+			if (decay.incMult >= 0.04) { decay.triggerNotif('decayII'); }
+			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
+			if (Game.buffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
+		}
+		Game.registerHook('check', decay.checkTriggerNotifs);
+		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
+		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes["golden"].popFunc.toString().replace("if (me.wrath) Game.Win('Wrath cookie');", "if (me.wrath) { decay.triggerNotif('wrath'); Game.Win('Wrath cookie'); }"))
 		
 		//ui and display and stuff
 		decay.term = function(mult) {
@@ -472,7 +486,7 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 60)/Game.fps; }'));
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('Game.Earn(me.sucked);', 'Game.cookies = Math.max(0, Game.cookies - me.sucked)'))
+		/*wrinkler pop*/eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('Game.Earn(me.sucked);', 'Game.cookies = Math.max(0, Game.cookies - me.sucked); if (me.sucked > 0.5) { decay.triggerNotif("wrinkler"); }'))
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('var suckRate=1/20;', 'var suckRate=1/2;').replace('Game.cpsSucked=Math.min(1,sucking*suckRate);', 'Game.cpsSucked=Math.min(1,Math.pow(suckRate, sucking));'));
 		Game.registerHook('cookiesPerClick', function(val) { return val * Game.cpsSucked; }); //withering affects clicking
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
@@ -647,6 +661,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.Upgrades['Shimmering veil [off]'].buyFunction = function() {
 			Game.veilPreviouslyCollapsed = false;
+			decay.triggerNotif('veil');
 		}
 		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and increases its maximum health by <b>25%</b>.<q>A consistency between jellyfish and cling wrap.</q>');
 		replaceDesc('Delicate touch', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>It breaks so easily.</q>');
