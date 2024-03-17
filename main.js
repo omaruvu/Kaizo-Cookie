@@ -576,16 +576,16 @@ Game.registerMod("Kaizo Cookies", {
 			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.35)
 		}
 		Game.veilRevolveFactor = function(set) {
-			return 0.06 * (1 + set * 1.2) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.15);
+			return 0.04 * (1 + set * 1.2) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.1);
 		}
 		Game.veilParticleSizeMax = function(set) {
-			return 64 * Math.pow(0.5, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.6 + set * 0.15);
+			return 96 * Math.pow(0.5, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.6 + set * 0.1);
 		}
 		Game.veilParticleSpeed = function(set) {
-			return 48 * Math.pow(0.6, set) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.2);
+			return 96 * Math.pow(0.6, set) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.15);
 		}
 		Game.veilParticleQuantity = function(set) {
-			return Math.round(9 * set);
+			return Math.round(9 * (set + 1));
 		}
 		veilDraw = veilDraw.replace('ctx.globalAlpha=1;', 'ctx.globalAlpha=Game.veilOpacity();');
 		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
