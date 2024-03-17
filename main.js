@@ -15,6 +15,32 @@ function getVer(str) {
 	for (let i in str) { str[i] = parseFloat(str[i]); }
 	return str;
 }
+function selectStatement(str, index, beginningCount) {
+	if (index == -1) { return false; }
+	var count = 0;
+	if (beginningCount) { count = beginningCount; }
+	var inited = false;
+	var start = index;
+	var inStrSingle = false;
+	var inStrDouble = false;
+	var inStrTemplate = false;
+	var inStr = function() { return (inStrSingle || inStrDouble || inStrTemplate); }
+	while (true) {
+		if (str[index] == '{' && !inStr()) { inited = true; count++; }
+		if (str[index] == '}' && !inStr()) { count--; }
+		var states = [!inStrSingle && !inStrDouble && !inStrTemplate, inStrSingle && !inStrDouble && !inStrTemplate, !inStrSingle && inStrDouble && !inStrTemplate, !inStrSingle && !inStrDouble && inStrTemplate];
+		if (str[index] == "'" && states[0]) { inStrSingle = true; }
+		if (str[index] == "'" && states[1]) { inStrSingle = false; }
+		if (str[index] == '"' && states[0]) { inStrDouble = true; }
+		if (str[index] == '"' && states[2]) { inStrDouble = false; }
+		if (str[index] == '`' && states[0]) { inStrTemplate = true; }
+		if (str[index] == '`' && states[3]) { inStrTemplate = false; }
+		if (count <= 0 && inited) { break; } 
+		if (index >= str.length) { break; }
+		index++;
+	}
+	return str.slice(start, index) + '}';
+}
 
 Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
 	if (Game.Objects['Wizard tower'].minigameLoaded) {
@@ -78,7 +104,7 @@ Game.registerMod("Kaizo Cookies", {
 				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
 			}
 			decay.regainAcc();
-			if (Game.T % 4) {
+			if (Game.T % 2) {
 				Game.recalculateGains = 1;	
 			}
 			decay.cpsList.push(Game.unbuffedCps);
@@ -402,10 +428,10 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`Game.Has('Shimmering veil [off]')`, 'false'));
 		Game.veilHP = 1000;
 		Game.veilCollapseAt = 0.1;
-		Game.veilMaxHP = 1000;
+		Game.veilMaxHP = 0;
 		Game.setVeilMaxHP = function() {
-			var h = 1000;
-			if (Game.Has('Reinforced membrane')) { h *= 2; }
+			var h = 1500;
+			if (Game.Has('Reinforced membrane')) { h *= 1.25; }
 			Game.veilMaxHP = h;
 		}
 		Game.setVeilMaxHP();
@@ -443,7 +469,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
 			if (veilHPInput == veilMaxInput) { return veilMaxInput; }
 			var hmult = 0.05 / Game.fps;
-			var hadd = 1 / Game.fps;
+			var hadd = 0.5 / Game.fps;
 			var hpow = 1;
 			if (Game.Has('Reinforced membrane')) { hadd *= 2; hmult *= 1.25; }
 			if (Game.Has('Delicate touch')) { hpow *= 0.75; }
@@ -467,7 +493,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Shimmering veil [off]'].buyFunction = function() {
 			Game.veilPreviouslyCollapsed = false;
 		}
-		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and <b>doubles</b> the amount of health it has.<q>A consistency between jellyfish and cling wrap.</q>');
+		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and increases its maximum health by <b>25%</b>.<q>A consistency between jellyfish and cling wrap.</q>');
 		replaceDesc('Delicate touch', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>It breaks so easily.</q>');
 		replaceDesc('Steadfast murmur', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>Lend an ear and listen.</q>');
 		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>15%</b> more decay.<q>Just within reach, yet at what cost?</q>');
@@ -497,6 +523,11 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
+			/*
+			if (Game.T % 5 == 0) {
+				console.log('Current veil HP: '+Game.veilHP);
+			}
+			*/
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
 				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
@@ -537,6 +568,42 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [30, 5]);
 			PlaySound('snd/spellFail.mp3',1);
 		}
+		Game.loseShimmeringVeil = function(c) { } //prevent veil from being lost from traditional methods
+		//veil graphics down below
+		var veilDrawOrigin = selectStatement(Game.DrawBackground.toString(), Game.DrawBackground.toString().indexOf("if (Game.veilOn())"));
+		var veilDraw = veilDrawOrigin;
+		Game.veilOpacity = function() {
+			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.35)
+		}
+		Game.veilRevolveFactor = function(set) {
+			return 0.04 * (1 + set * 0.6) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6);
+		}
+		Game.veilParticleSizeMax = function(set) {
+			return 64 * Math.pow(0.85, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.6);
+		}
+		Game.veilParticleSpeed = function(set) {
+			return 64 * Math.pow(1.35, set) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6);
+		}
+		Game.veilParticleSpeedMax = function(set) {
+			return 64 * Math.pow(1.35, set);
+		}
+		Game.veilParticleQuantity = function(set) {
+			return Math.round(9 * (set + 1));
+		}
+		Game.veilParticleSpawnBound = function(set) {
+			return 40 + 70 * (1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.75));
+		}
+		veilDraw = veilDraw.replace('ctx.globalAlpha=1;', 'ctx.globalAlpha=Game.veilOpacity();');
+		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
+		var veilParticlesOrigin = selectStatement(veilDraw, veilDraw.indexOf('for (i=0;i<6;i++)'));
+		var veilParticles = veilParticlesOrigin;
+		veilParticles = veilParticles.replace('for (i=0;i<6;i++)', 'for (i=0;i<Game.veilParticleQuantity(set);i++)');
+		veilParticles = veilParticles.replace('var t=Game.T+i*15;', 'var t=Game.T+i*Math.round((90 / Game.veilParticleQuantity(set)));');
+		veilParticles = veilParticles.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilRevolveFactor(set);');
+		veilParticles = veilParticles.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax(set)*(1-Math.pow(r*2-1,2));');
+		veilParticles = veilParticles.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(Game.veilParticleSpawnBound(set)+Game.veilParticleSpeed(set) * Math.cos(r));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(Game.veilParticleSpawnBound(set)+Game.veilParticleSpeed(set) * Math.sin(r));');
+		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'; set = 1; '+veilParticles+'; set = 2; '+veilParticles+'; set = 3; '+veilParticles);
+		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
 		
