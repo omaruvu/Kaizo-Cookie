@@ -318,7 +318,7 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in Game.buffs) { count++; }
 			return count;
 		}
-		//Game.registerHook('check', decay.checkRefreshes);
+		Game.registerHook('check', decay.checkRefreshes);
 		decay.checkTriggerNotifs = function() {
 			if (Game.drawT % 10 != 0) { return false; }
 			if (decay.unlocked) { decay.triggerNotif('initiate'); }
@@ -328,7 +328,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
 			if (Game.buffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
 		}
-		//Game.registerHook('check', decay.checkTriggerNotifs);
+		Game.registerHook('check', decay.checkTriggerNotifs);
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes["golden"].popFunc.toString().replace("if (me.wrath) Game.Win('Wrath cookie');", "if (me.wrath) { decay.triggerNotif('wrath'); Game.Win('Wrath cookie'); }"))
 		
@@ -486,7 +486,7 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 60)/Game.fps; }'));
-		/*wrinkler pop*/eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('Game.Earn(me.sucked);', 'Game.cookies = Math.max(0, Game.cookies - me.sucked); if (me.sucked > 0.5) { decay.triggerNotif("wrinkler"); }'))
+		/*wrinkler pop*/ //eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('Game.Earn(me.sucked);', 'Game.cookies = Math.max(0, Game.cookies - me.sucked); if (me.sucked > 0.5) { decay.triggerNotif("wrinkler"); }'))
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('var suckRate=1/20;', 'var suckRate=1/2;').replace('Game.cpsSucked=Math.min(1,sucking*suckRate);', 'Game.cpsSucked=Math.min(1,Math.pow(suckRate, sucking));'));
 		Game.registerHook('cookiesPerClick', function(val) { return val * Game.cpsSucked; }); //withering affects clicking
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
