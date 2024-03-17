@@ -573,24 +573,30 @@ Game.registerMod("Kaizo Cookies", {
 		var veilDrawOrigin = selectStatement(Game.DrawBackground.toString(), Game.DrawBackground.toString().indexOf("if (Game.veilOn())"));
 		var veilDraw = veilDrawOrigin;
 		Game.veilOpacity = function() {
-			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.25)
+			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.35)
 		}
-		Game.veilRevolveFactor = function() {
-			return 0.06 * Math.pow(Game.veilHP / Game.veilMaxHP, 0.5);
+		Game.veilRevolveFactor = function(set) {
+			return 0.06 * (1 + set * 1.2) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.15);
 		}
-		Game.veilParticleSizeMax = function() {
-			return 64 * Math.pow((Game.veilHP / Game.veilMaxHP), 0.5);
+		Game.veilParticleSizeMax = function(set) {
+			return 64 * Math.pow(0.5, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.6 + set * 0.15);
 		}
-		Game.veilParticleSpeed = function() {
-			return 64 * Math.pow(Game.veilHP / Game.veilMaxHP, 0.5);
+		Game.veilParticleSpeed = function(set) {
+			return 48 * Math.pow(0.6, set) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.2);
+		}
+		Game.veilParticleQuantity = function(set) {
+			return Math.round(9 * set);
 		}
 		veilDraw = veilDraw.replace('ctx.globalAlpha=1;', 'ctx.globalAlpha=Game.veilOpacity();');
 		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
-		veilDraw = veilDraw.replace('for (i=0;i<6;i++)', 'for (i=0;i<9;i++)');
-		veilDraw = veilDraw.replace('var t=Game.T+i*15;', 'var t=Game.T+i*10;');
-		veilDraw = veilDraw.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilRevolveFactor();');
-		veilDraw = veilDraw.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax()*(1-Math.pow(r*2-1,2));');
-		veilDraw = veilDraw.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(110+r*Game.veilParticleSpeed());').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(110+r*Game.veilParticleSpeed());');
+		var veilParticlesOrigin = selectStatement(veilDraw, veilDraw.indexOf('for (i=0;i<6;i++)'));
+		var veilParticles = veilParticlesOrigin;
+		veilParticles = veilParticles.replace('for (i=0;i<6;i++)', 'for (i=0;i<Game.veilParticleQuantity(set);i++)');
+		veilParticles = veilParticles.replace('var t=Game.T+i*15;', 'var t=Game.T+i*Math.round((90 / Game.veilParticleQuantity(set)));');
+		veilParticles = veilParticles.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilRevolveFactor(set);');
+		veilParticles = veilParticles.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax()*(1-Math.pow(r*2-1,2));');
+		veilParticles = veilParticles.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(110+r*Game.veilParticleSpeed());').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(110+r*Game.veilParticleSpeed());');
+		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'set = 1; '+veilParticles+'set = 2; '+veilParticles+'set = 3'+veilParticles);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
