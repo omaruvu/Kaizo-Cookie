@@ -589,7 +589,7 @@ Game.registerMod("Kaizo Cookies", {
 		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
 		veilDraw = veilDraw.replace('for (i=0;i<6;i++)', 'for (i=0;i<10;i++)');
 		veilDraw = veilDraw.replace("ctx.drawImage(Pic('glint.png'),xx-size/2,yy-size/2,size,size);", "if (Math.random() > Game.veilParticleFailChance()) { ctx.drawImage(Pic('glint.png'),xx-size/2,yy-size/2,size,size); }")
-		veilDraw = veilDraw.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilResolveFactor();');
+		veilDraw = veilDraw.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilRevolveFactor();');
 		veilDraw = veilDraw.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax*(1-Math.pow(r*2-1,2));');
 		veilDraw = veilDraw.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(110+r*Game.veilParticleSpeed());').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(110+r*Game.veilParticleSpeed());');
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
