@@ -576,13 +576,16 @@ Game.registerMod("Kaizo Cookies", {
 			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.35)
 		}
 		Game.veilRevolveFactor = function(set) {
-			return 0.04 * (1 + set * 1.2) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.1);
+			return 0.04 * (1 + set * 0.6) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.1);
 		}
 		Game.veilParticleSizeMax = function(set) {
-			return 48 * Math.pow(0.75, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.6 + set * 0.1);
+			return 48 * Math.pow(0.8, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.6 + set * 0.1);
 		}
 		Game.veilParticleSpeed = function(set) {
-			return 128 * Math.pow(0.7, set) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.15);
+			return 64 * Math.pow(1.35, set) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.15);
+		}
+		Game.veilParticleSpeedMax = function(set) {
+			return 64 * Math.pow(1.35, set);
 		}
 		Game.veilParticleQuantity = function(set) {
 			return Math.round(9 * (set + 1));
@@ -595,7 +598,7 @@ Game.registerMod("Kaizo Cookies", {
 		veilParticles = veilParticles.replace('var t=Game.T+i*15;', 'var t=Game.T+i*Math.round((90 / Game.veilParticleQuantity(set)));');
 		veilParticles = veilParticles.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilRevolveFactor(set);');
 		veilParticles = veilParticles.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax(set)*(1-Math.pow(r*2-1,2));');
-		veilParticles = veilParticles.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(60+r*Game.veilParticleSpeed(set));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(60+r*Game.veilParticleSpeed(set));');
+		veilParticles = veilParticles.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(60+Game.veilParticleSpeed(set) * Math.cos(r));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(60+Game.veilParticleSpeed(set) * Math.sin(r));');
 		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'; set = 1; '+veilParticles+'; set = 2; '+veilParticles+'; set = 3; '+veilParticles);
 		console.log('veilDraw: '+veilDraw);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
