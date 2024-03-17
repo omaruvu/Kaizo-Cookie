@@ -597,6 +597,7 @@ Game.registerMod("Kaizo Cookies", {
 		veilParticles = veilParticles.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax()*(1-Math.pow(r*2-1,2));');
 		veilParticles = veilParticles.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(110+r*Game.veilParticleSpeed());').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(110+r*Game.veilParticleSpeed());');
 		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'set = 1; '+veilParticles+'set = 2; '+veilParticles+'set = 3'+veilParticles);
+		console.log('veilDraw: '+veilDraw);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
