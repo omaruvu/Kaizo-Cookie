@@ -576,13 +576,13 @@ Game.registerMod("Kaizo Cookies", {
 			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.35)
 		}
 		Game.veilRevolveFactor = function(set) {
-			return 0.04 * (1 + set * 0.6) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.1);
+			return 0.04 * (1 + set * 0.6) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6);
 		}
 		Game.veilParticleSizeMax = function(set) {
-			return 48 * Math.pow(0.8, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.6 + set * 0.1);
+			return 64 * Math.pow(0.85, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.6);
 		}
 		Game.veilParticleSpeed = function(set) {
-			return 64 * Math.pow(1.35, set) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.15);
+			return 64 * Math.pow(1.35, set) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.6);
 		}
 		Game.veilParticleSpeedMax = function(set) {
 			return 64 * Math.pow(1.35, set);
@@ -591,7 +591,7 @@ Game.registerMod("Kaizo Cookies", {
 			return Math.round(9 * (set + 1));
 		}
 		Game.veilParticleSpawnBound = function(set) {
-			return 40 + 70 * (1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.6 + set * 0.15));
+			return 40 + 70 * (1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.75));
 		}
 		veilDraw = veilDraw.replace('ctx.globalAlpha=1;', 'ctx.globalAlpha=Game.veilOpacity();');
 		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
@@ -603,7 +603,6 @@ Game.registerMod("Kaizo Cookies", {
 		veilParticles = veilParticles.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax(set)*(1-Math.pow(r*2-1,2));');
 		veilParticles = veilParticles.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(Game.veilParticleSpawnBound(set)+Game.veilParticleSpeed(set) * Math.cos(r));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(Game.veilParticleSpawnBound(set)+Game.veilParticleSpeed(set) * Math.sin(r));');
 		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'; set = 1; '+veilParticles+'; set = 2; '+veilParticles+'; set = 3; '+veilParticles);
-		console.log('veilDraw: '+veilDraw);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
