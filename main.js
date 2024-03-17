@@ -99,6 +99,8 @@ Game.registerMod("Kaizo Cookies", {
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
 		decay.justMult = 0; //debugging use
 		decay.infReached = false;
+		decay.unlocked = false;
+		if (Game.cookiesEarned > 1000) { decay.unlocked = true; }
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
@@ -212,7 +214,6 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.prefs.wipeOnInf) { Game.HardReset(2); decay.setRates(); }
 			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notify('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [21, 25], Game.fps * 3600 * 24 * 365, false, 1); }
 		}
-		decay.unlocked = false;
 
 		//this is so the player can actually know what is going on
 		decay.notifs = {
