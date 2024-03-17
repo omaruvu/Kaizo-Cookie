@@ -32,7 +32,7 @@ function selectStatement(str, index, beginningCount) {
 		if (str[index] == "'" && states[1]) { inStrSingle = false; }
 		if (str[index] == '"' && states[0]) { inStrDouble = true; }
 		if (str[index] == '"' && states[2]) { inStrDouble = false; }
-		if (str[index] == '`' && states[0) { inStrTemplate = true; }
+		if (str[index] == '`' && states[0)) { inStrTemplate = true; }
 		if (str[index] == '`' && states[3]) { inStrTemplate = false; }
 		if (count <= 0 && inited) { break; } 
 		index++;
