@@ -16,6 +16,7 @@ function getVer(str) {
 	return str;
 }
 function selectStatement(str, index, beginningCount) {
+	if (index == -1) { return false; }
 	var count = 0;
 	if (beginningCount) { count = beginningCount; }
 	var inited = false;
