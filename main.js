@@ -1,5 +1,7 @@
 var decay = {};
 var kaizoCookiesVer = 'v1.1.1'
+
+//additional helper functions
 function replaceDesc(name, toReplaceWith) {
 	Game.Upgrades[name].baseDesc = toReplaceWith;
 	Game.Upgrades[name].desc = toReplaceWith;
@@ -100,6 +102,23 @@ Game.registerMod("Kaizo Cookies", {
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
+			preventNotifs: {
+				initiate: 0,
+				achievement: 0,
+				purity: 0,
+				wrinkler: 0,
+				wrath: 0,
+				gpoc: 0,
+				decayII: 0,
+				veil: 0,
+				buff: 0
+			},
+		}
+		decay.notifCalls = {
+			purity: 0,
+			gpoc: 0,
+			decayII: 0,
+			buff: 0
 		}
 		decay.update = function(buildId, tickSpeed) { 
 			if (Game.Has('Purity vaccines')) { return 1; }
@@ -181,6 +200,73 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notify('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [21, 25], Game.fps * 3600 * 24 * 365, false, 1); }
 		}
 
+		//this is so the player can actually know what is going on
+		decay.notifs = {
+			initiate: {
+				title: 'decay',
+				desc: 'Due to aging and corruption in your facilities, CpS continuously decreases over time. You can temporarily stop it from decreasing with certain actions, such as clicking the big cookie; or purify the decay\'s effects by, for example, clicking a Golden or Wrath cookie.',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.initiate'
+			},
+			achievement: {
+				title: 'Achievements',
+				desc: 'Obtaining an achievement also purifies your decay by a very large amount.',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.achievement'
+			},
+			purity: {
+				title: 'Purity',
+				desc: 'If you can purify all of your decay, any extra purification power will be spent as an increase in CpS. The extra CpS (called "purity") acts as a sacrifical filler for the decay; the more purity you have, the quicker the decay will be in eating through them.',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.purity',
+				nocall: 'decay.notifCalls.purity'
+			},
+			wrinkler: {
+				title: 'Wrinklers',
+				desc: 'Wrinklers now wither a very large amount of CpS each and loses cookies on pop, but if you manage to pop them before they reach the big cookie, your decay gets stopped for much longer than just clicking!<br>Also, the withering affects clicks, unlike in vanilla',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.wrinkler'
+			},
+			wrath: {
+				title: 'Wrath cookies',
+				desc: 'Wrath cookies now replaces Golden cookies according to the amount of decay you have when it spawns; the more decay you have, the more often it replaces Golden cookies. Luckily, it still purifies decay the same way as Golden cookies do.',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.wrath'
+			},
+			gpoc: {
+				title: 'Grandmapocalypse', 
+				desc: 'The Grandmapocalypse, in the vanilla sense, no longer exists. It has been replaced by the decay mechanic. As well, all other Grandmapocalypse-related items now help you combat the decay.',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.gpoc',
+				nocall: 'decay.notifCalls.gpoc'
+			}, 
+			decayII: {
+				title: 'decay: the return',
+				desc: 'The decay gets stronger as you progress through the game, but you also obtain more items to help you fight it as the game goes on. ',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.decayII',
+				nocall: 'decay.notifCalls.decayII'
+			},
+			veil: {
+				title: 'Shimmering Veil',
+				desc: 'While there is no sources to directly examine your Shimmering Veil\'s welldoing, you can infer its health from the brightness of the veil around the big cookie, as well as the particles swirling around it.',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.veil'
+			},
+			buff: {
+				title: 'Buffs under decay',
+				desc: 'Positive buffs now run out faster the more decay you have accumulated. Stay vigilant!<br>(This uses the current amount of decay, which means that any decay accumulated before the buff was obtained will also contribute to the buff running out faster)',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.buff',
+				nocall: 'decay.notifCalls.buff'
+			}
+		}
+		decay.triggerNotif(key) {
+			if (eval(decay.notifs[key].pref)) { console.log('Corresponding pref not found.'); return false; }
+			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); return true; } }
+			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, 1e21, false, true);
+		}
+		
 		//ui and display and stuff
 		decay.term = function(mult) {
 			if (mult > 1) { return 'purity'; }
@@ -458,7 +544,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.getVeilBoost = function() {
 			//this time it is for the fraction of decay that the veil takes on
 			var n = 0.6;
-			if (Game.Has('Glittering edge')) { n += 0.15; }
+			if (Game.Has('Glittering edge')) { n += 0.25; }
 			return n;
 		}
 		Game.getVeilCost = function(fromCollapse) {
@@ -514,7 +600,12 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and increases its maximum health by <b>25%</b>.<q>A consistency between jellyfish and cling wrap.</q>');
 		replaceDesc('Delicate touch', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>It breaks so easily.</q>');
 		replaceDesc('Steadfast murmur', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>Lend an ear and listen.</q>');
-		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>15%</b> more decay.<q>Just within reach, yet at what cost?</q>');
+		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>25%</b> more decay.<q>Just within reach, yet at what cost?</q>');
+		Game.Upgrades['Shimmering veil'].basePrice /= 1000;
+		Game.Upgrades['Reinforced membrane'].basePrice /= 1000;
+		Game.Upgrades['Delicate touch'].basePrice /= 1000;
+		Game.Upgrades['Steadfast murmur'].basePrice /= 1000;
+		Game.Upgrades['Glittering edge'].basePrice /= 1000;
 		var brokenVeil = new Game.Upgrade('Shimmering veil [broken]', '', 0, [9, 10]); brokenVeil.pool = ['toggle']; Game.UpgradesByPool['toggle'].push(brokenVeil); brokenVeil.order = 40005;
 		addLoc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1x</b> more cookies than usual.');
 		brokenVeil.descFunc = function() {
