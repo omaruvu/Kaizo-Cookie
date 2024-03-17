@@ -42,16 +42,12 @@ function selectStatement(str, index, beginningCount) {
 	return str.slice(start, index) + '}';
 }
 function geometricMean(arr) {
-	var exp = 0;
-	for (let i in arr) {
-		exp += Math.ceil(Math.log10(arr[i]));
-		arr[i] /= Math.ceil(Math.log10(arr[i]));
-	}
-	var mantissa = 1;
-	for (let i in arr) {
-		mantissa *= arr[i];
-	}
-	return Math.pow(mantissa, 1 / arr.length) * Math.pow(10, exp / arr.length);
+	var sum = 0; 
+	for (let i = 0; i < arr.length; i++) {
+		sum += Math.log(arr[i]);
+	} 
+	sum /= arr.length;
+	return Math.exp(sum) //wtf is an antilog
 }
 
 Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
