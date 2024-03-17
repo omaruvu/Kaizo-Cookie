@@ -25,7 +25,8 @@ function selectStatement(str, index, beginningCount) {
 	var inStrTemplate = false;
 	var inStr = function() { return (inStrSingle || inStrDouble || inStrTemplate); }
 	while (true) {
-		if (str[index] == '{' && !inStr()) { inited = true; count++; }
+		if (str[index] == '{' && !inStr() && !inited) { inited = true; }
+		if (str[index] == '{' && !inStr() && inited) { count++; }
 		if (str[index] == '}' && !inStr()) { count--; }
 		var states = [!inStrSingle && !inStrDouble && !inStrTemplate, inStrSingle && !inStrDouble && !inStrTemplate, !inStrSingle && inStrDouble && !inStrTemplate, !inStrSingle && !inStrDouble && inStrTemplate];
 		if (str[index] == "'" && states[0]) { inStrSingle = true; }
@@ -35,6 +36,7 @@ function selectStatement(str, index, beginningCount) {
 		if (str[index] == '`' && states[0]) { inStrTemplate = true; }
 		if (str[index] == '`' && states[3]) { inStrTemplate = false; }
 		if (count <= 0 && inited) { break; } 
+		if (index >= str.length) { break; }
 		index++;
 	}
 	return str.slice(start, index) + '}';
