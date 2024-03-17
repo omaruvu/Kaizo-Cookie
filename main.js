@@ -78,7 +78,7 @@ Game.registerMod("Kaizo Cookies", {
 				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
 			}
 			decay.regainAcc();
-			if (Game.T % 4) {
+			if (Game.T % 2) {
 				Game.recalculateGains = 1;	
 			}
 			decay.cpsList.push(Game.unbuffedCps);
@@ -402,10 +402,10 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`Game.Has('Shimmering veil [off]')`, 'false'));
 		Game.veilHP = 1000;
 		Game.veilCollapseAt = 0.1;
-		Game.veilMaxHP = 1000;
+		Game.veilMaxHP = 0;
 		Game.setVeilMaxHP = function() {
-			var h = 1000;
-			if (Game.Has('Reinforced membrane')) { h *= 2; }
+			var h = 1500;
+			if (Game.Has('Reinforced membrane')) { h *= 1.25; }
 			Game.veilMaxHP = h;
 		}
 		Game.setVeilMaxHP();
@@ -467,7 +467,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Shimmering veil [off]'].buyFunction = function() {
 			Game.veilPreviouslyCollapsed = false;
 		}
-		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and <b>doubles</b> the amount of health it has.<q>A consistency between jellyfish and cling wrap.</q>');
+		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and increases its maximum health by <b>25%</b>.<q>A consistency between jellyfish and cling wrap.</q>');
 		replaceDesc('Delicate touch', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>It breaks so easily.</q>');
 		replaceDesc('Steadfast murmur', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>Lend an ear and listen.</q>');
 		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>15%</b> more decay.<q>Just within reach, yet at what cost?</q>');
@@ -497,7 +497,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
-			if (Game.T % 15) {
+			if (Game.T % 5 == 0) {
 				console.log('Current veil HP: '+Game.veilHP);
 			}
 			if (Game.veilOn()) { 
@@ -540,6 +540,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [30, 5]);
 			PlaySound('snd/spellFail.mp3',1);
 		}
+		Game.loseShimmeringVeil = function(c) { } //prevent veil from being lost from traditional methods
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
 		
