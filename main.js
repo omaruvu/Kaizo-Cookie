@@ -202,7 +202,7 @@ Game.registerMod("Kaizo Cookies", {
 			var num = (1 - num / decay.cpsList[0]) * 100;
 			var str = num.toFixed(2);
 			*/
-			var str = geometricMean(decay.cpsList.slice(Game.fps * 1.5, decay.cpsList.length)).toFixed(2);
+			var str = geometricMean(decay.cpsList.slice(Game.fps * 0.5, decay.cpsList.length)).toFixed(2);
 			if (str.includes('-')) {
 				str = str.replace('-', '+');
 			} else {
