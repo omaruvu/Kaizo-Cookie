@@ -565,6 +565,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.getPledgeStrength = function() {
 			var str = 0.2; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
+			if (Game.Has('Unshackled Elder Pledge')) { str *= 2; }
 			var cap = 5;
 			if (Game.Has('Elder Pact')) { cap *= 2; }
 			return [1 + (str / Game.fps), 0.5 / (Game.getPledgeDuration() * cap), cap];
@@ -986,7 +987,7 @@ Game.registerMod("Kaizo Cookies", {
         Game.dragonAuras[2].desc="Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy and Dragonflight is <b>50%</b> more powerful.";
 		Game.dragonAuras[6].desc="All upgrades are <b>10% cheaper</b>.";
 		Game.dragonAuras[7].desc="All buildings are <b>5% cheaper</b>.";
-        Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS. Wrinklers approach the big cookie <b>5 times</b> slower.";
+        Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS."+'<br>'+"Wrinklers approach the big cookie <b>5 times</b> slower.";
         Game.dragonAuras[11].desc="Golden cookies give <b>10%</b> more cookies."+'<br>'+"Golden cookies may trigger a <b>Dragon\'s hoard</b>.";
 		Game.dragonAuras[12].desc="Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy appear <b>twice as often</b>.";
         Game.dragonAuras[15].desc="All cookie production <b>multiplied by 1.5</b>.";
@@ -1110,6 +1111,11 @@ Game.registerMod("Kaizo Cookies", {
 
 			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker.". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
 			this.achievements.push(new Game.Upgrade('Purity vaccines', '<b>Stops all decay.</b><q>Developed for the time of need.</q>', 7, [20, 6])); Game.last.pool='debug'; Game.UpgradesByPool['debug'].push(Game.last);
+
+			this.achievements.push(new Game.Upgrade('Unshackled Elder Pledge',("Makes purification <b>twice</b> as stronger.")+'<q>Your pledge to the grandmas is stronger than ever before.</q>',51200000000000000,[1,1,custImg])); Game.last.pool='prestige';
+			Game.Upgrades['Unshackled Elder Pledge'].parents=[Game.Upgrades['Unshackled flavor'],Game.Upgrades['Unshackled berrylium'],Game.Upgrades['Unshackled blueberrylium'],Game.Upgrades['Unshackled chalcedhoney'],Game.Upgrades['Unshackled buttergold'],Game.Upgrades['Unshackled sugarmuck'],Game.Upgrades['Unshackled jetmint'],Game.Upgrades['Unshackled cherrysilver'],Game.Upgrades['Unshackled hazelrald'],Game.Upgrades['Unshackled mooncandy'],Game.Upgrades['Unshackled astrofudge'],Game.Upgrades['Unshackled alabascream'],Game.Upgrades['Unshackled iridyum'],Game.Upgrades['Unshackled glucosmium'],Game.Upgrades['Unshackled glimmeringue']]
+			Game.PrestigeUpgrades.push(Game.Upgrades['Unshackled Elder Pledge'])
+			Game.last.posY=195,Game.last.posX=750
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
@@ -1117,6 +1123,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Cursedor [active]'].order=14000
 			Game.Upgrades['The ultimate cookie'].order=9999999999
 			Game.Upgrades['Purity vaccines'].order=1;
+			Game.Upgrades['Unshackled Elder Pledge'].order=770;
 			LocalizeUpgradesAndAchievs();
 	
 		}
