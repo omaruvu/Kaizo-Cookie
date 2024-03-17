@@ -1,5 +1,5 @@
 var decay = {};
-var kaizoCookiesVer = 'v1.1.1'
+var kaizoCookiesVer = 'v1.1.2'
 
 //additional helper functions
 function replaceDesc(name, toReplaceWith) {
@@ -114,6 +114,18 @@ Game.registerMod("Kaizo Cookies", {
 				buff: 0,
 				multipleBuffs: 0
 			},
+			firstNotif: {
+				initiate: 1,
+				achievement: 1,
+				purity: 1,
+				wrinkler: 1,
+				wrath: 1,
+				gpoc: 1,
+				decayII: 1,
+				veil: 1,
+				buff: 1,
+				multipleBuffs: 1
+			}
 		}
 		decay.notifCalls = {
 			initiate: 0,
@@ -127,7 +139,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Purity vaccines')) { return 1; }
 			var c = decay.mults[buildId];
 			var godz = Game.hasBuff('Devastation').arg2; if (!godz) { godz = 1; }
-    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * tickSpeed);
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen, 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * tickSpeed);
 			return c;
 		} 
 		decay.updateAll = function() {
@@ -155,6 +167,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
+			decay.gen = decay.mults[20];
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
@@ -195,9 +208,6 @@ Game.registerMod("Kaizo Cookies", {
  		decay.get = function(buildId) {
 			return decay.mults[buildId];
 		}
-		decay.gen = function() {
-			return decay.mults[20];
-		}
 		decay.onInf = function() {
 			if (decay.prefs.wipeOnInf) { Game.HardReset(2); decay.setRates(); }
 			if (decay.prefs.ascendOnInf) { Game.cookiesEarned = 0; Game.Ascend(1); Game.Notify('Infinite decay', 'Excess decay caused a forced ascension without gaining any prestige or heavenly chips.', [21, 25], Game.fps * 3600 * 24 * 365, false, 1); }
@@ -210,38 +220,44 @@ Game.registerMod("Kaizo Cookies", {
 				desc: 'Due to aging and corruption in your facilities, CpS continuously decreases over time. You can temporarily stop it from decreasing with certain actions, such as clicking the big cookie; or purify the decay\'s effects by, for example, clicking a Golden or Wrath cookie.',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.initiate',
+				first: 'decay.prefs.firstNotif.initiate',
 				nocall: 'decay.notifCalls.initiate'
 			},
 			achievement: {
 				title: 'Achievements',
 				desc: 'Obtaining an achievement also purifies your decay by a very large amount.',
 				icon: [0, 0],
-				pref: 'decay.prefs.preventNotifs.achievement'
+				pref: 'decay.prefs.preventNotifs.achievement',
+				first: 'decay.prefs.firstNotif.achievement'
 			},
 			purity: {
 				title: 'Purity',
 				desc: 'If you can purify all of your decay, any extra purification power will be spent as an increase in CpS. The extra CpS (called "purity") acts as a sacrifical filler for the decay; the more purity you have, the quicker the decay will be in eating through them.',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.purity',
+				first: 'decay.prefs.firstNotif.purity',
 				nocall: 'decay.notifCalls.purity'
 			},
 			wrinkler: {
 				title: 'Wrinklers',
 				desc: 'Wrinklers now wither a very large amount of CpS each and loses cookies on pop, but if you manage to pop them before they reach the big cookie, your decay gets stopped for much longer than just clicking!<br>Also, the withering affects clicks, unlike in vanilla',
 				icon: [0, 0],
-				pref: 'decay.prefs.preventNotifs.wrinkler'
+				pref: 'decay.prefs.preventNotifs.wrinkler',
+				first: 'decay.prefs.firstNotif.wrinkler'
 			},
 			wrath: {
 				title: 'Wrath cookies',
 				desc: 'Wrath cookies now replaces Golden cookies according to the amount of decay you have when it spawns; the more decay you have, the more often it replaces Golden cookies. Luckily, it still purifies decay the same way as Golden cookies do.',
 				icon: [0, 0],
-				pref: 'decay.prefs.preventNotifs.wrath'
+				pref: 'decay.prefs.preventNotifs.wrath',
+				first: 'decay.prefs.firstNotif.wrath'
 			},
 			gpoc: {
 				title: 'Grandmapocalypse', 
 				desc: 'The Grandmapocalypse, in the vanilla sense, no longer exists. It has been replaced by the decay mechanic. As well, all other Grandmapocalypse-related items now help you combat the decay.',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.gpoc',
+				first: 'decay.prefs.firstNotif.gpoc',
 				nocall: 'decay.notifCalls.gpoc'
 			}, 
 			decayII: {
@@ -249,19 +265,22 @@ Game.registerMod("Kaizo Cookies", {
 				desc: 'The decay gets stronger as you progress through the game, but you also obtain more items to help you fight it as the game goes on. ',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.decayII',
+				first: 'decay.prefs.firstNotif.decayII',
 				nocall: 'decay.notifCalls.decayII'
 			},
 			veil: {
 				title: 'Shimmering Veil',
 				desc: 'While there is no sources to directly examine your Shimmering Veil\'s welldoing, you can infer its health from the brightness of the veil around the big cookie, as well as the particles swirling around it.',
 				icon: [0, 0],
-				pref: 'decay.prefs.preventNotifs.veil'
+				pref: 'decay.prefs.preventNotifs.veil',
+				first: 'decay.prefs.firstNotif.veil'
 			},
 			buff: {
 				title: 'Buffs under decay',
 				desc: 'Positive buffs now run out faster the more decay you have accumulated. Stay vigilant!<br>(This uses the current amount of decay, which means that any decay accumulated before the buff was obtained will also contribute to the buff running out faster)',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.buff',
+				first: 'decay.prefs.firstNotif.buff',
 				nocall: 'decay.notifCalls.buff'
 			},
 			multipleBuffs: {
@@ -269,13 +288,15 @@ Game.registerMod("Kaizo Cookies", {
 				desc: 'Stacking more than one Golden cookie buff significantly increases your rate of decay.',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.multipleBuffs',
+				first: 'decay.prefs.firstNotif.multipleBuffs',
 				nocall: 'decay.notifCalls.multipleBuffs'
 			}
 		}
 		decay.triggerNotif = function(key) {
 			if (eval(decay.notifs[key].pref)) { console.log('Corresponding pref not found.'); return false; }
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); return true; } }
-			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, 1e21, false, true);
+			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, (eval(decay.notifs[key].first)?1e21:6), false, true);
+			eval(decay.notifs[key].first+'=0;');
 		}
 		decay.refreshTrigger = function(key) {
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') {
@@ -283,10 +304,19 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		decay.checkRefreshes = function() {
-			for (let i in decay.notifs) {
-				console.log(i);
-			}
+			if (Game.cookiesEarned <= 1000) { decay.notifCalls['initiate'] = 0; }
+			if (decay.gen <= 1.2) { decay.notifCalls['purity'] = 0; }
+			if (decay.gen > 0.5) { decay.notifCalls['gpoc'] = 0; }
+			if (decay.incMult < 0.04) { decay.notifCalls['decayII'] = 0; }
+			if (!Game.buffCount()) { decay.notifCalls['buff'] = 0; }
+			if (!(Game.buffCount() - 1)) { decay.notifCalls['multipleBuffs'] = 0; }
 		}
+		Game.buffCount = function() {
+			var count = 0;
+			for (let i in Game.buffs) { count++; }
+			return count;
+		}
+		Game.registerHook('check', decay.checkRefreshes);
 		
 		//ui and display and stuff
 		decay.term = function(mult) {
@@ -318,17 +348,17 @@ Game.registerMod("Kaizo Cookies", {
 		if (false) { Game.registerHook('draw', function() { if (Game.drawT % 3) { Game.UpdateMenu(); } }); } //feels like stretching the bounds of my computer a bit here
 
 		decay.diffStr = function() {
-			var str = '<b>CpS multiplier from '+decay.term(decay.gen())+': </b>';
-			if (decay.gen() < 0.00001) {
+			var str = '<b>CpS multiplier from '+decay.term(decay.gen)+': </b>';
+			if (decay.gen < 0.00001) {
 				str += '1 / ';
-				str += Beautify(1 / decay.gen());
+				str += Beautify(1 / decay.gen);
 			} else { 
-				if (decay.gen() > 1) { 
+				if (decay.gen > 1) { 
 					str += '<small>+</small>'; 
-					str += Beautify(((decay.gen() - 1) * 100), 3);
+					str += Beautify(((decay.gen - 1) * 100), 3);
 				} else { 
 					str += '<small>-</small>'; 
-					str += Beautify(((1 - decay.gen()) * 100), 3);
+					str += Beautify(((1 - decay.gen) * 100), 3);
 				}
 				str += '%';
 			}
@@ -336,7 +366,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
 		decay.effectStrs = function(funcs) {
-			var num = decay.gen();
+			var num = decay.gen;
 			if (Array.isArray(funcs)) { 
 				for (let i in funcs) {
 					num = funcs[i](num, i);
@@ -407,20 +437,20 @@ Game.registerMod("Kaizo Cookies", {
 		for (let i in Game.Objects) {
 			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
 		}
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`{Game.cookiesPs+=9;Game.cookiesPsByType['"egg"']=9;}`,`{Game.cookiesPs+=9*decay.gen();Game.cookiesPsByType['"egg"']=9*decay.gen();}`));
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`{Game.cookiesPs+=9;Game.cookiesPsByType['"egg"']=9;}`,`{Game.cookiesPs+=9*decay.gen;Game.cookiesPsByType['"egg"']=9*decay.gen;}`));
 		eval("Game.shimmerTypes['golden'].initFunc="+Game.shimmerTypes['golden'].initFunc.toString()
-			 .replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ' || ((!Game.Has("Elder Covenant")) && Math.random() > Math.pow(decay.gen(), decay.wcPow))'));
+			 .replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ' || ((!Game.Has("Elder Covenant")) && Math.random() > Math.pow(decay.gen, decay.wcPow))'));
 		addLoc('+%1/min');
 		Game.registerHook('check', () => {
 			if (Game.Objects['Wizard tower'].minigameLoaded) {
 				var gp = Game.Objects['Wizard tower'].minigame
 				var M = gp;
-				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen()), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
+				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
 				eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
 				eval('gp.draw='+M.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
 														 `Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,3))+')'):'')`)
 					.replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
-						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from "+decay.term(decay.gen())+": "+decay.effectStrs([function(n, i) { return Math.pow(Math.min(2, n), 0.3)}]); `));
+						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from "+decay.term(decay.gen)+": "+decay.effectStrs([function(n, i) { return Math.pow(Math.min(2, n), 0.3)}]); `));
 				eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));		
 				
 			}
@@ -438,7 +468,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (x2 > -0.5 * rect.w && x2 < 0.5 * rect.w && y2 > -0.5 * rect.h && y2 < 0.5 * rect.h) return true;
 			return false;
 		}
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen(), decay.wrinklerSpawnFactor); if (decay.gen() >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen, decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 60)/Game.fps; }'));
@@ -447,7 +477,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('cookiesPerClick', function(val) { return val * Game.cpsSucked; }); //withering affects clicking
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
 		eval('Game.getWrinklersMax='+Game.getWrinklersMax.toString().replace(`n+=Math.round(Game.auraMult('Dragon Guts')*2);`, ''));
-		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen())) } else { buff.time--; }'));
+		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen)) } else { buff.time--; }'));
 
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
 
@@ -660,7 +690,7 @@ Game.registerMod("Kaizo Cookies", {
 			*/
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
-				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
+				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen, 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
 				Game.veilHP -= (Game.veilMaxHP * Math.min(Math.sqrt(Game.veilMaxHP / Game.veilHP), 10)) / (500 * Game.fps);
 				if (Game.veilHP < Game.veilCollapseAt) {
 					Game.veilHP = Game.veilCollapseAt;
@@ -1203,13 +1233,20 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		str += ',';
-		str += Game.veilRestoreC + ',' + Game.veilPreviouslyCollapsed;
+		str += Game.veilRestoreC + ',' + Game.veilPreviouslyCollapsed + '/';
+		for (let i in decay.prefs.preventNotifs) {
+			str += decay.prefs.preventNotifs[i];
+		}
+		str += ',';
+		for (let i in decay.prefs.firstNotif) {
+			str += decay.prefs.firstNotif[i];
+		}
         return str;
     },
     load: function(str){
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
-		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed]
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif]
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
@@ -1228,7 +1265,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.pledgeT = parseFloat(strIn[0]);
 			Game.pledgeC = parseFloat(strIn[1]);
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
-			if (version[0] == 1 && version[1] == 1 && version[2] == 1) {
+			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 1) {
 				strIn = str[5].split(',');
 				Game.veilHP = parseFloat(strIn[0]); 
 				if (Game.Has('Shimmering veil')) { 
@@ -1247,6 +1284,19 @@ Game.registerMod("Kaizo Cookies", {
 				}
 				Game.veilRestoreC = parseFloat(strIn[2]);
 				Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
+			}
+			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 2) {
+				var counter = 0;
+				strIn = str[6].split(',');
+				for (let i in decay.prefs.preventNotifs) {
+					decay.prefs.preventNotifs[i] = parseInt(strIn[0][counter]);
+					counter++;
+				}
+				counter = 0;
+				for (let i in decay.prefs.firstNotif) {
+					decay.prefs.firstNotif[i] = parseInt(strIn[1][counter]);
+					counter++;
+				}
 			}
 		} else {
 			str = str[0];
