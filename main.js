@@ -111,14 +111,17 @@ Game.registerMod("Kaizo Cookies", {
 				gpoc: 0,
 				decayII: 0,
 				veil: 0,
-				buff: 0
+				buff: 0,
+				multipleBuffs: 0
 			},
 		}
 		decay.notifCalls = {
+			initiate: 0,
 			purity: 0,
 			gpoc: 0,
 			decayII: 0,
-			buff: 0
+			buff: 0,
+			multipleBuffs: 0
 		}
 		decay.update = function(buildId, tickSpeed) { 
 			if (Game.Has('Purity vaccines')) { return 1; }
@@ -206,7 +209,8 @@ Game.registerMod("Kaizo Cookies", {
 				title: 'decay',
 				desc: 'Due to aging and corruption in your facilities, CpS continuously decreases over time. You can temporarily stop it from decreasing with certain actions, such as clicking the big cookie; or purify the decay\'s effects by, for example, clicking a Golden or Wrath cookie.',
 				icon: [0, 0],
-				pref: 'decay.prefs.preventNotifs.initiate'
+				pref: 'decay.prefs.preventNotifs.initiate',
+				nocall: 'decay.notifCalls.initiate'
 			},
 			achievement: {
 				title: 'Achievements',
@@ -259,12 +263,29 @@ Game.registerMod("Kaizo Cookies", {
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.buff',
 				nocall: 'decay.notifCalls.buff'
+			},
+			multipleBuffs: {
+				title: 'Buff stacking',
+				desc: 'Stacking more than one Golden cookie buff significantly increases your rate of decay.',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.multipleBuffs',
+				nocall: 'decay.notifCalls.multipleBuffs'
 			}
 		}
 		decay.triggerNotif = function(key) {
 			if (eval(decay.notifs[key].pref)) { console.log('Corresponding pref not found.'); return false; }
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); return true; } }
 			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, 1e21, false, true);
+		}
+		decay.refreshTrigger = function(key) {
+			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') {
+				if (eval(decay.notifs[key].nocall)) { eval(decay.notifs[key].nocall+'=0'); }
+			}
+		}
+		decay.checkRefreshes = function() {
+			for (let i in decay.notifs) {
+				console.log(i);
+			}
 		}
 		
 		//ui and display and stuff
