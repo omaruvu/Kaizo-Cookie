@@ -443,7 +443,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.getVeilHeal = function(veilHPInput, veilMaxInput) {
 			if (veilHPInput == veilMaxInput) { return veilMaxInput; }
 			var hmult = 0.05 / Game.fps;
-			var hadd = 1 / Game.fps;
+			var hadd = 0.5 / Game.fps;
 			var hpow = 1;
 			if (Game.Has('Reinforced membrane')) { hadd *= 2; hmult *= 1.25; }
 			if (Game.Has('Delicate touch')) { hpow *= 0.75; }
@@ -523,6 +523,9 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Notify('Veil restored!', 'Your Shimmering Veil has recovered from the collapse, but your next activation will require more cookies.')
 				}
 				return true;
+			}
+			if (Game.T % 15) {
+				console.log('Current veil HP: '+Game.veilHP);
 			}
 		}
 		Game.veilRestoreC = 0;
