@@ -15,6 +15,30 @@ function getVer(str) {
 	for (let i in str) { str[i] = parseFloat(str[i]); }
 	return str;
 }
+function selectStatement(str, index, beginningCount) {
+	var count = 0;
+	if (beginningCount) { count = beginningCount; }
+	var inited = false;
+	var start = index;
+	var inStrSingle = false;
+	var inStrDouble = false;
+	var inStrTemplate = false;
+	var inStr = function() { return (inStrSingle || inStrDouble || inStrTemplate); }
+	while (true) {
+		if (str[index] == '{' && !inStr()) { inited = true; count++; }
+		if (str[index] == '}' && !inStr()) { count--; }
+		var states = [!inStrSingle && !inStrDouble && !inStrTemplate, inStrSingle && !inStrDouble && !inStrTemplate, !inStrSingle && inStrDouble && !inStrTemplate, !inStrSingle && !inStrDouble && inStrTemplate];
+		if (str[index] == "'" && states[0]) { inStrSingle = true; }
+		if (str[index] == "'" && states[1]) { inStrSingle = false; }
+		if (str[index] == '"' && states[0]) { inStrDouble = true; }
+		if (str[index] == '"' && states[2]) { inStrDouble = false; }
+		if (str[index] == '`' && states[0) { inStrTemplate = true; }
+		if (str[index] == '`' && states[3]) { inStrTemplate = false; }
+		if (count <= 0 && inited) { break; } 
+		index++;
+	}
+	return str.slice(start, index) + '}';
+}
 
 Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
 	if (Game.Objects['Wizard tower'].minigameLoaded) {
