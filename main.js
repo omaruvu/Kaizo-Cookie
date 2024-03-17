@@ -318,7 +318,7 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in Game.buffs) { count++; }
 			return count;
 		}
-		Game.registerHook('check', decay.checkRefreshes);
+		//Game.registerHook('check', decay.checkRefreshes);
 		decay.checkTriggerNotifs = function() {
 			if (Game.drawT % 10 != 0) { return false; }
 			if (decay.unlocked) { decay.triggerNotif('initiate'); }
@@ -328,7 +328,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
 			if (Game.buffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
 		}
-		Game.registerHook('check', decay.checkTriggerNotifs);
+		//Game.registerHook('check', decay.checkTriggerNotifs);
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes["golden"].popFunc.toString().replace("if (me.wrath) Game.Win('Wrath cookie');", "if (me.wrath) { decay.triggerNotif('wrath'); Game.Win('Wrath cookie'); }"))
 		
