@@ -301,7 +301,7 @@ Game.registerMod("Kaizo Cookies", {
 				if (eval(decay.notifCalls[key])) { return true; } else { decay.notifCalls[key] = 1; } 
 			}
 			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, (eval(decay.notifs[key].first)?1e21:6), false, true);
-			eval(decay.prefs.firstNotif[key]+'=0;');
+			decay.prefs.firstNotif[key] = 0;
 		}
 		decay.refreshTrigger = function(key) {
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') {
