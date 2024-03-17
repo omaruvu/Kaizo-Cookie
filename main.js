@@ -41,6 +41,18 @@ function selectStatement(str, index, beginningCount) {
 	}
 	return str.slice(start, index) + '}';
 }
+function geometricMean(arr) {
+	var exp = 0;
+	for (let i in arr) {
+		exp += Math.floor(Math.log10(arr[i]));
+		arr[i] /= Math.floor(Math.log10(arr[i]));
+	}
+	var mantissa = 1;
+	for (let i in arr) {
+		mantissa *= arr[i];
+	}
+	return Math.pow(mantissa, 1 / arr.length) * Math.pow(10, exp / arr.length);
+}
 
 Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
 	if (Game.Objects['Wizard tower'].minigameLoaded) {
@@ -70,20 +82,23 @@ Game.registerMod("Kaizo Cookies", {
 		//the decay object is declared outside of the mod object for conveience purposes
 		//decay: a decreasing multiplier to buildings, and theres a different mult for each building. The mult decreases the same way for each building tho
 		decay.mults = []; for (let i in Game.Objects) { decay.mults.push(1); } 
-		decay.mults.push(1); //the "general multiplier", is just used for checks elsewhere
+		decay.mults.push(1); //the "general multiplier", is just used for checks elsewhere (and "egg")
 		decay.incMult = 0.04; //decay mult is decreased by this multiplicative every second
 		decay.min = 0.15; //the minimum power that the update function uses; the lower it is, the slower the decay will pick up
 		decay.halt = 1; //simulates decay stopping from clicking
-		decay.haltOvertime = 0;
-		decay.haltOTLimit = 2; //OT stands for overtime
+		decay.haltOvertime = 0; //each halt, a fraction of the halt time is added to this; overtime will be expended when the main halt time runs out, but overtime is less effective at stopping decay
+		decay.haltOTLimit = 4; //OT stands for overtime
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5; //how quickly decay recovers from halt
-		decay.haltKeep = 0.2; //the fraction of halt time that is kept when halted again
-		decay.wrinklerSpawnThreshold = 0.8;
+		decay.haltKeep = 0.25; //the fraction of halt time that is kept when halted again
+		decay.haltOTDec = 0.5; //"halt overtime decrease", decHalt also applies to overtime but multiplied by this
+		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
+		decay.wrinklerSpawnThreshold = 0.8; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery'];
+		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
 		decay.justMult = 0; //debugging use
 		decay.infReached = false;
 		decay.prefs = {
@@ -94,7 +109,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Purity vaccines')) { return 1; }
 			var c = decay.mults[buildId];
 			var godz = Game.hasBuff('Devastation').arg2; if (!godz) { godz = 1; }
-    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * 0.75, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * tickSpeed);
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen(), 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * tickSpeed);
 			return c;
 		} 
 		decay.updateAll = function() {
@@ -146,12 +161,13 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			Game.recalculateGains = 1;
 		}
+		//stands for "regain acceleration"
 		decay.regainAcc = function() { 
     		decay.halt = Math.max(0, decay.halt - decay.decHalt / Game.fps);
 			if (decay.halt == 0) {
 				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt / Game.fps);
 			} else {
-				decay.haltOvertime = Math.max(0, decay.haltOvertime - (decay.decHalt / 2) / Game.fps);
+				decay.haltOvertime = Math.max(0, decay.haltOvertime - (decay.decHalt * decay.haltOTDec) / Game.fps);
 			}
 		}
 		decay.stop = function(val) {
@@ -177,13 +193,16 @@ Game.registerMod("Kaizo Cookies", {
 		
 		decay.getDec = function() {
 			if (decay.cpsList.length < Game.fps * 1.5) { return ''; }
-			var num = ((decay.cpsList[decay.cpsList.length - 1] + decay.cpsList[decay.cpsList.length - 2] + decay.cpsList[decay.cpsList.length - 3]) / 3);
+			/*
+			var num = 0;
 			for (let i = Game.fps / 2 + 1; i < Game.fps * 1.5; i++) {
 				num += decay.cpsList[i];
 			}
 			num /= 30;
 			var num = (1 - num / decay.cpsList[0]) * 100;
 			var str = num.toFixed(2);
+			*/
+			var str = geometricMean(decay.cpsList.slice(Game.fps * 1.5, decay.cpsList.length)).toFixed(2);
 			if (str.includes('-')) {
 				str = str.replace('-', '+');
 			} else {
