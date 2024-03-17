@@ -523,9 +523,11 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
+			/*
 			if (Game.T % 5 == 0) {
 				console.log('Current veil HP: '+Game.veilHP);
 			}
+			*/
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
 				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
@@ -574,17 +576,16 @@ Game.registerMod("Kaizo Cookies", {
 			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.25)
 		}
 		Game.veilParticleFailChance = function() {
-			//return 1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.25);
-			return 0.1;
+			return 1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.25);
 		}
 		Game.veilRevolveFactor = function() {
-			return 0.05 * Math.pow(Game.veilHP / Game.veilMaxHP, 0.5);
+			return 0.06 * Math.pow(Game.veilHP / Game.veilMaxHP, 0.5);
 		}
 		Game.veilParticleSizeMax = function() {
-			return 48 * (Game.veilHP / Game.veilMaxHP);
+			return 64 * Math.pow((Game.veilHP / Game.veilMaxHP), 0.5);
 		}
 		Game.veilParticleSpeed = function() {
-			return 32 * Math.pow(Game.veilHP / Game.veilMaxHP, 0.5);
+			return 64 * Math.pow(Game.veilHP / Game.veilMaxHP, 0.5);
 		}
 		veilDraw = veilDraw.replace('ctx.globalAlpha=1;', 'ctx.globalAlpha=Game.veilOpacity();');
 		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
