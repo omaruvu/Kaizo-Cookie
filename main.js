@@ -298,7 +298,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (eval(decay.notifs[key].pref)) { console.log('Corresponding pref not found.'); return false; }
 			if (!decay.unlocked) { return false; }
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { 
-				if (eval(decay.notifCalls[key])) { return true; } else { decay.notifCalls[key] = 1; } 
+				if (eval(decay.notifCalls[key])) { return true; } else { decay.notifCalls[key] = 1; /*I kinda give up*/ } 
 			}
 			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, (eval(decay.notifs[key].first)?1e21:6), false, true);
 			decay.prefs.firstNotif[key] = 0;
