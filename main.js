@@ -497,6 +497,9 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilAbsorbFactor = 2; //the more it is, the longer lasting the veil will be against decay
 		Game.updateVeil = function() {
 			if (!Game.Has('Shimmering veil')) { return false; }
+			if (Game.T % 15) {
+				console.log('Current veil HP: '+Game.veilHP);
+			}
 			if (Game.veilOn()) { 
 				var share = Math.pow(Game.getVeilBoost(), Game.veilAbsorbFactor);
 				Game.veilHP *= Math.pow(decay.update(20, share) / decay.gen(), 1 / Game.fps); //honestly idk what the difference is exactly between using pow and using division
@@ -523,9 +526,6 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Notify('Veil restored!', 'Your Shimmering Veil has recovered from the collapse, but your next activation will require more cookies.')
 				}
 				return true;
-			}
-			if (Game.T % 15) {
-				console.log('Current veil HP: '+Game.veilHP);
 			}
 		}
 		Game.veilRestoreC = 0;
