@@ -1238,7 +1238,7 @@ Game.registerMod("Kaizo Cookies", {
           str+=i.unlocked; //using comma works like that in python but not js
           str+=i.bought; //seperating them otherwise it adds 1+1 and not "1"+"1"
         }
-		str+='/'
+		str+='/';
 		for (let i = 0; i < 20; i++) {
 			str += decay.mults[i]; 
 			str += ',';
@@ -1269,8 +1269,8 @@ Game.registerMod("Kaizo Cookies", {
     },
     load: function(str){
 		//resetting stuff
-		/*
 		console.log('Kaizo Cookies loaded. Save string: '+str);
+		/*
 		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif]
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
