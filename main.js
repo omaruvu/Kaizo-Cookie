@@ -180,9 +180,9 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
-				if (godLvl == 1) { tickSpeed *= 0.4; }
-				else if (godLvl == 2) { tickSpeed *= 0.55; }
-				else if (godLvl == 3) { tickSpeed *= 0.7; }
+				if (godLvl == 1) { tickSpeed *= 0.7; }
+				else if (godLvl == 2) { tickSpeed *= 0.8; }
+				else if (godLvl == 3) { tickSpeed *= 0.9; }
 			}
 			if (Game.hasBuff('Devastation').arg2) { tickSpeed *= Game.hasBuff('Devastation').arg2; }
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
@@ -338,7 +338,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			fthof: {
 				title: 'Force the Hand of Fate',
-				desc: 'Notice: Force the Hand of Fate has had its effect pool adjusted and two effects have been removed from the pools (namely, building special and elder frenzy). Planners may not be accurate.',
+				desc: 'Notice: Force the Hand of Fate has had its effect pool adjusted and two effects have been removed from the pools (namely, building special and elder frenzy). Planners may not be accurate.<br>(Also, Golden cookies spawned by it does not purify decay.)',
 				icon: [22, 11],
 				pref: 'decay.prefs.preventNotifs.fthof',
 				first: 'decay.prefs.firstNotif.fthof',
@@ -564,7 +564,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(2.5, 0.5, 5); decay.stop(4);'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (me.force == "") { decay.purifyAll(2.5, 0.5, 5); decay.stop(4); }'));
 		decay.clickBCStop = function() {
 			decay.stop(0.5);
 		}
@@ -609,7 +609,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.pledges++;
 			Game.pledgeT=Game.getPledgeDuration();
 			Game.Unlock('Elder Covenant');
-			decay.stop(10);
+			decay.stop(10 + 20 * Game.Has('Uranium rolling pins'));
 			Game.storeToRefresh=1;
 		}
 		Game.Upgrades['Elder Pledge'].priceFunc = function() {
@@ -1177,9 +1177,9 @@ Game.registerMod("Kaizo Cookies", {
 				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [8, 64])+'</span>';
 
 				addLoc('Decay propagation rate -%1%.')
-				temp.gods['asceticism'].desc1='<span class="green">'+loc("+%1% base CpS.",15)+' '+loc('Decay propagation rate -%1%.', 60)+'</span>';
-				temp.gods['asceticism'].desc2='<span class="green">'+loc("+%1% base CpS.",10)+' '+loc('Decay propagation rate -%1%.', 45)+'</span>';
-				temp.gods['asceticism'].desc3='<span class="green">'+loc("+%1% base CpS.",5)+' '+loc('Decay propagation rate -%1%.', 30)+'</span>';
+				temp.gods['asceticism'].desc1='<span class="green">'+loc("+%1% base CpS.",15)+' '+loc('Decay propagation rate -%1%.', 30)+'</span>';
+				temp.gods['asceticism'].desc2='<span class="green">'+loc("+%1% base CpS.",10)+' '+loc('Decay propagation rate -%1%.', 20)+'</span>';
+				temp.gods['asceticism'].desc3='<span class="green">'+loc("+%1% base CpS.",5)+' '+loc('Decay propagation rate -%1%.', 10)+'</span>';
 
                 //Making Cyclius display the nerf?
 				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"));
@@ -1237,6 +1237,11 @@ Game.registerMod("Kaizo Cookies", {
 			Game.PrestigeUpgrades.push(Game.Upgrades['Unshackled Elder Pledge'])
 			Game.last.posY=195,Game.last.posX=610
 			
+			this.achievements.push(new Game.Upgrade('Uranium rolling pins', ('The Elder Pledge halts decay for <b>3</b> times longer on use.')+('<q>Radiation, my superpower!</q>'), 900000000000000, [4, 1, custImg])); Game.last.pool='prestige'; 
+			Game.Upgrades['Uranium rolling pins'].parents=[Game.Upgrades['Cat ladies']];
+			Game.PrestigeUpgrades.push(Game.Upgrades['Uranium rolling pins']);
+			Game.last.posY=-740; Game.last.posX=800;
+			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
 			Game.Upgrades['Cursedor [inactive]'].order=14000
@@ -1245,6 +1250,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Purity vaccines'].order=1;
 			Game.Upgrades['Unshackled Purity'].order=770;
 			Game.Upgrades['Unshackled Elder Pledge'].order=771;
+			Game.Upgrades['Uranium rolling pins'].order=274;
 			LocalizeUpgradesAndAchievs();
 	
 		}
