@@ -184,6 +184,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.hasBuff('Devastation').arg2) { tickSpeed *= Game.hasBuff('Devastation').arg2; }
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
 			tickSpeed *= Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1));
+			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
 
 			return tickSpeed;
 		}
@@ -197,6 +198,16 @@ Game.registerMod("Kaizo Cookies", {
 		decay.purifyAll = function(mult, close, cap) {
 			for (let i in decay.mults) {
 				decay.purify(i, mult, close, cap);
+			}
+			if (Game.hasGod) {
+				var godLvl = Game.hasGod('creation');
+				if (godLvl == 1) {
+					Game.gainBuff('creation storm', 4, 0.72);
+				} else if (godLvl == 2) {
+					Game.gainBuff('creation storm', 16, 0.24);
+				} else if (godLvl == 3) {
+					Game.gainBuff('creation storm', 64, 0.08);
+				}
 			}
 		}
 		decay.refresh = function(buildId, to) { 
@@ -538,6 +549,18 @@ Game.registerMod("Kaizo Cookies", {
 			decay.refreshAll(10);
 		}
 		Game.registerHook('reincarnate', decay.reincarnateBoost);
+		addLoc('Decay propagation rate -%1% for %2!');
+		new Game.buffType('creation storm', function(time, pow) {
+			return {
+				name: 'Storm of creation',
+				desc: loc('Decay propagation rate -%1% for %2!', [pow, Game.sayTime(time*Game.fps,-1)]),
+				icon: [30, 5],
+				time: time*Game.fps,
+				add: false,
+				max: true,
+				aura: 1
+			}
+		});
 		
 		//purification: elder pledge & elder covenant
 		for (let i in Game.UpgradesByPool['tech']) {
@@ -1122,7 +1145,7 @@ Game.registerMod("Kaizo Cookies", {
 				addLoc('-%1% decay for %2 seconds.')
 				temp.gods['creation'].descBefore='<span class="green">'+loc('Purifying decay grants a buff that weakens decay.')+'</span>';
 				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [72, 4])+'</span>';
-				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [27, 16])+'</span>';
+				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [24, 16])+'</span>';
 				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [8, 64])+'</span>';
 
 				addLoc('Decay propagation rate -%1%.')
