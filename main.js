@@ -488,9 +488,9 @@ Game.registerMod("Kaizo Cookies", {
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen, decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 60)/Game.fps; }'));
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Game.cookiesPs)/Game.fps; }'));
 		/*wrinkler pop*/ eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('Game.Earn(me.sucked);', 'Game.cookies = Math.max(0, Game.cookies - me.sucked); if (me.sucked > 0.5) { decay.triggerNotif("wrinkler"); }'))
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('var suckRate=1/20;', 'var suckRate=1/2;').replace('Game.cpsSucked=Math.min(1,sucking*suckRate);', 'Game.cpsSucked=1 - Math.min(1,Math.pow(suckRate, sucking));'));
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('var suckRate=1/20;', 'var suckRate=1/2;').replace('Game.cpsSucked=Math.min(1,sucking*suckRate);', 'Game.cpsSucked=1 - Math.min(1,Math.pow(suckRate, sucking)); if (Math.ceil(Game.auraMult("Dragon Guts") - 0.1)) { Game.cpsSucked = 1; }'));
 		Game.registerHook('cookiesPerClick', function(val) { return val * (1 - Game.cpsSucked); }); //withering affects clicking
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
 		eval('Game.getWrinklersMax='+Game.getWrinklersMax.toString().replace(`n+=Math.round(Game.auraMult('Dragon Guts')*2);`, ''));
@@ -505,7 +505,7 @@ Game.registerMod("Kaizo Cookies", {
 			decay.stop(0.5);
 		}
 		Game.registerHook('click', decay.clickBCStop);
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`ious corruption')) toSuck*=1.05;`, `ious corruption')) toSuck*=1.05; decay.stop(2 * Math.max((1 - Game.auraMult('Dragon Guts')), 0)); `));
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`Game.wrinklersPopped++;`, `Game.wrinklersPopped++; if (!me.close) { decay.stop(2 * Math.max((1 - Game.auraMult('Dragon Guts')), 0)); } `));
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(10, 0.8, 3);'));
 		decay.reincarnateBoost = function() {
 			decay.stop(20);
@@ -972,8 +972,6 @@ Game.registerMod("Kaizo Cookies", {
 
 		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`list.push('blood frenzy','chain cookie','cookie storm');`,`if (Math.random()<Game.auraMult('Unholy Dominion')){list.push('blood frenzy')}if (Game.auraMult('Unholy Dominion')>1) {if (Math.random()<Game.auraMult('Unholy Dominion')-1){list.push('blood frenzy')}}`));//Unholy Dominion pushes another EF to the pool making to so they are twice as common
 
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`suckRate*=1+Game.auraMult('Dragon Guts')*0.2;`, 'if (Game.auraMult("Dragon Guts")) { suckRate = 1; }'));
-
 		eval('Game.GetHeavenlyMultiplier='+Game.GetHeavenlyMultiplier.toString().replace("heavenlyMult*=1+Game.auraMult('Dragon God')*0.05;","heavenlyMult*=1+Game.auraMult('Dragon God')*0.20;"));
 
 		eval(`Game.shimmerTypes['golden'].popFunc=`+Game.shimmerTypes['golden'].popFunc.toString().replace(`if (Math.random()<Game.auraMult('Dragonflight')) list.push('dragonflight');`,`if (Math.random()<Game.auraMult('Dragonflight')) list.push('dragonflight'); if (Math.random()<Game.auraMult('Ancestral Metamorphosis')) { for (let i = 0; i < 10; i++) { list.push('Ancestral Metamorphosis'); } }`));//Adding custom effect for Ancestral Metamorphosis 
@@ -1271,6 +1269,7 @@ Game.registerMod("Kaizo Cookies", {
     },
     load: function(str){
 		//resetting stuff
+		/*
 		console.log('Kaizo Cookies loaded. Save string: '+str);
 		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif]
 		if (str[0][0] == 'v') {
@@ -1332,5 +1331,6 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 	    Game.storeToRefresh=1;
+	 */
     }
 });
