@@ -309,7 +309,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		decay.checkRefreshes = function() {
-			if (decay.unlocked) { decay.notifCalls['initiate'] = 0; }
+			if (!decay.unlocked) { decay.notifCalls['initiate'] = 0; }
 			if (decay.gen <= 1.2) { decay.notifCalls['purity'] = 0; }
 			if (decay.gen > 0.5) { decay.notifCalls['gpoc'] = 0; }
 			if (decay.incMult < 0.04) { decay.notifCalls['decayII'] = 0; }
@@ -1273,6 +1273,7 @@ Game.registerMod("Kaizo Cookies", {
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
 		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif]
+	    	/*
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
@@ -1281,11 +1282,9 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			Game.Lock('Shimmering veil [broken]'); 
 			var strIn = str[2].split(',');
-			/*
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
 			}
-   			*/
 			strIn = str[3].split(',');
 			decay.halt = parseFloat(strIn[0]);
 			decay.haltOvertime = parseFloat(strIn[1]);
@@ -1333,6 +1332,7 @@ Game.registerMod("Kaizo Cookies", {
             	this.achievements[i].bought=Number(str[(2*i)+1]); //+1 for the second value	
 			}
 		}
+  	*/
 	    Game.storeToRefresh=1;
     }
 });
