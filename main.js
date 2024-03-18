@@ -194,7 +194,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.purify = function(buildId, mult, close, cap, uncapped) {
 			if (decay.mults[buildId] >= cap) { 
 				if (!uncapped) { return true; } else {
-					mult /= Math.pow(mults[buildId] / cap, decay.pastCapPow);
+					mult /= Math.pow(mult[buildId] / cap, decay.pastCapPow);
 				}
 			}
 			if (uncapped && decay.mults[buildId] * mult >= cap && !(decay.mults[buildId] >= cap)) {
