@@ -207,7 +207,7 @@ Game.registerMod("Kaizo Cookies", {
 				decay.mults[buildId] = cap; return true; 	
 			}
 			if (decay.mults[buildId] < 1) { 
-				decay.mults[buildId] *= Math.pow(10, (1 - Math.log10(decay.mults[buildId]), 1) * close);
+				decay.mults[buildId] *= Math.pow(10, Math.log10(decay.mults[buildId]) * close);
 			}
 			if (decay.mults[buildId] > cap && !uncapped) { decay.mults[buildId] = cap; }
 		}
