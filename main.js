@@ -553,7 +553,7 @@ Game.registerMod("Kaizo Cookies", {
 		new Game.buffType('creation storm', function(time, pow) {
 			return {
 				name: 'Storm of creation',
-				desc: loc('Decay propagation rate -%1% for %2!', [pow, Game.sayTime(time*Game.fps,-1)]),
+				desc: loc('Decay propagation rate -%1% for %2!', [pow * 100, Game.sayTime(time*Game.fps,-1)]),
 				icon: [30, 5],
 				time: time*Game.fps,
 				add: false,
