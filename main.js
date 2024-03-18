@@ -1293,16 +1293,16 @@ Game.registerMod("Kaizo Cookies", {
 				console.log(str[5]);
 				Game.veilHP = parseFloat(strIn[0]); 
 				if (Game.Has('Shimmering veil')) { 
-
+					Game.Logic();
 					if (strIn[1] == 'on') {
 						Game.Upgrades['Shimmering veil [off]'].earn();
 						Game.Lock('Shimmering veil [on]'); Game.Unlock('Shimmering veil [on]'); 
 						Game.Lock('Shimmering veil [broken]');
 						console.log('veil on!');
 					} else if (strIn[1] == 'off') {
-						//Game.Upgrades['Shimmering veil [on]'].earn();
-						//Game.Lock('Shimmering veil [off]'); Game.Unlock('Shimmering veil [off]'); 
-						//Game.Upgrades['Shimmering veil [broken]'].unlocked = 0;
+						Game.Upgrades['Shimmering veil [on]'].earn();
+						Game.Lock('Shimmering veil [off]'); Game.Unlock('Shimmering veil [off]'); 
+						Game.Upgrades['Shimmering veil [broken]'].unlocked = 0;
 						console.log('veil off!');
 					} else {
 						Game.Lock('Shimmering veil [on]'); Game.Lock('Shimmering veil [off]');
