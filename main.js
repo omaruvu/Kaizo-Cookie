@@ -1277,8 +1277,6 @@ Game.registerMod("Kaizo Cookies", {
             	this.achievements[i / 2].unlocked=Number(str[1][i]); 
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
-			//Game.Lock('Shimmering veil [broken]'); //how tf is this making cookies NaN
-			console.log(Game.Upgrades['Shimmering veil [broken]'].descFunc.toString());
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
@@ -1290,9 +1288,10 @@ Game.registerMod("Kaizo Cookies", {
 			Game.pledgeT = parseFloat(strIn[0]);
 			Game.pledgeC = parseFloat(strIn[1]);
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
-			/*
 			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 1) {
 				strIn = str[5].split(',');
+				console.log(str[5]);
+				/*
 				Game.veilHP = parseFloat(strIn[0]); 
 				if (Game.Has('Shimmering veil')) { 
 					if (strIn[1] == 'on') {
@@ -1310,8 +1309,8 @@ Game.registerMod("Kaizo Cookies", {
 				}
 				Game.veilRestoreC = parseFloat(strIn[2]);
 				Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
+				*/
 			}
-   			*/
 			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 2) {
 				var counter = 0;
 				strIn = str[6].split(',');
