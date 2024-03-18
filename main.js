@@ -1281,9 +1281,11 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			Game.Lock('Shimmering veil [broken]'); 
 			var strIn = str[2].split(',');
+			/*
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
 			}
+   			*/
 			strIn = str[3].split(',');
 			decay.halt = parseFloat(strIn[0]);
 			decay.haltOvertime = parseFloat(strIn[1]);
