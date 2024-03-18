@@ -1312,7 +1312,6 @@ Game.registerMod("Kaizo Cookies", {
 				Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
 			}
    			*/
-   			/*
 			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 2) {
 				var counter = 0;
 				strIn = str[6].split(',');
@@ -1326,7 +1325,6 @@ Game.registerMod("Kaizo Cookies", {
 					counter++;
 				}
 			}
-			*/
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
