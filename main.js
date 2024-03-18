@@ -52,11 +52,10 @@ function geometricMean(arr) {
 	return Math.exp(sum) //wtf is an antilog
 }
 
-Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
-	if (Game.Objects['Wizard tower'].minigameLoaded) {
-		var gp = Game.Objects['Wizard tower'].minigame //acts as proxy for the replaced functions
-	}
-});
+var gp = Game.Objects['Wizard tower'].minigame //grimoire proxy
+var gap = Game.Objects['Farm'].minigame //garden proxy
+var grimoireUpdated = false;
+var gardenUpdated = false;
 
 Game.registerMod("Kaizo Cookies", { 
 	init: function() { 
@@ -145,7 +144,7 @@ Game.registerMod("Kaizo Cookies", {
 			return c;
 		} 
 		decay.updateAll = function() {
-			if (Game.cookiesEarned <= 1000) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
+			if (Game.cookiesEarned <= 5555) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
 			for (let i in decay.mults) {
 				var c = decay.update(i, (Game.veilOn()?(1 - Game.getVeilBoost()):1));
 				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
@@ -204,7 +203,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		decay.stop = function(val) {
-			decay.halt = val;
+			decay.halt = val * Game.effs['haltPower'];
 			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltKeep); 
 		}
  		decay.get = function(buildId) {
@@ -461,10 +460,10 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`{Game.cookiesPs+=9;Game.cookiesPsByType['"egg"']=9;}`,`{Game.cookiesPs+=9*decay.gen;Game.cookiesPsByType['"egg"']=9*decay.gen;}`));
 		eval("Game.shimmerTypes['golden'].initFunc="+Game.shimmerTypes['golden'].initFunc.toString()
-			 .replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ' || ((!Game.Has("Elder Covenant")) && Math.random() > Math.pow(decay.gen, decay.wcPow))'));
+			 .replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ' || ((!Game.Has("Elder Covenant")) && Math.random() > Math.pow(decay.gen, decay.wcPow * Game.effs["wrathReplace"]))'));
 		addLoc('+%1/min');
 		Game.registerHook('check', () => {
-			if (Game.Objects['Wizard tower'].minigameLoaded) {
+			if (Game.Objects['Wizard tower'].minigameLoaded && !grimoireUpdated) {
 				var gp = Game.Objects['Wizard tower'].minigame
 				var M = gp;
 				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
@@ -474,7 +473,7 @@ Game.registerMod("Kaizo Cookies", {
 					.replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
 						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from "+decay.term(decay.gen)+": "+decay.effectStrs([function(n, i) { return Math.pow(Math.min(2, n), 0.3)}]); `));
 				eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));		
-				
+				grimoireUpdated = true; //no more unnecessary replacing 
 			}
 		});
 		function inRect(x,y,rect)
@@ -491,7 +490,7 @@ Game.registerMod("Kaizo Cookies", {
 			return false;
 		}
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen, decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*Game.effs["wrinklerApproach"]*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Game.cookiesPs)/Game.fps; }'));
 		/*wrinkler pop*/ eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('Game.Earn(me.sucked);', 'Game.cookies = Math.max(0, Game.cookies - me.sucked); if (me.sucked > 0.5) { decay.triggerNotif("wrinkler"); }'))
@@ -505,13 +504,13 @@ Game.registerMod("Kaizo Cookies", {
 
 		
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.5 / 1.5, 1.5); decay.stop(4);'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(2.5, 0.5, 5); decay.stop(4);'));
 		decay.clickBCStop = function() {
 			decay.stop(0.5);
 		}
 		Game.registerHook('click', decay.clickBCStop);
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`Game.wrinklersPopped++;`, `Game.wrinklersPopped++; if (!me.close) { decay.stop(2 * Math.max((1 - Game.auraMult('Dragon Guts')), 0)); } `));
-		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(10, 0.8, 3);'));
+		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(1, 0.8, 3);'));
 		decay.reincarnateBoost = function() {
 			decay.stop(20);
 			decay.refreshAll(10);
@@ -811,7 +810,7 @@ Game.registerMod("Kaizo Cookies", {
 
         //Garden changes
 		Game.registerHook('check', () => {
-			if (Game.Objects['Farm'].minigameLoaded) {
+			if (Game.Objects['Farm'].minigameLoaded && !gardenUpdated) {
 		        M=Game.Objects['Farm'].minigame//Declaring M.soilsById so computeEffs works (this took hours to figure out)
 		        M.soilsById.soilsById = [];
 		        var n = 0;
@@ -873,6 +872,17 @@ Game.registerMod("Kaizo Cookies", {
 				Game.Objects['Farm'].minigame.tools['convert'].desc=loc("A swarm of sugar hornets comes down on your garden, <span class=\"red\">destroying every plant as well as every seed you've unlocked</span> - leaving only a %1 seed.<br>In exchange, they will grant you <span class=\"green\">%2</span>.<br>This action is only available with a complete seed log.",[loc("Baker's wheat"),loc("%1 sugar lump",LBeautify(15))]);
 				eval("Game.Objects['Farm'].minigame.askConvert="+Game.Objects['Farm'].minigame.askConvert.toString().replace("10","15"));
 				eval("Game.Objects['Farm'].minigame.convert="+Game.Objects['Farm'].minigame.convert.toString().replace("10","15"));
+
+				eval('M.computeEffs='+M.computeEffs.toString().replace('buildingCost:1,', 'buildingCost:1, wrinklerApproach:1, wrathReplace:1, haltPower:1').replace(`else if (name=='wardlichen') {effs.wrinklerSpawn*=1-0.15*mult;effs.wrathCookieFreq*=1-0.02*mult;}`, `else if (name=='wardlichen') {effs.haltPower+=0.02*mult; effs.wrathReplace*=1-0.02*mult;}`).replace(`else if (name=='wrinklegill') {effs.wrinklerSpawn+=0.02*mult;effs.wrinklerEat+=0.01*mult;}`,`else if (name=='wrinklegill') {effs.wrinklerApproach*=1-0.05*mult;}`).replace(`effs.wrathCookieGain+=0.01*mult;effs.wrathCookieFreq+=0.01*mult;`,`eff.wrinklerApproach*=1-0.02*mult; eff.haltPower+=0.01*mult;`));
+				addLoc('all decay-halting sources\' effect');
+				addLoc('wrath cookies replacement');
+				addLoc('wrinklers approach speed');
+				addLoc('decay-halting power');
+				M.plants['wardlichen'].effsStr='<div class="green">&bull; '+loc("all decay-halting sources' effect")+' +2%</div><div class="gray">&bull; '+loc("wrath cookies replacement")+' -2%</div>';
+				M.plants['wrinklegill'].effsStr='<div class="green">&bull; '+loc("wrinklers approach speed")+' -5%</div>';
+				M.plants['elderwort'].effsStr='<div class="green">&bull; '+loc("wrinklers approach speed")+' -2%</div><div class="green">&bull; '+loc("all decay-halting source' effect")+' +1%</div><div class="green">&bull; '+loc("%1 CpS",Game.Objects['Grandma'].single)+' +1%</div><div class="green">&bull; '+loc("immortal")+'</div><div class="gray">&bull; '+loc("surrounding plants (%1x%1) age %2% faster",[3,3])+'</div>';
+				eval("M.tools['info'].descFunc="+M.tools['info'].descFunc.toString().replace(`buildingCost:{n:'building costs',rev:true},`, `buildingCost:{n:'building costs',rev:true}, wrinklerApproach:{n:'wrinklers approach speed'}, wrathReplace:{n:'wrath cookies replacement'}, haltPower:{n:'decay-halting power'}`));
+				gardenUpdated = true; 
 			}
 		});
 	
