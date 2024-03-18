@@ -345,7 +345,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		decay.triggerNotif = function(key) {
-			if (eval(decay.notifs[key].pref)) { console.log('Corresponding pref not found.'); return false; }
+			if (eval(decay.notifs[key].pref)) { console.log('Corresponding pref not found. Input: '+key); return false; }
 			if (!decay.unlocked) { return false; }
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { 
 				if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); } 
