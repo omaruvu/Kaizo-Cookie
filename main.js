@@ -8,7 +8,9 @@ function replaceDesc(name, toReplaceWith) {
 	Game.Upgrades[name].ddesc = toReplaceWith;
 }
 function addLoc(str) {
-	locStrings[str] = str;
+	if (!locStrings.includes(str)) { 
+		locStrings[str] = str;
+	}
 }
 function getVer(str) {
 	if (str[0] !== 'v') { return false; }
@@ -560,6 +562,13 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('cookiesPerClick', function(val) { return val * (1 - Game.cpsSucked); }); //withering affects clicking
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
 		eval('Game.getWrinklersMax='+Game.getWrinklersMax.toString().replace(`n+=Math.round(Game.auraMult('Dragon Guts')*2);`, ''));
+		Game.getWrinklersMax = function() {
+			var n = 12;
+			if (Game.Has('Elder spice')) { n -= 2; }
+			return n;
+			//maybe make decay increase wrinkler cap?
+		}
+		replaceDesc('Elder spice', 'You attracts <b>2</b> less wrinklers.');
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen)) } else { buff.time--; }'));
 
 		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
@@ -571,7 +580,7 @@ Game.registerMod("Kaizo Cookies", {
 			decay.stop(0.5);
 		}
 		Game.registerHook('click', decay.clickBCStop);
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`Game.wrinklersPopped++;`, `Game.wrinklersPopped++; if (!me.close) { decay.stop(2 * Math.max((1 - Game.auraMult('Dragon Guts')), 0)); } `));
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`Game.wrinklersPopped++;`, `Game.wrinklersPopped++; if (me.phase == 1) { decay.stop(2 * Math.max((1 - Game.auraMult('Dragon Guts')), 0)); } `));
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(1, 0.8, 3);'));
 		decay.reincarnateBoost = function() {
 			decay.stop(20);
