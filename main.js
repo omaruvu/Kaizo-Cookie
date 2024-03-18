@@ -145,7 +145,7 @@ Game.registerMod("Kaizo Cookies", {
 			return c;
 		} 
 		decay.updateAll = function() {
-			if (Game.cookiesEarned <= 1000) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
+			if (Game.cookiesEarned <= 5555) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
 			for (let i in decay.mults) {
 				var c = decay.update(i, (Game.veilOn()?(1 - Game.getVeilBoost()):1));
 				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
@@ -505,13 +505,13 @@ Game.registerMod("Kaizo Cookies", {
 
 		
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(3.5, 0.5 / 1.5, 1.5); decay.stop(4);'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); decay.purifyAll(2.5, 0.5 / 1.5, 1.5); decay.stop(4);'));
 		decay.clickBCStop = function() {
 			decay.stop(0.5);
 		}
 		Game.registerHook('click', decay.clickBCStop);
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`Game.wrinklersPopped++;`, `Game.wrinklersPopped++; if (!me.close) { decay.stop(2 * Math.max((1 - Game.auraMult('Dragon Guts')), 0)); } `));
-		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(10, 0.8, 3);'));
+		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(1, 0.8, 1);'));
 		decay.reincarnateBoost = function() {
 			decay.stop(20);
 			decay.refreshAll(10);
