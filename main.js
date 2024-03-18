@@ -8,9 +8,7 @@ function replaceDesc(name, toReplaceWith) {
 	Game.Upgrades[name].ddesc = toReplaceWith;
 }
 function addLoc(str) {
-	if (!locStrings.includes(str)) { 
-		locStrings[str] = str;
-	}
+	locStrings[str] = str;
 }
 function getVer(str) {
 	if (str[0] !== 'v') { return false; }
