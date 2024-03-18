@@ -1277,14 +1277,12 @@ Game.registerMod("Kaizo Cookies", {
             	this.achievements[i / 2].unlocked=Number(str[1][i]); 
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
-			/*
 			Game.Lock('Shimmering veil [broken]'); 
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
 				console.log(strIn[i]);
 			}
-   			*/
 			strIn = str[3].split(',');
 			decay.halt = parseFloat(strIn[0]);
 			decay.haltOvertime = parseFloat(strIn[1]);
