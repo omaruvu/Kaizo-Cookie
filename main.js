@@ -1279,12 +1279,13 @@ Game.registerMod("Kaizo Cookies", {
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
    			*/
+			/*
 			Game.Lock('Shimmering veil [broken]'); 
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
 			}
-			/*
+   			*/
 			strIn = str[3].split(',');
 			decay.halt = parseFloat(strIn[0]);
 			decay.haltOvertime = parseFloat(strIn[1]);
@@ -1292,7 +1293,6 @@ Game.registerMod("Kaizo Cookies", {
 			Game.pledgeT = parseFloat(strIn[0]);
 			Game.pledgeC = parseFloat(strIn[1]);
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
-   			*/
 			/*
 			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 1) {
 				strIn = str[5].split(',');
