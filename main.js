@@ -1277,8 +1277,7 @@ Game.registerMod("Kaizo Cookies", {
             	this.achievements[i / 2].unlocked=Number(str[1][i]); 
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
-			//Game.Lock('Shimmering veil [broken]'); //how tf is this making cookies NaN
-			console.log(typeof Game.Upgrades['Shimmering veil [broken]']);
+			Game.Lock('Shimmering veil [broken]'); //how tf is this making cookies NaN
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
