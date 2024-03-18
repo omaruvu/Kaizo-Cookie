@@ -90,7 +90,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltKeep = 0.25; //the fraction of halt time that is kept when halted again
 		decay.haltOTDec = 0.5; //"halt overtime decrease", decHalt also applies to overtime but multiplied by this
 		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
-		decay.wrinklerSpawnThreshold = 0.8; //above this decay mult, wrinklers can never spawn regardless of chance
+		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.cpsList = [];
@@ -137,16 +137,16 @@ Game.registerMod("Kaizo Cookies", {
 			multipleBuffs: 0
 		}
 		decay.update = function(buildId, tickSpeed) { 
-			if (Game.Has('Purity vaccines')) { return 1; }
+			if (Game.Has('Purity vaccines')) { return decay.mults[buildId]; }
 			var c = decay.mults[buildId];
-			var godz = Game.hasBuff('Devastation').arg2; if (!godz) { godz = 1; }
-    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen,(Game.Has('Unshackled Purity'))?0.6:1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1)) * tickSpeed);
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))) * (Math.max(1, Math.pow(c,(Game.Has('Unshackled Purity'))?0.6:1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), tickSpeed);
 			return c;
 		} 
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 5555) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
+			var t = decay.getTickspeed();
 			for (let i in decay.mults) {
-				var c = decay.update(i, (Game.veilOn()?(1 - Game.getVeilBoost()):1));
+				var c = decay.update(i, t);
 				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
 			}
 			decay.regainAcc();
@@ -171,6 +171,21 @@ Game.registerMod("Kaizo Cookies", {
 			decay.gen = decay.mults[20];
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
+		}
+		decay.getTickspeed = function() {
+			var tickSpeed = 1;
+			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
+			if (Game.hasGod) {
+				var godLvl = Game.hasGod('asceticism');
+				if (godLvl == 1) { tickSpeed *= 0.4; }
+				else if (godLvl == 2) { tickSpeed *= 0.55; }
+				else if (godLvl == 3) { tickSpeed *= 0.7; }
+			}
+			if (Game.hasBuff('Devastation').arg2) { tickSpeed *= Game.hasBuff('Devastation').arg2; }
+			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
+			tickSpeed *= Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1));
+
+			return tickSpeed;
 		}
 		decay.purify = function(buildId, mult, close, cap) {
 			if (decay.mults[buildId] >= cap) { return true; }
@@ -203,7 +218,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 		decay.stop = function(val) {
-			decay.halt = val * Game.effs['haltPower'];
+			decay.halt = val * Game.eff('haltPower');
 			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltKeep); 
 		}
  		decay.get = function(buildId) {
@@ -233,7 +248,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			purity: {
 				title: 'Purity',
-				desc: 'If you can purify all of your decay, any extra purification power will be spent as an increase in CpS. The extra CpS (called "purity") acts as a sacrifical filler for the decay; the more purity you have, the quicker the decay will be in eating through them.',
+				desc: 'If you can purify all of your decay, any extra purification power will be spent as an increase in CpS. The extra CpS (called "purity") acts as a sacrifical buffer for the decay; the more purity you have, the quicker the decay will be in eating through them.',
 				icon: [2, 1, custImg],
 				pref: 'decay.prefs.preventNotifs.purity',
 				first: 'decay.prefs.firstNotif.purity',
@@ -440,7 +455,15 @@ Game.registerMod("Kaizo Cookies", {
 			var w = 1 - 0.8;
 			w *= Math.pow(0.99, Math.log10(c));
 			decay.wrinklerSpawnFactor = 1 - w;
-			decay.wrinklerSpawnThreshold = 1 - w * 3.5;
+			if (Game.hasGod) { 
+				var godLvl = Game.hasGod('scorn');
+				if (godLvl == 1) { decay.wrinklerSpawnThreshold = 1 - Math.pow(w * 3, 0.25); decay.wcPow = 0.25 * 2; }
+				else if (godLvl == 2) { decay.wrinklerSpawnThreshold = 1 - Math.pow(w * 3, 0.33); decay.wcPow = 0.25 * 1.5; }
+				else if (godLvl == 3) { decay.wrinklerSpawnThreshold = 1 - Math.pow(w * 3, 0.5); decay.wcPow = 0.25 * 1.2; }
+				else { decay.wrinklerSpawnThreshold = 1 - w * 3; decay.wcPow = 0.25; }
+			} else {
+				decay.wrinklerSpawnThreshold = 1 - w * 3; decay.wcPow = 0.25;
+			}
 
 			decay.min = Math.min(1, 0.15 + (1 - d) * 3.5);
 
@@ -451,7 +474,6 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.setRates();
 		Game.registerHook('check', decay.setRates);
-
 		
 		//decay's effects
 		Game.registerHook('logic', decay.updateAll);
@@ -459,8 +481,7 @@ Game.registerMod("Kaizo Cookies", {
 			eval('Game.Objects["'+i+'"].cps='+Game.Objects[i].cps.toString().replace('CpsMult(me);', 'CpsMult(me); mult *= decay.get(me.id); '));
 		}
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`{Game.cookiesPs+=9;Game.cookiesPsByType['"egg"']=9;}`,`{Game.cookiesPs+=9*decay.gen;Game.cookiesPsByType['"egg"']=9*decay.gen;}`));
-		eval("Game.shimmerTypes['golden'].initFunc="+Game.shimmerTypes['golden'].initFunc.toString()
-			 .replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ' || ((!Game.Has("Elder Covenant")) && Math.random() > Math.pow(decay.gen, decay.wcPow * Game.effs["wrathReplace"]))'));
+		eval("Game.shimmerTypes['golden'].initFunc="+Game.shimmerTypes['golden'].initFunc.toString().replace(' || (Game.elderWrath==1 && Math.random()<1/3) || (Game.elderWrath==2 && Math.random()<2/3) || (Game.elderWrath==3)', ' || ((!Game.Has("Elder Covenant")) && Math.random() > Math.pow(decay.gen, decay.wcPow * Game.eff("wrathReplace")))'));
 		addLoc('+%1/min');
 		Game.registerHook('check', () => {
 			if (Game.Objects['Wizard tower'].minigameLoaded && !grimoireUpdated) {
@@ -490,9 +511,10 @@ Game.registerMod("Kaizo Cookies", {
 			return false;
 		}
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen, decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*Game.effs["wrinklerApproach"]*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*Game.eff("wrinklerApproach")*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Game.cookiesPs)/Game.fps; }'));
+		eval('Game.UpdateWrinklers='+replaceAll("var godLvl=Game.hasGod('scorn');", 'var godLvl=0;', Game.UpdateWrinklers.toString()));
 		/*wrinkler pop*/ eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('Game.Earn(me.sucked);', 'Game.cookies = Math.max(0, Game.cookies - me.sucked); if (me.sucked > 0.5) { decay.triggerNotif("wrinkler"); }'))
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('var suckRate=1/20;', 'var suckRate=1/2;').replace('Game.cpsSucked=Math.min(1,sucking*suckRate);', 'Game.cpsSucked=1 - Math.min(1,Math.pow(suckRate, sucking)); if (Math.ceil(Game.auraMult("Dragon Guts") - 0.1)) { Game.cpsSucked = 1; }'));
 		Game.registerHook('cookiesPerClick', function(val) { return val * (1 - Game.cpsSucked); }); //withering affects clicking
@@ -1032,8 +1054,8 @@ Game.registerMod("Kaizo Cookies", {
 
         //Nerfing Mokalsium
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("if (godLvl==1) milkMult*=1.1;","if (godLvl==1) milkMult*=1.08;"))
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==2) milkMult*=1.05;","else if (godLvl==2) milkMult*=1.03;"))
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==3) milkMult*=1.03;","else if (godLvl==3) milkMult*=1.01;"))
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==2) milkMult*=1.05;","else if (godLvl==2) milkMult*=1.04;"))
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==3) milkMult*=1.03;","else if (godLvl==3) milkMult*=1.02;"))
 
         //Buffing Mokalsium negative effect
 		eval('Game.shimmerTypes["golden"].getTimeMod='+Game.shimmerTypes['golden'].getTimeMod.toString().replace("if (godLvl==1) m*=1.15;","if (godLvl==1) m*=1.20;"));
@@ -1041,14 +1063,22 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.shimmerTypes["golden"].getTimeMod='+Game.shimmerTypes['golden'].getTimeMod.toString().replace("else if (godLvl==3) m*=1.05;","else if (godLvl==3) m*=1.1;"));
 
         //Buffing Jeremy
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("if (godLvl==1) buildMult*=1.1;","if (godLvl==1) buildMult*=1.15;"))
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==2) buildMult*=1.06;","else if (godLvl==2) buildMult*=1.11;"))
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==3) buildMult*=1.03;","else if (godLvl==3) buildMult*=1.06;"))
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("if (godLvl==1) buildMult*=1.1;","if (godLvl==1) buildMult*=1.2;"))
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==2) buildMult*=1.06;","else if (godLvl==2) buildMult*=1.14;"))
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==3) buildMult*=1.03;","else if (godLvl==3) buildMult*=1.08;"))
+		eval('Game.shimmerTypes["golden"].getTimeMod='+Game.shimmerTypes["golden"].getTimeMod.toString().replace('if (godLvl==1) m*=1.1;', 'if (godLvl==1) m*=1.06;').replace('else if (godLvl==2) m*=1.06;', 'else if (godLvl==2) m*=1.04;').replace('else if (godLvl==3) m*=1.03;', 'else if (godLvl==3) m*=1.02;'))
 
         //Nerfing? Cyclius
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"))
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==2) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"))
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==3) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"))
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"));
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==2) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"));
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace("else if (godLvl==3) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=1+0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"));
+
+		//removes skruuia other functions
+		eval('Game.shimmerTypes["golden"].initFunc='+Game.shimmerTypes["golden"].initFunc.replace("(Game.hasGod && Game.hasGod('scorn'))", 'false'));
+
+		//dotjeiess original functions removal
+		eval('Game.GetHeavenlyMultiplier='+Game.GetHeavenlyMultiplier.toString().replace('Game.hasGod', 'false'));
+		eval('Game.modifyBuildingPrice='+Game.modifyBuildingPrice.toString().replace('Game.hasGod','false'));
 
 		//implementing godzamok change will be so annoying
 		for (let i in Game.Objects) {
@@ -1060,30 +1090,50 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('check', () => {
 			if (Game.Objects['Temple'].minigameLoaded) {
 				//Changing the desc
-				Game.Objects['Temple'].minigame.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[1])+'</span>';
-				Game.Objects['Temple'].minigame.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.5, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.4])+'</span>';
-				Game.Objects['Temple'].minigame.gods['ruin'].desc3='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.25, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.15])+'</span>';
+				var temp = Game.Objects['Temple'].minigame;
+				temp.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[1])+'</span>';
+				temp.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.5, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.4])+'</span>';
+				temp.gods['ruin'].desc3='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.25, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.15])+'</span>';
 
-				Game.Objects['Temple'].minigame.gods['mother'].desc1='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",8)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",20)+'</span>';
-				Game.Objects['Temple'].minigame.gods['mother'].desc2='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",4)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",15)+'</span>';
-				Game.Objects['Temple'].minigame.gods['mother'].desc3='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",2)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",10)+'</span>';
+				temp.gods['mother'].desc1='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",8)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",20)+'</span>';
+				temp.gods['mother'].desc2='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",4)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",15)+'</span>';
+				temp.gods['mother'].desc3='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",2)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",10)+'</span>';
 
-				Game.Objects['Temple'].minigame.gods['labor'].desc1='<span class="green">'+loc("Clicking is <b>%1%</b> more powerful.",25)+'</span> <span class="red">'+loc("Buildings produce %1% less.",3)+'</span>';
-				Game.Objects['Temple'].minigame.gods['labor'].desc2='<span class="green">'+loc("Clicking is <b>%1%</b> more powerful.",20)+'</span> <span class="red">'+loc("Buildings produce %1% less.",2)+'</span>';
-				Game.Objects['Temple'].minigame.gods['labor'].desc3='<span class="green">'+loc("Clicking is <b>%1%</b> more powerful.",15)+'</span> <span class="red">'+loc("Buildings produce %1% less.",1)+'</span>';
+				temp.gods['labor'].desc1='<span class="green">'+loc("Clicking is <b>%1%</b> more powerful.",25)+'</span> <span class="red">'+loc("Buildings produce %1% less.",3)+'</span>';
+				temp.gods['labor'].desc2='<span class="green">'+loc("Clicking is <b>%1%</b> more powerful.",20)+'</span> <span class="red">'+loc("Buildings produce %1% less.",2)+'</span>';
+				temp.gods['labor'].desc3='<span class="green">'+loc("Clicking is <b>%1%</b> more powerful.",15)+'</span> <span class="red">'+loc("Buildings produce %1% less.",1)+'</span>';
 
-				Game.Objects['Temple'].minigame.gods['ages'].desc1=loc("Effect cycles over %1 hours.",12);
-				Game.Objects['Temple'].minigame.gods['ages'].desc2=loc("Effect cycles over %1 hours.",24);
-				Game.Objects['Temple'].minigame.gods['ages'].desc3=loc("Effect cycles over %1 hours.",48);
+				temp.gods['ages'].desc1=loc("Effect cycles over %1 hours.",12);
+				temp.gods['ages'].desc2=loc("Effect cycles over %1 hours.",24);
+				temp.gods['ages'].desc3=loc("Effect cycles over %1 hours.",48);
 
-				Game.Objects['Temple'].minigame.gods['industry'].desc1='<span class="green">'+loc("Buildings produce %1% more.",15)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",10)+'</span>';
-				Game.Objects['Temple'].minigame.gods['industry'].desc2='<span class="green">'+loc("Buildings produce %1% more.",11)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",6)+'</span>';
-				Game.Objects['Temple'].minigame.gods['industry'].desc3='<span class="green">'+loc("Buildings produce %1% more.",6)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",3)+'</span>';
+				temp.gods['industry'].desc1='<span class="green">'+loc("Buildings produce %1% more.",20)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",6)+'</span>';
+				temp.gods['industry'].desc2='<span class="green">'+loc("Buildings produce %1% more.",14)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",4)+'</span>';
+				temp.gods['industry'].desc3='<span class="green">'+loc("Buildings produce %1% more.",8)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",2)+'</span>';
+
+				addLoc('Wrinkler spawning requires %1x more decay.');
+				addLoc('Wrath cookies replaces Golden cookies with %1% less decay.');
+				temp.gods['scorn'].desc1='<span class="green">'+loc('Wrinkler spawning requires %1x more decay.', 4)+'</span> <span class="red">'+loc('Wrath cookies replaces Golden cookies with %1% less decay.', 50);
+				temp.gods['scorn'].desc2='<span class="green">'+loc('Wrinkler spawning requires %1x more decay.', 3)+'</span> <span class="red">'+loc('Wrath cookies replaces Golden cookies with %1% less decay.', 33);
+				temp.gods['scorn'].desc3='<span class="green">'+loc('Wrinkler spawning requires %1x more decay.', 2)+'</span> <span class="red">'+loc('Wrath cookies replaces Golden cookies with %1% less decay.', 20);
+				delete temp.gods['scorn'].descBefore;
+
+				addLoc('Purifying decay grants a buff.');
+				addLoc('-%1% decay for %2 seconds.')
+				temp.gods['creation'].descBefore='<span class="green">'+loc('Purifying decay grants a buff that weakens decay.')+'</span>';
+				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [72, 4])+'</span>';
+				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [27, 16])+'</span>';
+				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [8, 64])+'</span>';
+
+				addLoc('Decay propagation rate -%1%.')
+				temp.gods['asceticism'].desc1='<span class="green">'+loc("+%1% base CpS.",15)+' '+loc('Decay propagation rate -%1%.', 60)+'</span>';
+				temp.gods['asceticism'].desc1='<span class="green">'+loc("+%1% base CpS.",10)+' '+loc('Decay propagation rate -%1%.', 45)+'</span>';
+				temp.gods['asceticism'].desc1='<span class="green">'+loc("+%1% base CpS.",5)+' '+loc('Decay propagation rate -%1%.', 30)+'</span>';
 
                 //Making Cyclius display the nerf?
-				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"))
-				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"))
-                eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"))
+				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"));
+				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"));
+                eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"));
 			}
 		});
 
