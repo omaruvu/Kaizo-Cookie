@@ -93,6 +93,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
+		decay.pastCapPow = 0.75; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
@@ -113,7 +114,8 @@ Game.registerMod("Kaizo Cookies", {
 				decayII: 0,
 				veil: 0,
 				buff: 0,
-				multipleBuffs: 0
+				multipleBuffs: 0,
+				fthof: 0
 			},
 			firstNotif: {
 				initiate: 1,
@@ -125,7 +127,8 @@ Game.registerMod("Kaizo Cookies", {
 				decayII: 1,
 				veil: 1,
 				buff: 1,
-				multipleBuffs: 1
+				multipleBuffs: 1,
+				fthof: 1
 			}
 		}
 		decay.notifCalls = {
@@ -139,7 +142,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.update = function(buildId, tickSpeed) { 
 			if (Game.Has('Purity vaccines')) { return decay.mults[buildId]; }
 			var c = decay.mults[buildId];
-    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))) * (Math.max(1, Math.pow(c,(Game.Has('Unshackled Purity'))?0.6:1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), tickSpeed);
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))) * (Math.max(1, Math.pow(c,(Game.Has('Unshackled Purity'))?0.9:1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), tickSpeed);
 			return c;
 		} 
 		decay.updateAll = function() {
@@ -188,23 +191,38 @@ Game.registerMod("Kaizo Cookies", {
 
 			return tickSpeed;
 		}
-		decay.purify = function(buildId, mult, close, cap) {
-			if (decay.mults[buildId] >= cap) { return true; }
+		decay.purify = function(buildId, mult, close, cap, uncapped) {
+			if (decay.mults[buildId] >= cap) { 
+				if (!uncapped) { return true; } else {
+					mults /= Math.pow(mults[buildId] / cap, decay.pastCapPow);
+				}
+			}
+			if (uncapped && decay.mults[buildId] * mult >= cap && !(decay.mults[buildId] >= cap)) {
+				mult /= cap / decay.mults[buildId];
+				decay.mults[buildId] = cap;
+				mult /= Math.pow(mults[buildId] / cap, decay.pastCapPow);
+			}
 			decay.mults[buildId] *= mult;
-			if (decay.mults[buildId] >= cap) { decay.mults[buildId] = cap; return true; }
-			decay.mults[buildId] *= Math.pow(10, (Math.log10(cap) - Math.log10(decay.mults[buildId])) * close);
-			if (decay.mults[buildId] > cap) { decay.mults[buildId] = cap; }
+			if (decay.mults[buildId] >= cap && !uncapped) { 
+				decay.mults[buildId] = cap; return true; 	
+			}
+			if (decay.mults[buildId] < 1) { 
+				decay.mults[buildId] *= Math.pow(10, (1 - Math.log10(decay.mults[buildId]), 1) * close);
+			}
+			if (decay.mults[buildId] > cap && !uncapped) { decay.mults[buildId] = cap; }
 		}
 		decay.purifyAll = function(mult, close, cap) {
+			var u = false;
+			if (Game.Has('Unshackled Purity')) { u = true; }
 			for (let i in decay.mults) {
-				decay.purify(i, mult, close, cap);
+				decay.purify(i, mult, close, cap, u);
 			}
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('creation');
 				if (godLvl == 1) {
-					Game.gainBuff('creation storm', 4, 0.72);
+					Game.gainBuff('creation storm', 4, 0.32);
 				} else if (godLvl == 2) {
-					Game.gainBuff('creation storm', 16, 0.24);
+					Game.gainBuff('creation storm', 16, 0.16);
 				} else if (godLvl == 3) {
 					Game.gainBuff('creation storm', 64, 0.08);
 				}
@@ -317,16 +335,23 @@ Game.registerMod("Kaizo Cookies", {
 				pref: 'decay.prefs.preventNotifs.multipleBuffs',
 				first: 'decay.prefs.firstNotif.multipleBuffs',
 				nocall: 'decay.notifCalls.multipleBuffs'
+			},
+			fthof: {
+				title: 'Force the Hand of Fate',
+				desc: 'Notice: Force the Hand of Fate has had its effect pool adjusted and two effects have been removed from the pools (namely, building special and elder frenzy). Planners may not be accurate.',
+				icon: [22, 11],
+				pref: 'decay.prefs.preventNotifs.fthof',
+				first: 'decay.prefs.firstNotif.fthof',
 			}
 		}
 		decay.triggerNotif = function(key) {
 			if (eval(decay.notifs[key].pref)) { console.log('Corresponding pref not found.'); return false; }
 			if (!decay.unlocked) { return false; }
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { 
-				if (decay.notifCalls[key]) { return true; } else { decay.notifCalls[key] = 1; /*I kinda give up*/ } 
+				if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); } 
 			}
 			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, (eval(decay.notifs[key].first)?1e21:6), false, true);
-			decay.prefs.firstNotif[key] = 0;
+			eval(decay.notifs[key].first+'=0;');
 		}
 		decay.refreshTrigger = function(key) {
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') {
@@ -505,6 +530,8 @@ Game.registerMod("Kaizo Cookies", {
 					.replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
 						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from "+decay.term(decay.gen)+": "+decay.effectStrs([function(n, i) { return Math.pow(Math.min(2, n), 0.3)}]); `));
 				eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));		
+				eval('gp.spells["hand of fate"].win='+gp.spells["hand of fate"].win.toString().replace(`if (Game.BuildingsOwned>=10 && Math.random()<0.25) choices.push('building special');`, 'decay.triggerNotif("fthof");'));
+				eval('gp.spells["hand of fate"].fail='+gp.spells["hand of fate"].fail.toString().replace(`if (Math.random()<0.1) choices.push('cursed finger','blood frenzy');`, `if (Math.random()<0.1) choices.push('cursed finger'); decay.triggerNotif("fthof");`));
 				grimoireUpdated = true; //no more unnecessary replacing 
 			}
 		});
@@ -612,7 +639,7 @@ Game.registerMod("Kaizo Cookies", {
 			return dur;
 		}
 		Game.getPledgeStrength = function() {
-			var str = 0.2; 
+			var str = 0.15; 
 			if (Game.Has('Elder Pact')) { str *= 2; }
 			if (Game.Has('Unshackled Elder Pledge')) { str *= 2; }
 			var cap = 5;
@@ -620,9 +647,10 @@ Game.registerMod("Kaizo Cookies", {
 			return [1 + (str / Game.fps), 0.5 / (Game.getPledgeDuration() * cap), cap];
 		}
 		Game.getPledgeCooldown = function() {
-			var c = Game.fps * 10 * 60;
+			var c = Game.fps * 12 * 60;
 			if (Game.Has('Exotic nuts')) { c /= 2; }
 			if (Game.Has('Arcane sugar')) { c /= 2; }
+			if (Game.Has('Unshackled Elder Pledge')) { c *= 0.75; }
 			return c;
 		}
 		Game.pledgeC = 0;
@@ -1058,7 +1086,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('check', () => {
 			if (Game.Objects['Wizard tower'].minigameLoaded) {
 				grimoire=Game.Objects['Wizard tower'].minigame;
-                grimoire.spells['hand of fate'].failFunc=function(){return 0.5};//Making FTHOF fail chance always 50%
+                grimoire.spells['hand of fate'].failFunc=function(fail){return fail+0.3*Game.shimmerTypes['golden'].n; };
 
 				eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("//if (Math.random()<0.2) choices.push('clot','cursed finger','ruin cookies');","if (Math.random()<0.2) choices.push('clot','cursed finger','ruin cookies');"))//Making this unused code used
 		        eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("if (Game.BuildingsOwned>=10 && Math.random()<0.25) choices.push('building special');","if (Game.BuildingsOwned>=10 && Math.random()<0.10) choices.push('building special');"))//Changing building special to 10%
@@ -1144,8 +1172,8 @@ Game.registerMod("Kaizo Cookies", {
 				addLoc('Purifying decay grants a buff.');
 				addLoc('-%1% decay for %2 seconds.')
 				temp.gods['creation'].descBefore='<span class="green">'+loc('Purifying decay grants a buff that weakens decay.')+'</span>';
-				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [72, 4])+'</span>';
-				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [24, 16])+'</span>';
+				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [32, 4])+'</span>';
+				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [16, 16])+'</span>';
 				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [8, 64])+'</span>';
 
 				addLoc('Decay propagation rate -%1%.')
@@ -1199,12 +1227,12 @@ Game.registerMod("Kaizo Cookies", {
 			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker.". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
 			this.achievements.push(new Game.Upgrade('Purity vaccines', '<b>Stops all decay.</b><q>Developed for the time of need.</q>', 7, [20, 6])); Game.last.pool='debug'; Game.UpgradesByPool['debug'].push(Game.last);
 
-			this.achievements.push(new Game.Upgrade('Unshackled Purity',("Decay increase is <b>half</b> as much with purity increase.")+'<q>One of the strongest antidotes that has been found; it can cure all known diseases.</q>',75000000000000000,[4,1,custImg])); Game.last.pool='prestige';
+			this.achievements.push(new Game.Upgrade('Unshackled Purity',("Purification is <b>no longer limited by caps</b>; however, increasing purity past the cap will require increasing amounts of purification power. <br>The decay rate increase from purity increase <b>-25%</b>.")+'<q>One of the strongest antidotes that has been found; it can cure all known diseases.</q>',11111100000000000,[4,1,custImg])); Game.last.pool='prestige';
 			Game.Upgrades['Unshackled Purity'].parents=[Game.Upgrades['Unshackled flavor'],Game.Upgrades['Unshackled berrylium'],Game.Upgrades['Unshackled blueberrylium'],Game.Upgrades['Unshackled chalcedhoney'],Game.Upgrades['Unshackled buttergold'],Game.Upgrades['Unshackled sugarmuck'],Game.Upgrades['Unshackled jetmint'],Game.Upgrades['Unshackled cherrysilver'],Game.Upgrades['Unshackled hazelrald'],Game.Upgrades['Unshackled mooncandy'],Game.Upgrades['Unshackled astrofudge'],Game.Upgrades['Unshackled alabascream'],Game.Upgrades['Unshackled iridyum'],Game.Upgrades['Unshackled glucosmium'],Game.Upgrades['Unshackled glimmeringue']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Unshackled Purity'])
 			Game.last.posY=195,Game.last.posX=750
 
-			this.achievements.push(new Game.Upgrade('Unshackled Elder Pledge',("Makes purification <b>twice</b> as stronger.")+'<q>Your pledge to the grandmas is stronger than ever before.</q>',51200000000000000,[1,1,custImg])); Game.last.pool='prestige';
+			this.achievements.push(new Game.Upgrade('Unshackled Elder Pledge',("Makes Elder Pledge's purification <b>twice</b> as strong, and reduces the cooldown by <b>25%</b>.")+'<q>Your pledge to the grandmas is stronger than ever before.</q>',25600000000000000,[1,1,custImg])); Game.last.pool='prestige';
 			Game.Upgrades['Unshackled Elder Pledge'].parents=[Game.Upgrades['Unshackled Purity']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Unshackled Elder Pledge'])
 			Game.last.posY=195,Game.last.posX=610
