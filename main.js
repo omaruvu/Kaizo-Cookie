@@ -1281,7 +1281,7 @@ Game.registerMod("Kaizo Cookies", {
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
-				console.log(strIn[i]);
+				console.log(strIn[i]+'with '+i);
 			}
 			strIn = str[3].split(',');
 			decay.halt = parseFloat(strIn[0]);
