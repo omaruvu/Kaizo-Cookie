@@ -1273,12 +1273,10 @@ Game.registerMod("Kaizo Cookies", {
 		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif]
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
-			/*
 			for(let i=0;i<str[1].length;i += 2) { 
             	this.achievements[i / 2].unlocked=Number(str[1][i]); 
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
-   			*/
 			/*
 			Game.Lock('Shimmering veil [broken]'); 
 			var strIn = str[2].split(',');
