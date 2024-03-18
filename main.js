@@ -141,7 +141,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Purity vaccines')) { return 1; }
 			var c = decay.mults[buildId];
 			var godz = Game.hasBuff('Devastation').arg2; if (!godz) { godz = 1; }
-    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen, 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * tickSpeed);
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - decay.mults[buildId], decay.min))) * (Math.max(1, Math.pow(decay.gen, 1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), (1 + Game.Has('Elder Covenant') * 0.5) * godz * Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1)) * tickSpeed);
 			return c;
 		} 
 		decay.updateAll = function() {
@@ -220,7 +220,7 @@ Game.registerMod("Kaizo Cookies", {
 			initiate: {
 				title: 'decay',
 				desc: 'Due to aging and corruption in your facilities, CpS continuously decreases over time. You can temporarily stop it from decreasing with certain actions, such as clicking the big cookie; or purify the decay\'s effects by, for example, clicking a Golden or Wrath cookie.',
-				icon: [0, 0],
+				icon: [3, 1, custImg],
 				pref: 'decay.prefs.preventNotifs.initiate',
 				first: 'decay.prefs.firstNotif.initiate',
 				nocall: 'decay.notifCalls.initiate'
@@ -228,14 +228,14 @@ Game.registerMod("Kaizo Cookies", {
 			achievement: {
 				title: 'Achievements',
 				desc: 'Obtaining an achievement also purifies your decay by a very large amount.',
-				icon: [0, 0],
+				icon: [5, 6],
 				pref: 'decay.prefs.preventNotifs.achievement',
 				first: 'decay.prefs.firstNotif.achievement'
 			},
 			purity: {
 				title: 'Purity',
 				desc: 'If you can purify all of your decay, any extra purification power will be spent as an increase in CpS. The extra CpS (called "purity") acts as a sacrifical filler for the decay; the more purity you have, the quicker the decay will be in eating through them.',
-				icon: [0, 0],
+				icon: [2, 1, custImg],
 				pref: 'decay.prefs.preventNotifs.purity',
 				first: 'decay.prefs.firstNotif.purity',
 				nocall: 'decay.notifCalls.purity'
@@ -243,21 +243,21 @@ Game.registerMod("Kaizo Cookies", {
 			wrinkler: {
 				title: 'Wrinklers',
 				desc: 'Wrinklers now wither a very large amount of CpS each and loses cookies on pop, but if you manage to pop them before they reach the big cookie, your decay gets stopped for much longer than just clicking!<br>Also, the withering affects clicks, unlike in vanilla',
-				icon: [0, 0],
+				icon: [19, 8],
 				pref: 'decay.prefs.preventNotifs.wrinkler',
 				first: 'decay.prefs.firstNotif.wrinkler'
 			},
 			wrath: {
 				title: 'Wrath cookies',
 				desc: 'Wrath cookies now replaces Golden cookies according to the amount of decay you have when it spawns; the more decay you have, the more often it replaces Golden cookies. Luckily, it still purifies decay the same way as Golden cookies do.',
-				icon: [0, 0],
+				icon: [15, 5],
 				pref: 'decay.prefs.preventNotifs.wrath',
 				first: 'decay.prefs.firstNotif.wrath'
 			},
 			gpoc: {
 				title: 'Grandmapocalypse', 
 				desc: 'The Grandmapocalypse, in the vanilla sense, no longer exists. It has been replaced by the decay mechanic. As well, all other Grandmapocalypse-related items now help you combat the decay.',
-				icon: [0, 0],
+				icon: [27, 11],
 				pref: 'decay.prefs.preventNotifs.gpoc',
 				first: 'decay.prefs.firstNotif.gpoc',
 				nocall: 'decay.notifCalls.gpoc'
@@ -265,7 +265,7 @@ Game.registerMod("Kaizo Cookies", {
 			decayII: {
 				title: 'decay: the return',
 				desc: 'The decay gets stronger as you progress through the game, but you also obtain more items to help you fight it as the game goes on. ',
-				icon: [0, 0],
+				icon: [3, 1, custImg],
 				pref: 'decay.prefs.preventNotifs.decayII',
 				first: 'decay.prefs.firstNotif.decayII',
 				nocall: 'decay.notifCalls.decayII'
@@ -273,14 +273,14 @@ Game.registerMod("Kaizo Cookies", {
 			veil: {
 				title: 'Shimmering Veil',
 				desc: 'While there is no sources to directly examine your Shimmering Veil\'s welldoing, you can infer its health from the brightness of the veil around the big cookie, as well as the particles swirling around it.',
-				icon: [0, 0],
+				icon: [9, 10],
 				pref: 'decay.prefs.preventNotifs.veil',
 				first: 'decay.prefs.firstNotif.veil'
 			},
 			buff: {
 				title: 'Buffs under decay',
 				desc: 'Positive buffs now run out faster the more decay you have accumulated. Stay vigilant!<br>(This uses the current amount of decay, which means that any decay accumulated before the buff was obtained will also contribute to the buff running out faster)',
-				icon: [0, 0],
+				icon: [22, 6],
 				pref: 'decay.prefs.preventNotifs.buff',
 				first: 'decay.prefs.firstNotif.buff',
 				nocall: 'decay.notifCalls.buff'
@@ -288,7 +288,7 @@ Game.registerMod("Kaizo Cookies", {
 			multipleBuffs: {
 				title: 'Buff stacking',
 				desc: 'Stacking more than one Golden cookie buff significantly increases your rate of decay.',
-				icon: [0, 0],
+				icon: [23, 6],
 				pref: 'decay.prefs.preventNotifs.multipleBuffs',
 				first: 'decay.prefs.firstNotif.multipleBuffs',
 				nocall: 'decay.notifCalls.multipleBuffs'
@@ -318,7 +318,12 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.buffCount = function() {
 			var count = 0;
-			for (let i in Game.buffs) { count++; }
+			for (let i in Game.buffs) { if (!decay.exemptBuffs.includes(Game.buffs[i].type.name)) { count++; } }
+			return count;
+		}
+		Game.gcBuffCount = function() {
+			var count = 0;
+			for (let i in Game.buffs) { if (decay.gcBuffs.includes(Game.buffs[i].type.name)) { count++; } }
 			return count;
 		}
 		Game.registerHook('check', decay.checkRefreshes);
@@ -329,7 +334,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.gen <= 0.5) { decay.triggerNotif('gpoc'); }
 			if (decay.incMult >= 0.04) { decay.triggerNotif('decayII'); }
 			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
-			if (Game.buffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
+			if (Game.gcBuffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
 		}
 		Game.registerHook('logic', decay.checkTriggerNotifs);
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
