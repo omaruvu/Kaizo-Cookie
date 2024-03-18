@@ -1402,12 +1402,14 @@ Game.registerMod("Kaizo Cookies", {
 		for (let i in decay.prefs.firstNotif) {
 			str += decay.prefs.firstNotif[i];
 		}
+		str += '/';
+		str += Game.cookiesSucked;
         return str;
     },
     load: function(str){
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
-		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif]
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, wrinklers sucked]
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
@@ -1425,45 +1427,42 @@ Game.registerMod("Kaizo Cookies", {
 			Game.pledgeT = parseFloat(strIn[0]);
 			Game.pledgeC = parseFloat(strIn[1]);
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
-			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 1) {
-				strIn = str[5].split(',');
-				console.log(str[5]);
-				Game.veilHP = parseFloat(strIn[0]); 
-				if (Game.Has('Shimmering veil')) { 
-					Game.Loop();
-					if (strIn[1] == 'on') {
-						Game.Upgrades['Shimmering veil [off]'].earn();
-						Game.Lock('Shimmering veil [on]'); Game.Unlock('Shimmering veil [on]'); 
-						Game.Lock('Shimmering veil [broken]');
-						console.log('veil on!');
-					} else if (strIn[1] == 'off') {
-						Game.Upgrades['Shimmering veil [on]'].earn();
-						Game.Lock('Shimmering veil [off]'); Game.Unlock('Shimmering veil [off]'); 
-						Game.Upgrades['Shimmering veil [broken]'].unlocked = 0;
-						console.log('veil off!');
-					} else {
-						Game.Lock('Shimmering veil [on]'); Game.Lock('Shimmering veil [off]');
-						Game.Upgrades['Shimmering veil [broken]'].earn();
-						console.log('veil broken!');
-					}
-
-				}
-				Game.veilRestoreC = parseFloat(strIn[2]);
-				Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
-			}
-			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 2) {
-				var counter = 0;
-				strIn = str[6].split(',');
-				for (let i in decay.prefs.preventNotifs) {
-					decay.prefs.preventNotifs[i] = parseInt(strIn[0][counter]);
-					counter++;
-				}
-				counter = 0;
-				for (let i in decay.prefs.firstNotif) {
-					decay.prefs.firstNotif[i] = parseInt(strIn[1][counter]);
-					counter++;
+			strIn = str[5].split(',');
+			console.log(str[5]);
+			Game.veilHP = parseFloat(strIn[0]); 
+			if (Game.Has('Shimmering veil')) { 
+				Game.Loop();
+				if (strIn[1] == 'on') {
+					Game.Upgrades['Shimmering veil [off]'].earn();
+					Game.Lock('Shimmering veil [on]'); Game.Unlock('Shimmering veil [on]'); 
+					Game.Lock('Shimmering veil [broken]');
+					console.log('veil on!');
+				} else if (strIn[1] == 'off') {
+					Game.Upgrades['Shimmering veil [on]'].earn();
+					Game.Lock('Shimmering veil [off]'); Game.Unlock('Shimmering veil [off]'); 
+					Game.Upgrades['Shimmering veil [broken]'].unlocked = 0;
+					console.log('veil off!');
+				} else {
+					Game.Lock('Shimmering veil [on]'); Game.Lock('Shimmering veil [off]');
+					Game.Upgrades['Shimmering veil [broken]'].earn();
+					console.log('veil broken!');
 				}
 			}
+			Game.veilRestoreC = parseFloat(strIn[2]);
+			Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
+			var counter = 0;
+			strIn = str[6].split(',');
+			for (let i in decay.prefs.preventNotifs) {
+				decay.prefs.preventNotifs[i] = parseInt(strIn[0][counter]);
+				counter++;
+			}
+			counter = 0;
+			for (let i in decay.prefs.firstNotif) {
+				decay.prefs.firstNotif[i] = parseInt(strIn[1][counter]);
+				counter++;
+			}
+			strIn = str[7];
+			//pending...
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
