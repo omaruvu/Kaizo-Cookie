@@ -1290,7 +1290,6 @@ Game.registerMod("Kaizo Cookies", {
 			Game.pledgeC = parseFloat(strIn[1]);
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
 
-			/*
 			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 1) {
 				strIn = str[5].split(',');
 				Game.veilHP = parseFloat(strIn[0]); 
@@ -1311,7 +1310,7 @@ Game.registerMod("Kaizo Cookies", {
 				Game.veilRestoreC = parseFloat(strIn[2]);
 				Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
 			}
-   			*/
+
 			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 2) {
 				var counter = 0;
 				strIn = str[6].split(',');
