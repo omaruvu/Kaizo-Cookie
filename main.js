@@ -1237,7 +1237,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.PrestigeUpgrades.push(Game.Upgrades['Unshackled Elder Pledge'])
 			Game.last.posY=195,Game.last.posX=610
 			
-			this.achievements.push(new Game.Upgrade('Uranium rolling pins', ('The Elder Pledge halts decay for <b>3</b> times longer on use.')+('<q>Radiation, my superpower!</q>'), 900000000000000, [4, 1, custImg])); Game.last.pool='prestige'; 
+			this.achievements.push(new Game.Upgrade('Uranium rolling pins', ('The Elder Pledge halts decay for <b>3</b> times longer on use.')+('<q>Radiation, my superpower!</q>'), 900000000000000, [5, 1, custImg])); Game.last.pool='prestige'; 
 			Game.Upgrades['Uranium rolling pins'].parents=[Game.Upgrades['Cat ladies']];
 			Game.PrestigeUpgrades.push(Game.Upgrades['Uranium rolling pins']);
 			Game.last.posY=-740; Game.last.posX=800;
