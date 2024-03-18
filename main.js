@@ -1278,11 +1278,12 @@ Game.registerMod("Kaizo Cookies", {
             	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
 			}
 			Game.Lock('Shimmering veil [broken]'); 
+			/*
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
 				decay.mults[i] = parseFloat(strIn[i]);
-				console.log(strIn[i]+'with '+i);
 			}
+   			*/
 			strIn = str[3].split(',');
 			decay.halt = parseFloat(strIn[0]);
 			decay.haltOvertime = parseFloat(strIn[1]);
@@ -1311,6 +1312,7 @@ Game.registerMod("Kaizo Cookies", {
 				Game.veilRestoreC = parseFloat(strIn[2]);
 				Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
 			}
+   			*/
 			if (version[0] >= 1 && version[1] >= 1 && version[2] >= 2) {
 				var counter = 0;
 				strIn = str[6].split(',');
@@ -1324,7 +1326,6 @@ Game.registerMod("Kaizo Cookies", {
 					counter++;
 				}
 			}
-   			*/
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
