@@ -928,6 +928,7 @@ Game.registerMod("Kaizo Cookies", {
 				name: loc('Liquify politician'),
 				desc: loc('Purifies a lot of decay with a very high purity limit.'),
 				failDesc: loc('Amplifies your decay.'),
+				icon: [5, 0, custImg],
 				costMin: 6,
 				costPercent: 0.35,
 				win: function() {
