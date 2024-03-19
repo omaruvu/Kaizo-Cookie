@@ -569,6 +569,7 @@ Game.registerMod("Kaizo Cookies", {
 				eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));		
 				eval('gp.spells["hand of fate"].win='+gp.spells["hand of fate"].win.toString().replace(`if (Game.BuildingsOwned>=10 && Math.random()<0.25) choices.push('building special');`, 'decay.triggerNotif("fthof");'));
 				eval('gp.spells["hand of fate"].fail='+gp.spells["hand of fate"].fail.toString().replace(`if (Math.random()<0.1) choices.push('cursed finger','blood frenzy');`, `if (Math.random()<0.1) choices.push('cursed finger'); decay.triggerNotif("fthof");`));
+				decay.addSpells();
 				grimoireUpdated = true; //no more unnecessary replacing 
 			}
 		});
@@ -914,6 +915,31 @@ Game.registerMod("Kaizo Cookies", {
 		replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(Game.veilParticleSpawnBound(set) - Game.veilParticleSpeed(set) * Math.cos(r));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(Game.veilParticleSpawnBound(set) - Game.veilParticleSpeed(set) * Math.sin(r));');
 		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'; set = 1; '+veilParticles+'; set = 2; '+veilParticles+'; set = 3; '+veilParticles);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
+
+		
+		//SPELLS
+		decay.addSpells = function() {
+			addLoc('Liquify politician');
+			addLoc('Purifies a lot of decay with a very high purity limit.');
+			addLoc('Amplifies your decay.');
+			addLoc('Corruption cleared!');
+			addLoc('Backfire! Corruption intensified!');
+			gp.spells['liquify politician'] = {
+				name: loc('Liquify politician'),
+				desc: loc('Purifies a lot of decay with a very high purity limit.'),
+				failDesc: loc('Amplifies your decay.'),
+				costMin: 6,
+				costPercent: 0.35,
+				win: function() {
+					decay.purifyAll(50, 0.25, 100);
+					Game.Popup('<div style="font-size:80%;">'+loc("Corruption cleared!")+'</div>',Game.mouseX,Game.mouseY);
+				},
+				fail: function() {
+					decay.purifyAll(0.1, -0.5, 1);
+					Game.Popup('<div style="font-size:80%;">'+loc("Backfire! Corruption intensified!")+'</div>',Game.mouseX,Game.mouseY);
+				}
+			}
+		}
 
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
 		
