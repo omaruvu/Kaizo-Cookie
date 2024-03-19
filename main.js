@@ -1320,7 +1320,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Unshackled Purity'].order=770;
 			Game.Upgrades['Unshackled Elder Pledge'].order=771;
 			Game.Upgrades['Uranium rolling pins'].order=275;
-			Game.Upgrades['Sparkling blade'].order = 282;
+			Game.Upgrades['Sparkling blade'].order = 283;
 			LocalizeUpgradesAndAchievs();
 	
 		}
