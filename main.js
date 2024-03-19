@@ -966,7 +966,7 @@ Game.registerMod("Kaizo Cookies", {
 					if (!Game.hasBuff('Unending flow')) {
 						Game.gainBuff('unending flow', 120, 0.1);
 					} else {
-						Game.hasBuff('Unending flow').arg1 = 1 - (1 - Game.hasBuff('Unending flow').arg1) * 0.1;
+						Game.hasBuff('Unending flow').arg1 = 1 - (0.1 * (1 - Game.hasBuff('Unending flow').arg1));
 					}
 					Game.Popup('<div style="font-size:80%;">'+loc("The water shall flow!")+'</div>',Game.mouseX,Game.mouseY);
 				},
@@ -1625,6 +1625,7 @@ Game.registerMod("Kaizo Cookies", {
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
 		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, wrinklers sucked]
+		return false; 
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
