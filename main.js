@@ -114,7 +114,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
-		decay.pastCapPow = 0.75; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
+		decay.pastCapPow = 0.15; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
