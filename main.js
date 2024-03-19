@@ -100,6 +100,7 @@ Game.registerMod("Kaizo Cookies", {
 		//decay: a decreasing multiplier to buildings, and theres a different mult for each building. The mult decreases the same way for each building tho
 		decay.mults = []; for (let i in Game.Objects) { decay.mults.push(1); } 
 		decay.mults.push(1); //the "general multiplier", is just used for checks elsewhere (and "egg")
+		decay.gen = decay.mults[20];
 		decay.incMult = 0.04; //decay mult is decreased by this multiplicative every second
 		decay.min = 0.15; //the minimum power that the update function uses; the lower it is, the slower the decay will pick up
 		decay.halt = 1; //simulates decay stopping from clicking
@@ -199,7 +200,6 @@ Game.registerMod("Kaizo Cookies", {
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
-		decay.gen = decay.mults[20];
 		decay.getTickspeed = function() {
 			var tickSpeed = 1;
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
