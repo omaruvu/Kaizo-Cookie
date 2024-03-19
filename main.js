@@ -175,7 +175,7 @@ Game.registerMod("Kaizo Cookies", {
 			var c = decay.update(20, t);
 			if (!isFinite(1 / c)) { if (!isNaN(c)) { console.log('Infinity reached. decay mult: '+c); for (let i in decay.mults) { decay.mults[i] = 1 / Number.MAX_VALUE; } decay.infReached = true; } }
 			for (let i in decay.mults) {
-				decay.mults[i] = c;
+				//decay.mults[i] = c;
 			}
 			decay.regainAcc();
 			if (Game.T % 2) {
@@ -213,8 +213,8 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
 			tickSpeed *= Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1));
 			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
-			//if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
-			//if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
+			if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
+			if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
 
 			return tickSpeed;
 		}
