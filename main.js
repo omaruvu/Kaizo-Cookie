@@ -1492,7 +1492,7 @@ Game.registerMod("Kaizo Cookies", {
 			strIn = str[5].split(',');
 			if (isv(strIn[0])) { Game.veilHP = parseFloat(strIn[0]); }
 			if (Game.Has('Shimmering veil')) { 
-				Game.Loop();
+				Game.Logic();
 				if (strIn[1] == 'on') {
 					Game.Upgrades['Shimmering veil [off]'].earn();
 					Game.Lock('Shimmering veil [on]'); Game.Unlock('Shimmering veil [on]'); 
