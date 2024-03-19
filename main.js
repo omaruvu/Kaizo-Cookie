@@ -17,6 +17,12 @@ function getVer(str) {
 	for (let i in str) { str[i] = parseFloat(str[i]); }
 	return str;
 }
+function isv(str) { //"isValid"
+	if (str.includes('NaN') || str.includes('undefined')) {
+		return false;
+	}
+	return true;
+}
 function selectStatement(str, index, beginningCount) {
 	if (index == -1) { return false; }
 	var count = 0;
@@ -1413,23 +1419,22 @@ Game.registerMod("Kaizo Cookies", {
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
-            	this.achievements[i / 2].unlocked=Number(str[1][i]); 
-            	this.achievements[i / 2].bought=Number(str[1][i + 1]); 
+            	if (isv(str[1][i])) { this.achievements[i / 2].unlocked=Number(str[1][i]); }
+            	if (isv(str[1][i + 1])) { this.achievements[i / 2].bought=Number(str[1][i + 1]); }
 			}
 			var strIn = str[2].split(',');
 			for (let i in strIn) {
-				decay.mults[i] = parseFloat(strIn[i]);
+				if (isv(strIn[i])) { decay.mults[i] = parseFloat(strIn[i]); }
 			}
 			strIn = str[3].split(',');
-			decay.halt = parseFloat(strIn[0]);
-			decay.haltOvertime = parseFloat(strIn[1]);
+			if (isv(strIn[0])) { decay.halt = parseFloat(strIn[0]); }
+			if (isv(strIn[1])) { decay.haltOvertime = parseFloat(strIn[1]); }
 			strIn = str[4].split(',');
-			Game.pledgeT = parseFloat(strIn[0]);
-			Game.pledgeC = parseFloat(strIn[1]);
+			if (isv(strIn[0])) { Game.pledgeT = parseFloat(strIn[0]); } else { Game.pledgeT = 0; }
+			if (isv(strIn[1])) { Game.pledgeC = parseFloat(strIn[1]); }
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
 			strIn = str[5].split(',');
-			console.log(str[5]);
-			Game.veilHP = parseFloat(strIn[0]); 
+			if (isv(strIn[0])) { Game.veilHP = parseFloat(strIn[0]); }
 			if (Game.Has('Shimmering veil')) { 
 				Game.Loop();
 				if (strIn[1] == 'on') {
@@ -1442,23 +1447,28 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Lock('Shimmering veil [off]'); Game.Unlock('Shimmering veil [off]'); 
 					Game.Upgrades['Shimmering veil [broken]'].unlocked = 0;
 					console.log('veil off!');
-				} else {
+				} else if (strIn[1] == 'broken'){
 					Game.Lock('Shimmering veil [on]'); Game.Lock('Shimmering veil [off]');
 					Game.Upgrades['Shimmering veil [broken]'].earn();
 					console.log('veil broken!');
+				} else {
+					Game.Upgrades['Shimmering veil [on]'].earn();
+					Game.Lock('Shimmering veil [off]'); Game.Unlock('Shimmering veil [off]'); 
+					Game.Upgrades['Shimmering veil [broken]'].unlocked = 0;
+					console.log('veil: something went wrong');
 				}
 			}
-			Game.veilRestoreC = parseFloat(strIn[2]);
-			Game.veilPreviouslyCollapsed = Boolean(strIn[3]);
+			if (isv(strIn[2])) { Game.veilRestoreC = parseFloat(strIn[2]); }
+			if (isv(strIn[3])) { Game.veilPreviouslyCollapsed = Boolean(strIn[3]); }
 			var counter = 0;
 			strIn = str[6].split(',');
 			for (let i in decay.prefs.preventNotifs) {
-				decay.prefs.preventNotifs[i] = parseInt(strIn[0][counter]);
+				if (isv(strIn[0][counter])) { decay.prefs.preventNotifs[i] = parseInt(strIn[0][counter]); }
 				counter++;
 			}
 			counter = 0;
 			for (let i in decay.prefs.firstNotif) {
-				decay.prefs.firstNotif[i] = parseInt(strIn[1][counter]);
+				if (isv(strIn[1][counter])) { decay.prefs.firstNotif[i] = parseInt(strIn[1][counter]); }
 				counter++;
 			}
 			strIn = str[7];
