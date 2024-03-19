@@ -111,6 +111,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltKeep = 0.25; //the fraction of halt time that is kept when halted again
 		decay.haltOTDec = 0.5; //"halt overtime decrease", decHalt also applies to overtime but multiplied by this
 		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
+		decay.haltTickingPow = 2; //the more it is, the less that the current decay tickspeed will affect decHalt
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
@@ -138,7 +139,8 @@ Game.registerMod("Kaizo Cookies", {
 				buff: 0,
 				multipleBuffs: 0,
 				fthof: 0,
-				purityCap: 0
+				purityCap: 0,
+				buildVariance: 0
 			},
 			firstNotif: {
 				initiate: 1,
@@ -152,7 +154,8 @@ Game.registerMod("Kaizo Cookies", {
 				buff: 1,
 				multipleBuffs: 1,
 				fthof: 1,
-				purityCap: 0
+				purityCap: 1,
+				buildVariance: 1
 			}
 		}
 		decay.notifCalls = {
@@ -161,7 +164,8 @@ Game.registerMod("Kaizo Cookies", {
 			gpoc: 0,
 			decayII: 0,
 			buff: 0,
-			multipleBuffs: 0
+			multipleBuffs: 0,
+			buildVariance: 0
 		}
 		decay.update = function(buildId, tickSpeed) { 
 			if (Game.Has('Purity vaccines')) { return decay.mults[buildId]; }
@@ -266,11 +270,12 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		//stands for "regain acceleration"
 		decay.regainAcc = function() { 
-    		decay.halt = Math.max(0, decay.halt - decay.decHalt / Game.fps);
+			var decHaltMult = Math.pow(decay.getTickSpeed(), decay.haltTickingPow);
+    		decay.halt = Math.max(0, decay.halt - decay.decHalt * decHaltMult / Game.fps);
 			if (decay.halt == 0) {
-				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt / Game.fps);
+				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt * decHaltMult / Game.fps);
 			} else {
-				decay.haltOvertime = Math.max(0, decay.haltOvertime - (decay.decHalt * decay.haltOTDec) / Game.fps);
+				decay.haltOvertime = Math.max(0, decay.haltOvertime - (decay.decHalt * decHaltMult * decay.haltOTDec) / Game.fps);
 			}
 		}
 		decay.stop = function(val) {
@@ -376,6 +381,14 @@ Game.registerMod("Kaizo Cookies", {
 				icon: [2, 1, custImg],
 				pref: 'decay.prefs.preventNotifs.purityCap',
 				first: 'decay.prefs.firstNotif.purityCap'
+			},
+			buildVariance: {
+				title: 'Building size',
+				desc: 'You might know that your amount of buildings affect decay, but did you know that the buildings\' size affects it too? The more space that a building would take up lore-wise, the more decay it contributes.',
+				icon: [2, 6],
+				pref: 'decay.prefs.preventNotifs.buildVariance',
+				first: 'decay.prefs.firstNotif.buildVariance',
+				nocall: 'decay.notifCalls.buildVariance'
 			}
 		}
 		decay.triggerNotif = function(key) {
@@ -400,6 +413,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.incMult < 0.04) { decay.notifCalls['decayII'] = 0; }
 			if (!Game.buffCount()) { decay.notifCalls['buff'] = 0; }
 			if (!(Game.buffCount() - 1)) { decay.notifCalls['multipleBuffs'] = 0; }
+			if (Game.Objects['Idleverse'].amount == 0 && Game.Objects['Cortex baker'].amount == 0) { decay.notifCalls['buildVariance'] = 0; }
 		}
 		Game.buffCount = function() {
 			var count = 0;
@@ -420,6 +434,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.incMult >= 0.04) { decay.triggerNotif('decayII'); }
 			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
 			if (Game.gcBuffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
+			if (Game.Objects['Idleverse'].amount > 0 && Game.Objects['Cortex baker'].amount > 0) { decay.triggerNotif('buildVariance'); }
 		}
 		Game.registerHook('logic', decay.checkTriggerNotifs);
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
@@ -510,11 +525,11 @@ Game.registerMod("Kaizo Cookies", {
 		decay.setRates = function() {
 			var d = 1;
 			var c = Game.cookiesEarned;
-			d *= Math.pow(0.998, Math.log10(c));
+			d *= Math.pow(0.99775, Math.log10(c));
 			d *= Math.pow(0.9985, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
 			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
 			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
-			d *= Math.pow(0.9975, Math.max(Math.pow(decay.getBuildingContribution(), 0.25) - 10, 0));
+			d *= Math.pow(0.9975, Math.max(Math.pow(decay.getBuildingContribution(), 0.33) - 10, 0));
 			d *= Math.pow(0.997, Math.log2(Math.max(Game.lumpsTotal, 1)));
 			d *= Math.pow(0.999, Math.pow(Game.dragonLevel, 0.6));
 			d *= Math.pow(0.9999, Math.log2(Math.max(Date.now() - Game.startDate - 100000, 1))); //hopefully not too bruh
@@ -540,9 +555,8 @@ Game.registerMod("Kaizo Cookies", {
 
 			decay.min = Math.min(1, 0.15 + (1 - d) * 3.5);
 
-			var dh = 0.33;
-			dh *= Math.pow(1.012, Math.log10(c));
-			dh *= 1 / d;
+			var dh = 0.25;
+			dh *= 1 / Math.pow(d, 2);
 			decay.decHalt = dh;
 		}
 		decay.getBuildingContribution = function() {
@@ -626,7 +640,7 @@ Game.registerMod("Kaizo Cookies", {
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen, decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*Game.eff("wrinklerApproach")*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Game.cookiesPs)/Game.fps; }'));
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Game.cookiesPsRawHighest)/Game.fps; }'));
 		addLoc('-%1!');
 		addLoc('You lost <b>%1</b>!');
 		eval('Game.UpdateWrinklers='+replaceAll("var godLvl=Game.hasGod('scorn');", 'var godLvl=0;', Game.UpdateWrinklers.toString()));
