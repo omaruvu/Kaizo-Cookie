@@ -172,7 +172,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 5555) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
 			var t = decay.getTickspeed();
-			var c = decay.update(decay.gen, t);
+			var c = decay.update(20, t);
 			if (!isFinite(1 / c)) { if (!isNaN(c)) { console.log('Infinity reached. decay mult: '+c); for (let i in decay.mults) { decay.mults[i] = 1 / Number.MAX_VALUE; } decay.infReached = true; } }
 			for (let i in decay.mults) {
 				decay.mults[i] = c;
