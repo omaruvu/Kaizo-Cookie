@@ -171,9 +171,10 @@ Game.registerMod("Kaizo Cookies", {
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 5555) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
 			var t = decay.getTickspeed();
+			var c = decay.update(decay.gen, t);
+			if (!isFinite(1 / c)) { if (!isNaN(c)) { console.log('Infinity reached. decay mult: '+c); for (let i in decay.mults) { decay.mults[i] = 1 / Number.MAX_VALUE; } decay.infReached = true; } }
 			for (let i in decay.mults) {
-				var c = decay.update(i, t);
-				if (isFinite(1 / c)) { decay.mults[i] = c; } else { if (!isNaN(c)) { if (i == 20) { console.log('Infinity reached. decay mult: '+c); }decay.mults[i] = 1 / Number.MAX_VALUE; decay.infReached = true; } }
+				decay.mults[i] = c;
 			}
 			decay.regainAcc();
 			if (Game.T % 2) {
