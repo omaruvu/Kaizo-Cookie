@@ -982,7 +982,7 @@ Game.registerMod("Kaizo Cookies", {
 				{
 					var me=M.spells[i];
 					var icon=me.icon||[28,12];
-					str+='<div class="grimoireSpell titleFont" id="grimoireSpell'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.spellTooltip('+me.id+')','this')+'><div class="usesIcon shadowFilter grimoireIcon" style="'+writeIcon(icon)+'</div><div class="grimoirePrice" id="grimoirePrice'+me.id+'">-</div></div>';
+					str+='<div class="grimoireSpell titleFont" id="grimoireSpell'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.spellTooltip('+me.id+')','this')+'><div class="usesIcon shadowFilter grimoireIcon" style="'+writeIcon(icon)+'"</div><div class="grimoirePrice" id="grimoirePrice'+me.id+'">-</div></div>';
 				}
 				str+='</div>';
 				var icon=[29,14];
