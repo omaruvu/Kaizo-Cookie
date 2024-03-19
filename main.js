@@ -64,11 +64,11 @@ function geometricMean(arr) {
 
 function allValues(checkpoint) {
 	var str = '[DEBUGGING: '+checkpoint+']';
-	str += 'Cookies in bank: '+Game.cookies;
-	str += 'CBTA: '+Game.cookiesEarned;
-	str += 'CPS: '+Game.cookiesPs;
-	str += decay.gen;
-	str += '[DEBUGGER OF '+checkpoint+' END]'
+	str += '<br>Cookies in bank: '+Game.cookies;
+	str += '<br>CBTA: '+Game.cookiesEarned;
+	str += '<br>CPS: '+Game.cookiesPs;
+	str += '<br>Decay general: '+decay.gen;
+	str += '<br>[DEBUGGER OF '+checkpoint+' END]'
 	console.log(str);
 }
 
@@ -196,6 +196,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
+		decay.gen = decay.mults[20];
 		decay.getTickspeed = function() {
 			var tickSpeed = 1;
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
