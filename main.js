@@ -175,7 +175,7 @@ Game.registerMod("Kaizo Cookies", {
 			var c = decay.update(20, t);
 			if (!isFinite(1 / c)) { if (!isNaN(c)) { console.log('Infinity reached. decay mult: '+c); for (let i in decay.mults) { decay.mults[i] = 1 / Number.MAX_VALUE; } decay.infReached = true; } }
 			for (let i in decay.mults) {
-				//decay.mults[i] = c;
+				decay.mults[i] = c;
 			}
 			decay.regainAcc();
 			if (Game.T % 2) {
@@ -197,7 +197,7 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 			decay.gen = decay.mults[20];
-			Game.updateVeil();
+			//Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
 		decay.getTickspeed = function() {
@@ -1635,6 +1635,7 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in strIn) {
 				if (isv(strIn[i])) { decay.mults[i] = parseFloat(strIn[i]); }
 			}
+			if (isv(strIn[20])) { decay.gen = parseFloat(strIn[20]); }
 			strIn = str[3].split(',');
 			if (isv(strIn[0])) { decay.halt = parseFloat(strIn[0]); }
 			if (isv(strIn[1])) { decay.haltOvertime = parseFloat(strIn[1]); }
