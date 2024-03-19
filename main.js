@@ -1300,6 +1300,11 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Uranium rolling pins'].parents=[Game.Upgrades['Cat ladies']];
 			Game.PrestigeUpgrades.push(Game.Upgrades['Uranium rolling pins']);
 			Game.last.posY=-740; Game.last.posX=800;
+
+			this.achievements.push(new Game.Upgrade('Sparkling blade', ('The Shimmering Veil has a 10% chance to be revived to full health on collapse.')+('<q>Just within reach, yet at what cost?</q>'), 1500000000000000, [23, 34])); Game.last.pool='prestige'; 
+			Game.Upgrades['Sparkling blade'].parents=[Game.Upgrades['Glittering edge']];
+			Game.PrestigeUpgrades.push(Game.Upgrades['Sparkling blade']);
+			Game.last.posY=622; Game.last.posX=-662;
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
@@ -1310,6 +1315,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Unshackled Purity'].order=770;
 			Game.Upgrades['Unshackled Elder Pledge'].order=771;
 			Game.Upgrades['Uranium rolling pins'].order=274;
+			Game.Upgrades['Sparkling blade'].order = 282;
 			LocalizeUpgradesAndAchievs();
 	
 		}
