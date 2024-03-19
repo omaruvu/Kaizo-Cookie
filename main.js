@@ -862,9 +862,9 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilRestoreC = 0;
 		Game.veilPreviouslyCollapsed = false;
 		Game.collapseVeil = function() {
-			if (Game.Has('Sparkling blade') && Math.random() < 0.1) {
+			if (Game.Has('sparkling wonder') && Math.random() < 0.1) {
 				Game.veilHP = Game.veilMaxHP;
-				Game.Notify('Veil revived', 'Your Sparkling blade saved your veil from collapse and healed it back to full health!', [23, 34]);
+				Game.Notify('Veil revived', 'Your sparkling wonder saved your veil from collapse and healed it back to full health!', [23, 34]);
 			} else {
 				Game.Lock('Shimmering veil [on]');
 				Game.Lock('Shimmering veil [off]');
@@ -1306,9 +1306,9 @@ Game.registerMod("Kaizo Cookies", {
 			Game.PrestigeUpgrades.push(Game.Upgrades['Uranium rolling pins']);
 			Game.last.posY=-740; Game.last.posX=800;
 
-			this.achievements.push(new Game.Upgrade('Sparkling blade', ('The <b>Shimmering Veil</b> has a <b>10%</b> chance to be revived to full health on collapse.')+('<q>Just within reach, yet at what cost?</q>'), 1500000000000000, [23, 34])); Game.last.pool='prestige'; 
-			Game.Upgrades['Sparkling blade'].parents=[Game.Upgrades['Glittering edge']];
-			Game.PrestigeUpgrades.push(Game.Upgrades['Sparkling blade']);
+			this.achievements.push(new Game.Upgrade('sparkling wonder', ('The <b>Shimmering Veil</b> has a <b>10%</b> chance to be revived to full health on collapse.')+('<q>Just within reach, yet at what cost?</q>'), 1500000000000000, [23, 34])); Game.last.pool='prestige'; 
+			Game.Upgrades['sparkling wonder'].parents=[Game.Upgrades['Glittering edge']];
+			Game.PrestigeUpgrades.push(Game.Upgrades['sparkling wonder']);
 			Game.last.posY=662; Game.last.posX=-622;
 			
 			Game.Upgrades['Golden sugar'].order=350045
@@ -1320,7 +1320,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Unshackled Purity'].order=770;
 			Game.Upgrades['Unshackled Elder Pledge'].order=771;
 			Game.Upgrades['Uranium rolling pins'].order=275;
-			Game.Upgrades['Sparkling blade'].order = 283;
+			Game.Upgrades['sparkling wonder'].order = 283;
 			LocalizeUpgradesAndAchievs();
 	
 		}
