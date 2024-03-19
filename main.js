@@ -932,6 +932,7 @@ Game.registerMod("Kaizo Cookies", {
 				icon: [5, 0, custImg],
 				costMin: 6,
 				costPercent: 0.35,
+				id: 9,
 				win: function() {
 					decay.purifyAll(50, 0.25, 100);
 					Game.Popup('<div style="font-size:80%;">'+loc("Corruption cleared!")+'</div>',Game.mouseX,Game.mouseY);
