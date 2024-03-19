@@ -941,6 +941,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Popup('<div style="font-size:80%;">'+loc("Backfire! Corruption intensified!")+'</div>',Game.mouseX,Game.mouseY);
 				}
 			}
+			gp.spellsById.push(gp.spells['liquify politician']);
 		}
 
 		Game.rebuildGrimoire = function() {
