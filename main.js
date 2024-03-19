@@ -905,7 +905,7 @@ Game.registerMod("Kaizo Cookies", {
 		veilParticles = veilParticles.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilRevolveFactor(set);');
 		veilParticles = veilParticles.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax(set)*(1-Math.pow(r*2-1,2));');
 		veilParticles = veilParticles.
-		replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(Game.veilParticleSpawnBound(set) * Game.veilParticleSpeed(set) * Math.cos(r));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(Game.veilParticleSpawnBound(set)+Game.veilParticleSpeed(set) * Math.sin(r));');
+		replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(Game.veilParticleSpawnBound(set) - Game.veilParticleSpeed(set) * Math.cos(r));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(Game.veilParticleSpawnBound(set) - Game.veilParticleSpeed(set) * Math.sin(r));');
 		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'; set = 1; '+veilParticles+'; set = 2; '+veilParticles+'; set = 3; '+veilParticles);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
