@@ -510,11 +510,11 @@ Game.registerMod("Kaizo Cookies", {
 		decay.setRates = function() {
 			var d = 1;
 			var c = Game.cookiesEarned;
-			d *= Math.pow(0.999, Math.log10(c));
+			d *= Math.pow(0.998, Math.log10(c));
 			d *= Math.pow(0.9985, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
 			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
 			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
-			d *= Math.pow(0.998, Math.max(Math.pow(decay.getBuildingContribution(), 0.25) - 10, 0));
+			d *= Math.pow(0.9975, Math.max(Math.pow(decay.getBuildingContribution(), 0.25) - 10, 0));
 			d *= Math.pow(0.997, Math.log2(Math.max(Game.lumpsTotal, 1)));
 			d *= Math.pow(0.999, Math.pow(Game.dragonLevel, 0.6));
 			d *= Math.pow(0.9999, Math.log2(Math.max(Date.now() - Game.startDate - 100000, 1))); //hopefully not too bruh
