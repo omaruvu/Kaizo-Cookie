@@ -125,7 +125,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.infReached = false;
 		decay.unlocked = false;
 		if (Game.cookiesEarned > 1000) { decay.unlocked = true; }
-		decay.DEBUG = true; //disable or enable the debugger statements
+		decay.DEBUG = false; //disable or enable the debugger statements
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
@@ -1251,8 +1251,10 @@ Game.registerMod("Kaizo Cookies", {
 				eval("Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].fail="+Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].fail.toString().replace(`var val=Math.min(Game.cookies*0.15,Game.cookiesPs*60*15)+13;`,`var val=Math.min(Game.cookies*0.5)+13;`));
 
 				//desc
-				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].desc=loc("+20% prestige level effect on CpS for 20 seconds.");
-				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].failDesc=loc("Trigger a %1-minute clot and lose half of your cookies owned.",15);
+				addLoc('+%1% prestige level effect on CpS for 20 seconds.');
+				addLoc('Trigger a %1-minute clot and lose %2% of your cookies owned.');
+				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].desc=loc("+%1% prestige level effect on CpS for 20 seconds.", 20);
+				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].failDesc=loc("Trigger a %1-minute clot and lose %2% of your cookies owned.", [15, 50]);
 			}
 		});
 
@@ -1282,6 +1284,12 @@ Game.registerMod("Kaizo Cookies", {
             var id=Game.Objects[i].id;
             if (!(i=='Cursor')) {s.ddesc=s.ddesc.replace(s.ddesc.slice(0,s.ddesc.indexOf('<q>')),'Tiered upgrades for <b>'+i+'</b> provide an extra <b>'+(id==1?'45':(20-id)*9)+'%</b> production.<br>Only works with unshackled upgrade tiers.');}
         }
+
+		Game.registerHook('check', function() {
+			if (Game.goldenClicks>=1) { Game.Unlock('Lucky day'); }
+			if (Game.goldenClicks>=3) { Game.Unlock('Serendipity'); }
+			if (Game.goldenClicks>=7) { Game.Unlock('Get lucky'); }
+		});
 
         Game.Upgrades['Pure heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000
         Game.Upgrades['Ardent heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000
