@@ -65,11 +65,11 @@ function geometricMean(arr) {
 function allValues(checkpoint) {
 	if (!decay.DEBUG) { return false; }
 	var str = '[DEBUGGING: '+checkpoint+']';
-	str += '<br>Cookies in bank: '+Game.cookies;
-	str += '<br>CBTA: '+Game.cookiesEarned;
-	str += '<br>CPS: '+Game.cookiesPs;
-	str += '<br>Decay general: '+decay.gen;
-	str += '<br>[DEBUGGER OF '+checkpoint+' END]'
+	str += '\nCookies in bank: '+Game.cookies;
+	str += '\nCBTA: '+Game.cookiesEarned;
+	str += '\nCPS: '+Game.cookiesPs;
+	str += '\nDecay general: '+decay.gen;
+	str += '\n[DEBUGGER OF '+checkpoint+' END]'
 	console.log(str);
 }
 
@@ -116,13 +116,13 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.pastCapPow = 0.75; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.cpsList = [];
-		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery'];
+		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
 		decay.justMult = 0; //debugging use
 		decay.infReached = false;
 		decay.unlocked = false;
 		if (Game.cookiesEarned > 1000) { decay.unlocked = true; }
-		decay.DEBUG = false; //disable or enable the debugger statements
+		decay.DEBUG = true; //disable or enable the debugger statements
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
@@ -197,7 +197,7 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 			decay.gen = decay.mults[20];
-			Game.updateVeil();
+			//Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
 		decay.getTickspeed = function() {
@@ -213,6 +213,8 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
 			tickSpeed *= Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1));
 			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
+			if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
+			if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
 
 			return tickSpeed;
 		}
@@ -558,18 +560,23 @@ Game.registerMod("Kaizo Cookies", {
 		addLoc('+%1/min');
 		Game.registerHook('check', () => {
 			if (Game.Objects['Wizard tower'].minigameLoaded && !grimoireUpdated) {
-				var gp = Game.Objects['Wizard tower'].minigame
+				var gp = Game.Objects['Wizard tower'].minigame;
 				var M = gp;
+				decay.addSpells();
+				Game.rebuildGrimoire();
 				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
 				eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
-				eval('gp.draw='+M.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
+				eval('gp.draw='+gp.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
 														 `Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,3))+')'):'')`)
 					.replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
 						 `loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]); M.infoL.innerHTML+="; Magic regen multiplier from "+decay.term(decay.gen)+": "+decay.effectStrs([function(n, i) { return Math.pow(Math.min(2, n), 0.3)}]); `));
 				eval('gp.draw='+replaceAll('M.','gp.',gp.draw.toString()));		
 				eval('gp.spells["hand of fate"].win='+gp.spells["hand of fate"].win.toString().replace(`if (Game.BuildingsOwned>=10 && Math.random()<0.25) choices.push('building special');`, 'decay.triggerNotif("fthof");'));
 				eval('gp.spells["hand of fate"].fail='+gp.spells["hand of fate"].fail.toString().replace(`if (Math.random()<0.1) choices.push('cursed finger','blood frenzy');`, `if (Math.random()<0.1) choices.push('cursed finger'); decay.triggerNotif("fthof");`));
+				/*makes it so that the tooltips can support custom icons*/eval('gp.spellTooltip='+replaceAll('M.', 'gp.', gp.spellTooltip.toString()));
+				eval('gp.spellTooltip='+gp.spellTooltip.toString().replace(`background-position:'+(-me.icon[0]*48)+'px '+(-me.icon[1]*48)+'px;`, `'+writeIcon(me.icon)+'`));
 				grimoireUpdated = true; //no more unnecessary replacing 
+				allValues('spells activated');
 			}
 		});
 		function inRect(x,y,rect)
@@ -915,6 +922,152 @@ Game.registerMod("Kaizo Cookies", {
 		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'; set = 1; '+veilParticles+'; set = 2; '+veilParticles+'; set = 3; '+veilParticles);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
+		allValues('veil');
+		
+		//SPELLS
+		decay.addSpells = function() {
+			addLoc('Liquify politician');
+			addLoc('Purifies a lot of decay with a very high purity limit.');
+			addLoc('Amplifies your decay.');
+			addLoc('Corruption cleared!');
+			addLoc('Backfire! Corruption intensified!');
+			gp.spells['liquify politician'] = {
+				name: loc('Liquify politician'),
+				desc: loc('Purifies a lot of decay with a very high purity limit.'),
+				failDesc: loc('Amplifies your decay.'),
+				icon: [5, 0, custImg],
+				costMin: 6,
+				costPercent: 0.45,
+				id: 9,
+				win: function() {
+					decay.purifyAll(50, 0.25, 100);
+					Game.Popup('<div style="font-size:80%;">'+loc("Corruption cleared!")+'</div>',Game.mouseX,Game.mouseY);
+				},
+				fail: function() {
+					decay.purifyAll(0.1, -0.5, 1);
+					Game.Popup('<div style="font-size:80%;">'+loc("Backfire! Corruption intensified!")+'</div>',Game.mouseX,Game.mouseY);
+				}
+			}
+			gp.spellsById.push(gp.spells['liquify politician']);
+			addLoc('Manifest spring');
+			addLoc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)');
+			addLoc('Decay propagation is %1% faster for the next %2 minutes.');
+			addLoc('The water shall flow!');
+			addLoc('Oops! Pipes broken!');
+			gp.spells['manifest spring'] = {
+				name: loc('Manifest spring'),
+				desc: loc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)', [20, 2]),
+				failDesc: loc('Decay propagation is %1% faster for the next %2 minutes.', [50, 2]),
+				icon: [6, 0, custImg],
+				costMin: 10,
+				costPercent: 0.15,
+				id: 10,
+				win: function() {
+					if (!Game.hasBuff('Unending flow')) {
+						Game.gainBuff('unending flow', 120, 0.2);
+					} else {
+						Game.hasBuff('Unending flow').arg1 = Game.hasBuff('Unending flow').arg1 + (0.2 * (1 - Game.hasBuff('Unending flow').arg1));
+					}
+					Game.Popup('<div style="font-size:80%;">'+loc("The water shall flow!")+'</div>',Game.mouseX,Game.mouseY);
+				},
+				fail: function() {
+					Game.gainBuff('stagnant body', 120, 0.5);
+					Game.Popup('<div style="font-size:80%;">'+loc("Oops! Pipes broken!")+'</div>',Game.mouseX,Game.mouseY);
+				}
+			}
+			gp.spellsById.push(gp.spells['manifest spring']);
+			addLoc('Unending flow');
+			new Game.buffType('unending flow', function(time, pow) {
+			return {
+					name: loc('Unending flow'),
+					desc: loc('Decay propagation rate -%1% for %2!', [pow * 100, Game.sayTime(time*Game.fps,-1)]),
+					icon: [6, 0, custImg],
+					time: time*Game.fps,
+					add: false,
+					max: false,
+					aura: 0
+				}
+			});
+			addLoc('Stagnant body');
+			addLoc('Decay propagation rate +%1% for %2!');
+			new Game.buffType('stagnant body', function(time, pow) {
+			return {
+					name: loc('Stagnant body'),
+					desc: loc('Decay propagation rate +%1% for %2!', [pow * 100, Game.sayTime(time*Game.fps,-1)]),
+					icon: [30, 3],
+					time: time*Game.fps,
+					add: false,
+					max: false,
+					aura: 0
+				}
+			});
+		}
+
+		Game.rebuildGrimoire = function() {
+			if (typeof gp === 'undefined') { return false; }
+			let M = gp;
+			var str='';
+			str+='<style>'+
+			'#grimoireBG{background:url('+Game.resPath+'img/shadedBorders.png),url('+Game.resPath+'img/BGgrimoire.jpg);background-size:100% 100%,auto;position:absolute;left:0px;right:0px;top:0px;bottom:16px;}'+
+			'#grimoireContent{position:relative;box-sizing:border-box;padding:4px 24px;}'+
+			'#grimoireBar{max-width:95%;margin:4px auto;height:16px;}'+
+			'#grimoireBarFull{transform:scale(1,2);transform-origin:50% 0;height:50%;}'+
+			'#grimoireBarText{transform:scale(1,0.8);width:100%;position:absolute;left:0px;top:0px;text-align:center;color:#fff;text-shadow:-1px 1px #000,0px 0px 4px #000,0px 0px 6px #000;margin-top:2px;}'+
+			'#grimoireSpells{text-align:center;width:100%;padding:8px;box-sizing:border-box;}'+
+			'.grimoireIcon{pointer-events:none;margin:2px 6px 0px 6px;width:48px;height:48px;opacity:0.8;position:relative;}'+
+			'.grimoirePrice{pointer-events:none;}'+
+			'.grimoireSpell{box-shadow:4px 4px 4px #000;cursor:pointer;position:relative;color:#f33;opacity:0.8;text-shadow:0px 0px 4px #000,0px 0px 6px #000;font-weight:bold;font-size:12px;display:inline-block;width:60px;height:74px;background:url('+Game.resPath+'img/spellBG.png);}'+
+			'.grimoireSpell.ready{color:rgba(255,255,255,0.8);opacity:1;}'+
+			'.grimoireSpell.ready:hover{color:#fff;}'+
+			'.grimoireSpell:hover{box-shadow:6px 6px 6px 2px #000;z-index:1000000001;top:-1px;}'+
+			'.grimoireSpell:active{top:1px;}'+
+			'.grimoireSpell.ready .grimoireIcon{opacity:1;}'+
+			'.grimoireSpell:hover{background-position:0px -74px;} .grimoireSpell:active{background-position:0px 74px;}'+
+			'.grimoireSpell:nth-child(4n+1){background-position:-60px 0px;} .grimoireSpell:nth-child(4n+1):hover{background-position:-60px -74px;} .grimoireSpell:nth-child(4n+1):active{background-position:-60px 74px;}'+
+			'.grimoireSpell:nth-child(4n+2){background-position:-120px 0px;} .grimoireSpell:nth-child(4n+2):hover{background-position:-120px -74px;} .grimoireSpell:nth-child(4n+2):active{background-position:-120px 74px;}'+
+			'.grimoireSpell:nth-child(4n+3){background-position:-180px 0px;} .grimoireSpell:nth-child(4n+3):hover{background-position:-180px -74px;} .grimoireSpell:nth-child(4n+3):active{background-position:-180px 74px;}'+
+			
+			'.grimoireSpell:hover .grimoireIcon{top:-1px;}'+
+			'.grimoireSpell.ready:hover .grimoireIcon{animation-name:bounce;animation-iteration-count:infinite;animation-duration:0.8s;}'+
+			'.noFancy .grimoireSpell.ready:hover .grimoireIcon{animation:none;}'+
+			
+			'#grimoireInfo{text-align:center;font-size:11px;margin-top:12px;color:rgba(255,255,255,0.75);text-shadow:-1px 1px 0px #000;}'+
+			'</style>';
+			str+='<div id="grimoireBG"></div>';
+			str+='<div id="grimoireContent">';
+				str+='<div id="grimoireSpells">';//did you know adding class="shadowFilter" to this cancels the "z-index:1000000001" that displays the selected spell above the tooltip? stacking orders are silly https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
+				for (var i in M.spells)
+				{
+					var me=M.spells[i];
+					var icon=me.icon||[28,12];
+					str+='<div class="grimoireSpell titleFont" id="grimoireSpell'+me.id+'" '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.spellTooltip('+me.id+')','this')+'><div class="usesIcon shadowFilter grimoireIcon" style="'+writeIcon(icon)+'"></div><div class="grimoirePrice" id="grimoirePrice'+me.id+'">-</div></div>';
+				}
+				str+='</div>';
+				var icon=[29,14];
+				str+='<div id="grimoireBar" class="smallFramed meterContainer" style="width:1px;"><div '+Game.getDynamicTooltip('Game.ObjectsById['+M.parent.id+'].minigame.refillTooltip','this')+' id="grimoireLumpRefill" class="usesIcon shadowFilter lumpRefill" style="left:-40px;top:-17px;background-position:'+(-icon[0]*48)+'px '+(-icon[1]*48)+'px;"></div><div id="grimoireBarFull" class="meter filling" style="width:1px;"></div><div id="grimoireBarText" class="titleFont"></div><div '+Game.getTooltip('<div style="padding:8px;width:300px;font-size:11px;text-align:center;">'+loc("This is your magic meter. Each spell costs magic to use.<div class=\"line\"></div>Your maximum amount of magic varies depending on your amount of <b>Wizard towers</b>, and their level.<div class=\"line\"></div>Magic refills over time. The lower your magic meter, the slower it refills.")+'</div>')+' style="position:absolute;left:0px;top:0px;right:0px;bottom:0px;"></div></div>';
+				str+='<div id="grimoireInfo"></div>';
+			str+='</div>';
+			l('rowSpecial7').innerHTML=str;
+			M.magicBarL=l('grimoireBar');
+			M.magicBarFullL=l('grimoireBarFull');
+			M.magicBarTextL=l('grimoireBarText');
+			M.lumpRefill=l('grimoireLumpRefill');
+			M.infoL=l('grimoireInfo');
+			for (var i in M.spells)
+			{
+				var me=M.spells[i];
+				AddEvent(l('grimoireSpell'+me.id),'click',function(spell){return function(){PlaySound('snd/tick.mp3');M.castSpell(spell);}}(me));
+			}
+			AddEvent(M.lumpRefill,'click',function(){
+				if (M.magic<M.magicM)
+				{Game.refillLump(1,function(){
+					M.magic+=100;
+					M.magic=Math.min(M.magic,M.magicM);
+					PlaySound('snd/pop'+Math.floor(Math.random()*3+1)+'.mp3',0.75);
+				});}
+			});
+		}
+
 		//other nerfs and buffs down below (unrelated but dont know where else to put them)
 		
 		//Shimmer pool
@@ -926,7 +1079,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Objects[i].level = Math.max(1, Game.Objects[i].level);
 		}
 
-		allValues('veil; decay complete');
+		allValues('spells; decay complete');
 
 		/*=====================================================================================
         Minigames 
@@ -1271,6 +1424,24 @@ Game.registerMod("Kaizo Cookies", {
 		allValues('pantheon');
 
 		/*=====================================================================================
+        News ticker
+        =======================================================================================*/
+		decay.getNews = function() {
+			var newList = [];
+			//add your new messages here
+			return newList;
+		}
+		Game.registerHook('ticker', decay.getNews);
+
+		Game.changeNews = function(message, newMessage) {
+			eval('Game.getNewTicker='+Game.getNewTicker.toString().replace(message, newMessage));
+		}
+		Game.removeNews = function(message, noComma) {
+			var comma = ','; if (noComma) { comma = ''; }
+			eval('Game.getNewTicker='+Game.getNewTicker.toString().replace("'"+message+"'"+comma, newMessage));
+		}
+
+		/*=====================================================================================
         Custom upgrade
         =======================================================================================*/
 
@@ -1482,6 +1653,8 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in strIn) {
 				if (isv(strIn[i])) { decay.mults[i] = parseFloat(strIn[i]); }
 			}
+			allValues('load; upgrades and decay basic');
+			if (isv(strIn[20])) { decay.gen = parseFloat(strIn[20]); }
 			strIn = str[3].split(',');
 			if (isv(strIn[0])) { decay.halt = parseFloat(strIn[0]); }
 			if (isv(strIn[1])) { decay.haltOvertime = parseFloat(strIn[1]); }
@@ -1490,6 +1663,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (isv(strIn[1])) { Game.pledgeC = parseFloat(strIn[1]); }
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
 			strIn = str[5].split(',');
+			allValues('load; pledge and halt');
 			if (isv(strIn[0])) { Game.veilHP = parseFloat(strIn[0]); }
 			if (Game.Has('Shimmering veil')) { 
 				Game.Logic();
@@ -1516,6 +1690,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (isv(strIn[2])) { Game.veilRestoreC = parseFloat(strIn[2]); }
 			if (isv(strIn[3])) { Game.veilPreviouslyCollapsed = Boolean(strIn[3]); }
+			allValues('load; veil');
 			var counter = 0;
 			strIn = str[6].split(',');
 			for (let i in decay.prefs.preventNotifs) {
