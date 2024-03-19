@@ -122,7 +122,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.infReached = false;
 		decay.unlocked = false;
 		if (Game.cookiesEarned > 1000) { decay.unlocked = true; }
-		decay.DEBUG = false; //disable or enable the debugger statements
+		decay.DEBUG = true; //disable or enable the debugger statements
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
@@ -576,6 +576,7 @@ Game.registerMod("Kaizo Cookies", {
 				/*makes it so that the tooltips can support custom icons*/eval('gp.spellTooltip='+replaceAll('M.', 'gp.', gp.spellTooltip.toString()));
 				eval('gp.spellTooltip='+gp.spellTooltip.toString().replace(`background-position:'+(-me.icon[0]*48)+'px '+(-me.icon[1]*48)+'px;`, `'+writeIcon(me.icon)+'`));
 				grimoireUpdated = true; //no more unnecessary replacing 
+				allValues('spells activated');
 			}
 		});
 		function inRect(x,y,rect)
@@ -921,6 +922,7 @@ Game.registerMod("Kaizo Cookies", {
 		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'; set = 1; '+veilParticles+'; set = 2; '+veilParticles+'; set = 3; '+veilParticles);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
+		allValues('veil');
 		
 		//SPELLS
 		decay.addSpells = function() {
@@ -1077,7 +1079,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Objects[i].level = Math.max(1, Game.Objects[i].level);
 		}
 
-		allValues('veil; decay complete');
+		allValues('spells; decay complete');
 
 		/*=====================================================================================
         Minigames 
