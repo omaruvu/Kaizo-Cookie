@@ -65,11 +65,11 @@ function geometricMean(arr) {
 function allValues(checkpoint) {
 	if (!decay.DEBUG) { return false; }
 	var str = '[DEBUGGING: '+checkpoint+']';
-	str += '<br>Cookies in bank: '+Game.cookies;
-	str += '<br>CBTA: '+Game.cookiesEarned;
-	str += '<br>CPS: '+Game.cookiesPs;
-	str += '<br>Decay general: '+decay.gen;
-	str += '<br>[DEBUGGER OF '+checkpoint+' END]'
+	str += '\nCookies in bank: '+Game.cookies;
+	str += '\nCBTA: '+Game.cookiesEarned;
+	str += '\nCPS: '+Game.cookiesPs;
+	str += '\nDecay general: '+decay.gen;
+	str += '\n[DEBUGGER OF '+checkpoint+' END]'
 	console.log(str);
 }
 
@@ -560,9 +560,9 @@ Game.registerMod("Kaizo Cookies", {
 		addLoc('+%1/min');
 		Game.registerHook('check', () => {
 			if (Game.Objects['Wizard tower'].minigameLoaded && !grimoireUpdated) {
-				var gp = Game.Objects['Wizard tower'].minigame
+				var gp = Game.Objects['Wizard tower'].minigame;
 				var M = gp;
-				decay.addSpells();
+				//decay.addSpells();
 				Game.rebuildGrimoire();
 				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
 				eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
