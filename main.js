@@ -1424,6 +1424,24 @@ Game.registerMod("Kaizo Cookies", {
 		allValues('pantheon');
 
 		/*=====================================================================================
+        News ticker
+        =======================================================================================*/
+		decay.getNews = function() {
+			var newList = [];
+			//add your new messages here
+			return newList;
+		}
+		Game.registerHook('ticker', decay.getNews);
+
+		Game.changeNews = function(message, newMessage) {
+			eval('Game.getNewTicker='+Game.getNewTicker.toString().replace(message, newMessage));
+		}
+		Game.removeNews = function(message, noComma) {
+			var comma = ','; if (noComma) { comma = ''; }
+			eval('Game.getNewTicker='+Game.getNewTicker.toString().replace("'"+message"'"+comma, newMessage));
+		}
+
+		/*=====================================================================================
         Custom upgrade
         =======================================================================================*/
 
