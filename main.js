@@ -1309,7 +1309,7 @@ Game.registerMod("Kaizo Cookies", {
 			this.achievements.push(new Game.Upgrade('Sparkling blade', ('The <b>Shimmering Veil</b> has a <b>10%</b> chance to be revived to full health on collapse.')+('<q>Just within reach, yet at what cost?</q>'), 1500000000000000, [23, 34])); Game.last.pool='prestige'; 
 			Game.Upgrades['Sparkling blade'].parents=[Game.Upgrades['Glittering edge']];
 			Game.PrestigeUpgrades.push(Game.Upgrades['Sparkling blade']);
-			Game.last.posY=622; Game.last.posX=-662;
+			Game.last.posY=662; Game.last.posX=-622;
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
