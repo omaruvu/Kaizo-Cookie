@@ -272,7 +272,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		//stands for "regain acceleration"
 		decay.regainAcc = function() { 
-			var decHaltMult = Math.pow(decay.getTickSpeed(), decay.haltTickingPow);
+			var decHaltMult = Math.pow(decay.getTickspeed(), decay.haltTickingPow);
     		decay.halt = Math.max(0, decay.halt - decay.decHalt * decHaltMult / Game.fps);
 			if (decay.halt == 0) {
 				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt * decHaltMult / Game.fps);
