@@ -956,7 +956,7 @@ Game.registerMod("Kaizo Cookies", {
 			addLoc('Oops! Pipes broken!');
 			gp.spells['manifest spring'] = {
 				name: loc('Manifest spring'),
-				desc: loc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)', [10, 2]),
+				desc: loc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)', [20, 2]),
 				failDesc: loc('Decay propagation is %1% faster for the next %2 minutes.', [50, 2]),
 				icon: [6, 0, custImg],
 				costMin: 10,
@@ -964,9 +964,9 @@ Game.registerMod("Kaizo Cookies", {
 				id: 10,
 				win: function() {
 					if (!Game.hasBuff('Unending flow')) {
-						Game.gainBuff('unending flow', 120, 0.1);
+						Game.gainBuff('unending flow', 120, 0.2);
 					} else {
-						Game.hasBuff('Unending flow').arg1 = Game.hasBuff('Unending flow').arg1 + (0.1 * (1 - Game.hasBuff('Unending flow').arg1));
+						Game.hasBuff('Unending flow').arg1 = Game.hasBuff('Unending flow').arg1 + (0.2 * (1 - Game.hasBuff('Unending flow').arg1));
 					}
 					Game.Popup('<div style="font-size:80%;">'+loc("The water shall flow!")+'</div>',Game.mouseX,Game.mouseY);
 				},
@@ -1626,7 +1626,6 @@ Game.registerMod("Kaizo Cookies", {
 		console.log('Kaizo Cookies loaded. Save string: '+str);
 		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, wrinklers sucked]
 		if (str[0][0] == 'v') {
-			/*
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
             	if (isv(str[1][i])) { this.achievements[i / 2].unlocked=Number(str[1][i]); }
@@ -1636,6 +1635,7 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in strIn) {
 				if (isv(strIn[i])) { decay.mults[i] = parseFloat(strIn[i]); }
 			}
+			allValues('load; upgrades and decay basic');
 			if (isv(strIn[20])) { decay.gen = parseFloat(strIn[20]); }
 			strIn = str[3].split(',');
 			if (isv(strIn[0])) { decay.halt = parseFloat(strIn[0]); }
@@ -1645,6 +1645,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (isv(strIn[1])) { Game.pledgeC = parseFloat(strIn[1]); }
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
 			strIn = str[5].split(',');
+			allValues('load; pledge and halt');
 			if (isv(strIn[0])) { Game.veilHP = parseFloat(strIn[0]); }
 			if (Game.Has('Shimmering veil')) { 
 				Game.Logic();
@@ -1671,6 +1672,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (isv(strIn[2])) { Game.veilRestoreC = parseFloat(strIn[2]); }
 			if (isv(strIn[3])) { Game.veilPreviouslyCollapsed = Boolean(strIn[3]); }
+			allValues('load; veil');
 			var counter = 0;
 			strIn = str[6].split(',');
 			for (let i in decay.prefs.preventNotifs) {
@@ -1683,7 +1685,6 @@ Game.registerMod("Kaizo Cookies", {
 				counter++;
 			}
 			strIn = str[7];
-   			*/
 			//pending...
 		} else {
 			str = str[0];
