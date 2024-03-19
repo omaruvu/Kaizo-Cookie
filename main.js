@@ -665,7 +665,7 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Elder spice', 'You attracts <b>2</b> less wrinklers.');
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen)) } else { buff.time--; }'));
 
-		Game.registerHook('cps', function(m) { return m * (1 + 7 * Math.pow(1 - decay.incMult, 12)); }); //octuples cps to make up for the decay
+		Game.registerHook('cps', function(m) { return m * (2 + 14 * Math.pow(1 - decay.incMult, 12)); }); //octuples cps to make up for the decay
 
 		allValues('decay effects');
 		
