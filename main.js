@@ -596,7 +596,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('check', decay.setRates);
 		//make certain actions force a setRate
 		for (let i in Game.Objects) {
-			eval('Game.Objects["'+i+'"].buy='+Game.Objects[i].buy.toString().replace('if (this.buyFunction) this.buyFunction();', 'if (this.buyFunction) { this.buyFunction(); } decay.setRates();');
+			eval('Game.Objects["'+i+'"].buy='+Game.Objects[i].buy.toString().replace('if (this.buyFunction) this.buyFunction();', 'if (this.buyFunction) { this.buyFunction(); } decay.setRates();'));
 		}
 		//the other actions are in their respective minigame sections
 
