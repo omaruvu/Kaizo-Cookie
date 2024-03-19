@@ -74,8 +74,10 @@ function allValues(checkpoint) {
 }
 
 var gp = Game.Objects['Wizard tower'].minigame //grimoire proxy
+var pp = Game.Objects['Temple'].minigame //pantheon proxy
 var grimoireUpdated = false;
 var gardenUpdated = false;
+var pantheonUpdated = false;
 
 Game.registerMod("Kaizo Cookies", { 
 	init: function() { 
@@ -111,10 +113,11 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltKeep = 0.25; //the fraction of halt time that is kept when halted again
 		decay.haltOTDec = 0.5; //"halt overtime decrease", decHalt also applies to overtime but multiplied by this
 		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
+		decay.haltTickingPow = 2; //the more it is, the less that the current decay tickspeed will affect decHalt
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
-		decay.pastCapPow = 0.75; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
+		decay.pastCapPow = 0.15; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
@@ -122,7 +125,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.infReached = false;
 		decay.unlocked = false;
 		if (Game.cookiesEarned > 1000) { decay.unlocked = true; }
-		decay.DEBUG = true; //disable or enable the debugger statements
+		decay.DEBUG = false; //disable or enable the debugger statements
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
@@ -138,7 +141,8 @@ Game.registerMod("Kaizo Cookies", {
 				buff: 0,
 				multipleBuffs: 0,
 				fthof: 0,
-				purityCap: 0
+				purityCap: 0,
+				buildVariance: 0
 			},
 			firstNotif: {
 				initiate: 1,
@@ -152,7 +156,8 @@ Game.registerMod("Kaizo Cookies", {
 				buff: 1,
 				multipleBuffs: 1,
 				fthof: 1,
-				purityCap: 0
+				purityCap: 1,
+				buildVariance: 1
 			}
 		}
 		decay.notifCalls = {
@@ -161,7 +166,8 @@ Game.registerMod("Kaizo Cookies", {
 			gpoc: 0,
 			decayII: 0,
 			buff: 0,
-			multipleBuffs: 0
+			multipleBuffs: 0,
+			buildVariance: 0
 		}
 		decay.update = function(buildId, tickSpeed) { 
 			if (Game.Has('Purity vaccines')) { return decay.mults[buildId]; }
@@ -266,11 +272,12 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		//stands for "regain acceleration"
 		decay.regainAcc = function() { 
-    		decay.halt = Math.max(0, decay.halt - decay.decHalt / Game.fps);
+			var decHaltMult = Math.pow(decay.getTickspeed(), decay.haltTickingPow);
+    		decay.halt = Math.max(0, decay.halt - decay.decHalt * decHaltMult / Game.fps);
 			if (decay.halt == 0) {
-				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt / Game.fps);
+				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt * decHaltMult / Game.fps);
 			} else {
-				decay.haltOvertime = Math.max(0, decay.haltOvertime - (decay.decHalt * decay.haltOTDec) / Game.fps);
+				decay.haltOvertime = Math.max(0, decay.haltOvertime - (decay.decHalt * decHaltMult * decay.haltOTDec) / Game.fps);
 			}
 		}
 		decay.stop = function(val) {
@@ -376,6 +383,14 @@ Game.registerMod("Kaizo Cookies", {
 				icon: [2, 1, custImg],
 				pref: 'decay.prefs.preventNotifs.purityCap',
 				first: 'decay.prefs.firstNotif.purityCap'
+			},
+			buildVariance: {
+				title: 'Building size',
+				desc: 'You might know that your amount of buildings affect decay, but did you know that the buildings\' size affects it too? The more space that a building would take up lore-wise, the more decay it contributes.',
+				icon: [2, 6],
+				pref: 'decay.prefs.preventNotifs.buildVariance',
+				first: 'decay.prefs.firstNotif.buildVariance',
+				nocall: 'decay.notifCalls.buildVariance'
 			}
 		}
 		decay.triggerNotif = function(key) {
@@ -400,6 +415,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.incMult < 0.04) { decay.notifCalls['decayII'] = 0; }
 			if (!Game.buffCount()) { decay.notifCalls['buff'] = 0; }
 			if (!(Game.buffCount() - 1)) { decay.notifCalls['multipleBuffs'] = 0; }
+			if (Game.Objects['Idleverse'].amount == 0 && Game.Objects['Cortex baker'].amount == 0) { decay.notifCalls['buildVariance'] = 0; }
 		}
 		Game.buffCount = function() {
 			var count = 0;
@@ -420,6 +436,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.incMult >= 0.04) { decay.triggerNotif('decayII'); }
 			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
 			if (Game.gcBuffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
+			if (Game.Objects['Idleverse'].amount > 0 && Game.Objects['Cortex baker'].amount > 0) { decay.triggerNotif('buildVariance'); }
 		}
 		Game.registerHook('logic', decay.checkTriggerNotifs);
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
@@ -510,11 +527,11 @@ Game.registerMod("Kaizo Cookies", {
 		decay.setRates = function() {
 			var d = 1;
 			var c = Game.cookiesEarned;
-			d *= Math.pow(0.999, Math.log10(c));
-			d *= Math.pow(0.99825, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
-			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
-			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
-			d *= Math.pow(0.9975, Math.max(Math.pow(Game.BuildingsOwned, 0.33) - 10, 0));
+			d *= Math.pow(0.99775, Math.log10(c));
+			d *= Math.pow(0.9985, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
+			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
+			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
+			d *= Math.pow(0.9975, Math.max(Math.pow(decay.getBuildingContribution(), 0.33) - 10, 0));
 			d *= Math.pow(0.997, Math.log2(Math.max(Game.lumpsTotal, 1)));
 			d *= Math.pow(0.999, Math.pow(Game.dragonLevel, 0.6));
 			d *= Math.pow(0.9999, Math.log2(Math.max(Date.now() - Game.startDate - 100000, 1))); //hopefully not too bruh
@@ -540,13 +557,48 @@ Game.registerMod("Kaizo Cookies", {
 
 			decay.min = Math.min(1, 0.15 + (1 - d) * 3.5);
 
-			var dh = 0.33;
-			dh *= Math.pow(1.012, Math.log10(c));
-			dh *= 1 / d;
+			var dh = 0.25;
+			dh *= 1 / Math.pow(d, 2);
 			decay.decHalt = dh;
+		}
+		decay.getBuildingContribution = function() {
+			//the bigger the building, the more "space" they take up, thus increasing decay by more
+			var c = 0;
+			var add = 0;
+			if (Game.Has('Thousand fingers')) add +=    Game.BuildingsOwned; 
+			if (Game.Has('Million fingers')) add*=		5;
+			if (Game.Has('Billion fingers')) add*=		10;
+			if (Game.Has('Trillion fingers')) add*=		20;
+			if (Game.Has('Quadrillion fingers')) add*=	20;
+			if (Game.Has('Quintillion fingers')) add*=	20;
+			if (Game.Has('Sextillion fingers')) add*=	20;
+			if (Game.Has('Septillion fingers')) add*=	20;
+			if (Game.Has('Octillion fingers')) add*=	20;
+			if (Game.Has('Nonillion fingers')) add*=	20;
+			if (Game.Has('Decillion fingers')) add*=	20;
+			if (Game.Has('Undecillion fingers')) add*=	20;
+			if (Game.Has('Unshackled cursors')) add*=	25;
+			c += Math.log10(add) * Game.Objects['Cursor'].amount * 0.1;
+			var grandmaPer = 1;
+			if (Game.Has('One mind')) { grandmaPer += Game.Objects['Grandma'].amount / 100; }
+			if (Game.Has('Communal brainsweep')) { grandmaPer += Game.Objects['Grandma'].amount / 100; }
+			if (Game.Has('Elder Pact')) { grandmaPer += Game.Objects['Portal'].amount / 40; }
+			c += grandmaPer + Game.Objects['Grandma'].amount;
+			c += Game.Objects['Farm'].amount * 3 + Game.Objects['Mine'].amount * 3 + Game.Objects['Factory'].amount * 1.5 + Game.Objects['Bank'].amount * 1.25;
+			c += Game.Objects['Temple'].amount * 1.25 + Game.Objects['Wizard tower'].amount + Game.Objects['Shipment'].amount + Game.Objects['Alchemy lab'].amount;
+			c += Game.Objects['Portal'].amount * (1 + Game.Has('Deity-sized portals') * 1.5) + Game.Objects['Time machine'].amount;
+			c += Game.Objects['Antimatter condenser'].amount * 2.5 + Game.Objects['Prism'].amount + Game.Objects['Chancemaker'].amount * 1.5;
+			c += Game.Objects['Fractal engine'].amount * 2.71828 + Math.pow(Game.Objects['Javascript console'].amount, 1.25);
+			c += Game.Objects['Idleverse'].amount * 20 + Game.Objects['Cortex baker'].amount * 12 + Game.Objects['You'].amount;
+			return c;
 		}
 		decay.setRates();
 		Game.registerHook('check', decay.setRates);
+		//make certain actions force a setRate
+		for (let i in Game.Objects) {
+			eval('Game.Objects["'+i+'"].buy='+Game.Objects[i].buy.toString().replace('if (this.buyFunction) this.buyFunction();', 'if (this.buyFunction) { this.buyFunction(); } decay.setRates();'));
+		}
+		//the other actions are in their respective minigame sections
 
 		allValues('decay ui and scaling');
 		
@@ -595,7 +647,7 @@ Game.registerMod("Kaizo Cookies", {
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen, decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*Game.eff("wrinklerApproach")*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Game.cookiesPs)/Game.fps; }'));
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Math.max(Game.cookiesPsRawHighest, Game.cookiesPs))/Game.fps; }'));
 		addLoc('-%1!');
 		addLoc('You lost <b>%1</b>!');
 		eval('Game.UpdateWrinklers='+replaceAll("var godLvl=Game.hasGod('scorn');", 'var godLvl=0;', Game.UpdateWrinklers.toString()));
@@ -613,7 +665,7 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Elder spice', 'You attracts <b>2</b> less wrinklers.');
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen)) } else { buff.time--; }'));
 
-		Game.registerHook('cps', function(m) { return m * (1 + 7 * Math.pow(1 - decay.incMult, 12)); }); //octuples cps to make up for the decay
+		Game.registerHook('cps', function(m) { return m * (2 + 14 * Math.pow(1 - decay.incMult, 12)); }); //octuples cps to make up for the decay
 
 		allValues('decay effects');
 		
@@ -654,7 +706,7 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('One mind', 'Each grandma gains <b>+0.0<span></span>2 base CpS per grandma</b>.<br>Also unlocks the <b>Elder Pledge</b>, which slowly purifies the decay for some cookies.<q>Repels the ancient evil with industrial magic.</q>');
 		replaceDesc('Exotic nuts', 'Cookie production multiplier <b>+4%</b>, and <b>halves</b> the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
 		replaceDesc('Communal brainsweep', 'Each grandma gains another <b>+0.0<span></span>2 base CpS per grandma</b>, and makes the Elder Pledge purify for <b>twice as much time</b>.<q>Burns the corruption with the worker\'s might.</q>');
-		replaceDesc('Arcane sugar', 'Cookie production multiplier <b>+5%</b>, and <b>halves</b> the Elder Pledge cooldown, and halves the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
+		replaceDesc('Arcane sugar', 'Cookie production multiplier <b>+5%</b>, and <b>halves</b> the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
 		replaceDesc('Elder Pact', 'Each grandma gains <b>+0.0<span></span>5 base CpS per portal</b>, and makes the Elder Pledge <b>twice as powerful</b>.<q>Questionably unethical.</q>');
 		replaceDesc('Sacrificial rolling pins', 'The Elder Pledge is <b>10 times</b> cheaper.<q>As its name suggests, it suffers so that everyone can live tomorrow.</q>');
 		Game.Upgrades['One mind'].clickFunction = function() { };
@@ -1199,8 +1251,10 @@ Game.registerMod("Kaizo Cookies", {
 				eval("Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].fail="+Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].fail.toString().replace(`var val=Math.min(Game.cookies*0.15,Game.cookiesPs*60*15)+13;`,`var val=Math.min(Game.cookies*0.5)+13;`));
 
 				//desc
-				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].desc=loc("+20% prestige level effect on CpS for 20 seconds.");
-				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].failDesc=loc("Trigger a %1-minute clot and lose half of your cookies owned.",15);
+				addLoc('+%1% prestige level effect on CpS for 20 seconds.');
+				addLoc('Trigger a %1-minute clot and lose %2% of your cookies owned.');
+				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].desc=loc("+%1% prestige level effect on CpS for 20 seconds.", 20);
+				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].failDesc=loc("Trigger a %1-minute clot and lose %2% of your cookies owned.", [15, 50]);
 			}
 		});
 
@@ -1230,6 +1284,12 @@ Game.registerMod("Kaizo Cookies", {
             var id=Game.Objects[i].id;
             if (!(i=='Cursor')) {s.ddesc=s.ddesc.replace(s.ddesc.slice(0,s.ddesc.indexOf('<q>')),'Tiered upgrades for <b>'+i+'</b> provide an extra <b>'+(id==1?'45':(20-id)*9)+'%</b> production.<br>Only works with unshackled upgrade tiers.');}
         }
+
+		Game.registerHook('check', function() {
+			if (Game.goldenClicks>=1) { Game.Unlock('Lucky day'); }
+			if (Game.goldenClicks>=3) { Game.Unlock('Serendipity'); }
+			if (Game.goldenClicks>=7) { Game.Unlock('Get lucky'); }
+		});
 
         Game.Upgrades['Pure heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000
         Game.Upgrades['Ardent heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000
@@ -1356,9 +1416,10 @@ Game.registerMod("Kaizo Cookies", {
 		addLoc('Buff boosts clicks by +%1% for every building sold for %2 seconds, ');
 		addLoc('but also temporarily increases decay propagation by %1% with every building sold.')
 		Game.registerHook('check', () => {
-			if (Game.Objects['Temple'].minigameLoaded) {
+			if (Game.Objects['Temple'].minigameLoaded && !pantheonUpdated) {
 				//Changing the desc
 				var temp = Game.Objects['Temple'].minigame;
+				pp = temp;
 				temp.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[1])+'</span>';
 				temp.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.5, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.4])+'</span>';
 				temp.gods['ruin'].desc3='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.25, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.15])+'</span>';
@@ -1387,21 +1448,25 @@ Game.registerMod("Kaizo Cookies", {
 				delete temp.gods['scorn'].descBefore;
 
 				addLoc('Purifying decay grants a buff.');
-				addLoc('-%1% decay for %2 seconds.')
+				addLoc('-%1% decay for %2 seconds.');
 				temp.gods['creation'].descBefore='<span class="green">'+loc('Purifying decay grants a buff that weakens decay.')+'</span>';
 				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [32, 4])+'</span>';
 				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [16, 16])+'</span>';
 				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [8, 64])+'</span>';
 
-				addLoc('Decay propagation rate -%1%.')
+				addLoc('Decay propagation rate -%1%.');
 				temp.gods['asceticism'].desc1='<span class="green">'+loc("+%1% base CpS.",15)+' '+loc('Decay propagation rate -%1%.', 30)+'</span>';
 				temp.gods['asceticism'].desc2='<span class="green">'+loc("+%1% base CpS.",10)+' '+loc('Decay propagation rate -%1%.', 20)+'</span>';
 				temp.gods['asceticism'].desc3='<span class="green">'+loc("+%1% base CpS.",5)+' '+loc('Decay propagation rate -%1%.', 10)+'</span>';
 
                 //Making Cyclius display the nerf?
-				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"));
-				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"));
-                eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"));
+				eval("temp.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"));
+				eval("temp.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"));
+                eval("temp.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"));
+
+				eval("temp.slotGod="+replaceAll('M', 'pp', temp.slotGod.toString()));
+				eval("temp.slotGod="+temp.slotGod.toString().replace('Game.recalculateGains=true;', 'Game.recalculateGains=true; decay.setRates();'))
+				pantheonUpdated = true;
 			}
 		});
 
