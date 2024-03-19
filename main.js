@@ -116,7 +116,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.pastCapPow = 0.75; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.cpsList = [];
-		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery'];
+		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
 		decay.justMult = 0; //debugging use
 		decay.infReached = false;
@@ -213,6 +213,8 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
 			tickSpeed *= Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1));
 			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
+			if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
+			if (Game.hasBuff('Stagnant bpdy').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
 
 			return tickSpeed;
 		}
@@ -933,7 +935,7 @@ Game.registerMod("Kaizo Cookies", {
 				failDesc: loc('Amplifies your decay.'),
 				icon: [5, 0, custImg],
 				costMin: 6,
-				costPercent: 0.35,
+				costPercent: 0.45,
 				id: 9,
 				win: function() {
 					decay.purifyAll(50, 0.25, 100);
@@ -945,6 +947,58 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 			gp.spellsById.push(gp.spells['liquify politician']);
+			addLoc('Manifest spring');
+			addLoc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)');
+			addLoc('Decay propagation is %1% faster for the next %2 minutes.');
+			addLoc('The water shall flow!');
+			addLoc('Oops! Pipes broken!');
+			gp.spells['manifest spring'] = {
+				name: loc('Manifest spring'),
+				desc: loc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)', [10, 2]),
+				failDesc: loc('Decay propagation is %1% faster for the next %2 minutes.', [50, 2]),
+				icon: [6, 0, custImg],
+				costMin: 10,
+				costPercent: 0.15,
+				id: 10,
+				win: function() {
+					if (!Game.HasBuff('Unending flow')) {
+						Game.gainBuff('unending flow', 120, 0.1);
+					} else {
+						Game.HasBuff('Unending flow').arg1 = 1 - (1 - Game.HasBuff('Unending flow').arg1) * 0.1;
+					}
+					Game.Popup('<div style="font-size:80%;">'+loc("The water shall flow!")+'</div>',Game.mouseX,Game.mouseY);
+				},
+				fail: function() {
+					Game.gainBuff('stagnant body', 120, 0.5);
+					Game.Popup('<div style="font-size:80%;">'+loc("Oops! Pipes broken!")+'</div>',Game.mouseX,Game.mouseY);
+				}
+			}
+			gp.spellsById.push(gp.spells['manifest spring']);
+			addLoc('Unending flow');
+			new Game.buffType('unending flow', function(time, pow) {
+			return {
+					name: loc('Unending flow'),
+					desc: loc('Decay propagation rate -%1% for %2!', [pow * 100, Game.sayTime(time*Game.fps,-1)]),
+					icon: [6, 0, custImg],
+					time: time*Game.fps,
+					add: false,
+					max: false,
+					aura: 0
+				}
+			});
+			addLoc('Stagnant body');
+			addLoc('Decay propagation rate +%1% for %2!');
+			new Game.buffType('stagnant body', function(time, pow) {
+			return {
+					name: loc('Stagnant body'),
+					desc: loc('Decay propagation rate +%1% for %2!', [pow * 100, Game.sayTime(time*Game.fps,-1)]),
+					icon: [30, 3],
+					time: time*Game.fps,
+					add: false,
+					max: false,
+					aura: 0
+				}
+			});
 		}
 
 		Game.rebuildGrimoire = function() {
