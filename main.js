@@ -545,7 +545,7 @@ Game.registerMod("Kaizo Cookies", {
 			dh *= 1 / d;
 			decay.decHalt = dh;
 		}
-		decay.getBuildingContribution() {
+		decay.getBuildingContribution = function() {
 			//the bigger the building, the more "space" they take up, thus increasing decay by more
 			var c = 0;
 			var add = 0;
