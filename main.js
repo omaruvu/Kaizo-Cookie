@@ -879,7 +879,7 @@ Game.registerMod("Kaizo Cookies", {
 			return Math.pow(Game.veilHP / Game.veilMaxHP, 0.35)
 		}
 		Game.veilRevolveFactor = function(set) {
-			return 0.025 * (1 + set * 0.6) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.05);
+			return 0.01 * (1 + set * 0.6) * Math.pow(Game.veilHP / Game.veilMaxHP, 0.05);
 		}
 		Game.veilParticleSizeMax = function(set) {
 			return 64 * Math.pow(0.85, set) * Math.pow((Game.veilHP / Game.veilMaxHP), 0.05);
