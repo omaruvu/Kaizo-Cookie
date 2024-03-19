@@ -74,8 +74,10 @@ function allValues(checkpoint) {
 }
 
 var gp = Game.Objects['Wizard tower'].minigame //grimoire proxy
+var pp = Game.Objects['Temple'].minigame //pantheon proxy
 var grimoireUpdated = false;
 var gardenUpdated = false;
+var pantheonUpdated = false;
 
 Game.registerMod("Kaizo Cookies", { 
 	init: function() { 
@@ -592,6 +594,11 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.setRates();
 		Game.registerHook('check', decay.setRates);
+		//make certain actions force a setRate
+		for (let i in Game.Objects) {
+			eval('Game.Objects["'+i+'"].buy='+Game.Objects[i].buy.toString().replace('if (this.buyFunction) this.buyFunction();', 'if (this.buyFunction) { this.buyFunction(); } decay.setRates();');
+		}
+		//the other actions are in their respective minigame sections
 
 		allValues('decay ui and scaling');
 		
@@ -1401,9 +1408,10 @@ Game.registerMod("Kaizo Cookies", {
 		addLoc('Buff boosts clicks by +%1% for every building sold for %2 seconds, ');
 		addLoc('but also temporarily increases decay propagation by %1% with every building sold.')
 		Game.registerHook('check', () => {
-			if (Game.Objects['Temple'].minigameLoaded) {
+			if (Game.Objects['Temple'].minigameLoaded && !pantheonUpdated) {
 				//Changing the desc
 				var temp = Game.Objects['Temple'].minigame;
+				pp = temp;
 				temp.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[1])+'</span>';
 				temp.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.5, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.4])+'</span>';
 				temp.gods['ruin'].desc3='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.25, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.15])+'</span>';
@@ -1432,21 +1440,25 @@ Game.registerMod("Kaizo Cookies", {
 				delete temp.gods['scorn'].descBefore;
 
 				addLoc('Purifying decay grants a buff.');
-				addLoc('-%1% decay for %2 seconds.')
+				addLoc('-%1% decay for %2 seconds.');
 				temp.gods['creation'].descBefore='<span class="green">'+loc('Purifying decay grants a buff that weakens decay.')+'</span>';
 				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [32, 4])+'</span>';
 				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [16, 16])+'</span>';
 				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [8, 64])+'</span>';
 
-				addLoc('Decay propagation rate -%1%.')
+				addLoc('Decay propagation rate -%1%.');
 				temp.gods['asceticism'].desc1='<span class="green">'+loc("+%1% base CpS.",15)+' '+loc('Decay propagation rate -%1%.', 30)+'</span>';
 				temp.gods['asceticism'].desc2='<span class="green">'+loc("+%1% base CpS.",10)+' '+loc('Decay propagation rate -%1%.', 20)+'</span>';
 				temp.gods['asceticism'].desc3='<span class="green">'+loc("+%1% base CpS.",5)+' '+loc('Decay propagation rate -%1%.', 10)+'</span>';
 
                 //Making Cyclius display the nerf?
-				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"));
-				eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"));
-                eval("Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"));
+				eval("temp.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*3))*Math.PI*2);","if (godLvl==1) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);"));
+				eval("temp.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*12))*Math.PI*2);","else if (godLvl==2) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);"));
+                eval("temp.gods['ages'].activeDescFunc="+Game.Objects['Temple'].minigame.gods['ages'].activeDescFunc.toString().replace("else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*24))*Math.PI*2);","else if (godLvl==3) mult*=0.15*Math.sin((Date.now()/1000/(60*60*48))*Math.PI*2);"));
+
+				eval("temp.slotGod="+replaceAll('M', 'pp', temp.slotGod.toString()));
+				eval("temp.slotGod="+temp.slotGod.toString().replace('Game.recalculateGains=true;', 'Game.recalculateGains=true; decay.setRates();'))
+				pantheonUpdated = true;
 			}
 		});
 
