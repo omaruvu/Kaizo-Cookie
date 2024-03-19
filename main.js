@@ -18,9 +18,13 @@ function getVer(str) {
 	return str;
 }
 function isv(str) { //"isValid"
-	if (str.includes('NaN') || str.includes('undefined')) {
-		return false;
+	if (typeof str === 'string') { 
+		if (str.includes('NaN') || str.includes('undefined')) {
+			return false;
+		}
 	}
+	if (isNaN(str)) { return false; }
+	if (typeof str === 'undefined') { return false; }
 	return true;
 }
 function selectStatement(str, index, beginningCount) {
