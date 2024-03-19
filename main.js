@@ -63,6 +63,7 @@ function geometricMean(arr) {
 }
 
 function allValues(checkpoint) {
+	if (!decay.DEBUG) { return false; }
 	var str = '[DEBUGGING: '+checkpoint+']';
 	str += '<br>Cookies in bank: '+Game.cookies;
 	str += '<br>CBTA: '+Game.cookiesEarned;
@@ -120,6 +121,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.infReached = false;
 		decay.unlocked = false;
 		if (Game.cookiesEarned > 1000) { decay.unlocked = true; }
+		decay.DEBUG = false; //disable or enable the debugger statements
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
