@@ -894,7 +894,7 @@ Game.registerMod("Kaizo Cookies", {
 			return Math.round(9 * (set + 1));
 		}
 		Game.veilParticleSpawnBound = function(set) {
-			return 135 - 22 * (1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.75));
+			return 155 - 30 * (1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.75));
 		}
 		veilDraw = veilDraw.replace('ctx.globalAlpha=1;', 'ctx.globalAlpha=Game.veilOpacity();');
 		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
