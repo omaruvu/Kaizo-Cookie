@@ -713,7 +713,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.storeToRefresh=1;
 		}
 		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString()
-			 .replace('Game.elderWrath=1;', 'if (decay.gen > 1) { Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay."); } else { Game.Notify("Purification complete!", ''); }')
+			 .replace('Game.elderWrath=1;', 'if (decay.gen > 1) { Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay."); } else { Game.Notify("Purification complete!", ""); }')
 			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
 			 .replace(`Game.Unlock('Elder Pledge');`, '')
 			 .replace(`(Game.Has('Elder Pact') && Game.Upgrades['Elder Pledge'].unlocked==0)`, `(Game.Has('One mind') && Game.Upgrades['Elder Pledge'].unlocked==0)`)
