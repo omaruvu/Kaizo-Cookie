@@ -961,10 +961,10 @@ Game.registerMod("Kaizo Cookies", {
 				costPercent: 0.15,
 				id: 10,
 				win: function() {
-					if (!Game.HasBuff('Unending flow')) {
+					if (!Game.hasBuff('Unending flow')) {
 						Game.gainBuff('unending flow', 120, 0.1);
 					} else {
-						Game.HasBuff('Unending flow').arg1 = 1 - (1 - Game.HasBuff('Unending flow').arg1) * 0.1;
+						Game.hasBuff('Unending flow').arg1 = 1 - (1 - Game.hasBuff('Unending flow').arg1) * 0.1;
 					}
 					Game.Popup('<div style="font-size:80%;">'+loc("The water shall flow!")+'</div>',Game.mouseX,Game.mouseY);
 				},
