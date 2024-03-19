@@ -511,10 +511,10 @@ Game.registerMod("Kaizo Cookies", {
 			var d = 1;
 			var c = Game.cookiesEarned;
 			d *= Math.pow(0.999, Math.log10(c));
-			d *= Math.pow(0.99825, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
-			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
-			d *= Math.pow(0.9975, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
-			d *= Math.pow(0.9975, Math.max(Math.pow(Game.BuildingsOwned, 0.33) - 10, 0));
+			d *= Math.pow(0.9985, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
+			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
+			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
+			d *= Math.pow(0.998, Math.max(Math.pow(decay.getBuildingContribution(), 0.25) - 10, 0));
 			d *= Math.pow(0.997, Math.log2(Math.max(Game.lumpsTotal, 1)));
 			d *= Math.pow(0.999, Math.pow(Game.dragonLevel, 0.6));
 			d *= Math.pow(0.9999, Math.log2(Math.max(Date.now() - Game.startDate - 100000, 1))); //hopefully not too bruh
@@ -544,6 +544,37 @@ Game.registerMod("Kaizo Cookies", {
 			dh *= Math.pow(1.012, Math.log10(c));
 			dh *= 1 / d;
 			decay.decHalt = dh;
+		}
+		decay.getBuildingContribution() {
+			//the bigger the building, the more "space" they take up, thus increasing decay by more
+			var c = 0;
+			var add = 0;
+			if (Game.Has('Thousand fingers')) add +=    Game.BuildingsOwned; 
+			if (Game.Has('Million fingers')) add*=		5;
+			if (Game.Has('Billion fingers')) add*=		10;
+			if (Game.Has('Trillion fingers')) add*=		20;
+			if (Game.Has('Quadrillion fingers')) add*=	20;
+			if (Game.Has('Quintillion fingers')) add*=	20;
+			if (Game.Has('Sextillion fingers')) add*=	20;
+			if (Game.Has('Septillion fingers')) add*=	20;
+			if (Game.Has('Octillion fingers')) add*=	20;
+			if (Game.Has('Nonillion fingers')) add*=	20;
+			if (Game.Has('Decillion fingers')) add*=	20;
+			if (Game.Has('Undecillion fingers')) add*=	20;
+			if (Game.Has('Unshackled cursors')) add*=	25;
+			c += Math.log10(add) * Game.Objects['Cursor'].amount * 0.1;
+			var grandmaPer = 1;
+			if (Game.Has('One mind')) { grandmaPer += Game.Objects['Grandma'].amount / 100; }
+			if (Game.Has('Communal brainsweep')) { grandmaPer += Game.Objects['Grandma'].amount / 100; }
+			if (Game.Has('Elder Pact')) { grandmaPer += Game.Objects['Portal'].amount / 40; }
+			c += grandmaPer + Game.Objects['Grandma'].amount;
+			c += Game.Objects['Farm'].amount * 3 + Game.Objects['Mine'].amount * 3 + Game.Objects['Factory'].amount * 1.5 + Game.Objects['Bank'].amount * 1.25;
+			c += Game.Objects['Temple'].amount * 1.25 + Game.Objects['Wizard tower'].amount + Game.Objects['Shipment'].amount + Game.Objects['Alchemy lab'].amount;
+			c += Game.Objects['Portal'].amount * (1 + Game.Has('Deity-sized portals') * 1.5) + Game.Objects['Time machine'].amount;
+			c += Game.Objects['Antimatter condenser'].amount * 2.5 + Game.Objects['Prism'].amount + Game.Objects['Chancemaker'].amount * 1.5;
+			c += Game.Objects['Fractal engine'].amount * 2.71828 + Math.pow(Game.Objects['Javascript console'].amount, 1.25);
+			c += Game.Objects['Idleverse'].amount * 20 + Game.Objects['Cortex baker'].amount * 12 + Game.Objects['You'].amount;
+			return c;
 		}
 		decay.setRates();
 		Game.registerHook('check', decay.setRates);
