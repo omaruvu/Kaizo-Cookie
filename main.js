@@ -378,6 +378,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.triggerNotif = function(key) {
 			if (typeof eval(decay.notifs[key].pref) === 'undefined') { console.log('Corresponding pref not found. Input: '+key); return false; }
+			if (eval(decay.notifs[key].pref)) { return false; }
 			if (!decay.unlocked) { return false; }
 			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { 
 				if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); } 
@@ -794,12 +795,12 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Reinforced membrane', 'Makes the <b>Shimmering Veil</b> cost <b>half</b> as much, <b>reduces</b> the amount of decay applied on collapse and <b>halves</b> the amount of cooldown, makes it <b>heal faster</b> when turned off, and increases its maximum health by <b>25%</b>.<q>A consistency between jellyfish and cling wrap.</q>');
 		replaceDesc('Delicate touch', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>It breaks so easily.</q>');
 		replaceDesc('Steadfast murmur', 'Makes the <b>Shimmering Veil</b> return <b>slightly less decay</b> on collapse, and <b>halves</b> the multiplier to reactivation cost if it had collapsed.<br>Also makes the <b>Shimmering Veil</b> heal <b>slightly faster</b> when turned off.<q>Lend an ear and listen.</q>');
-		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>25%</b> more decay.<q>Just within reach, yet at what cost?</q>');
+		replaceDesc('Glittering edge', 'The <b>Shimmering Veil</b> takes on <b>25%</b> more decay.<q>Stare into it, and the cosmos will stare back.</q>');
 		Game.Upgrades['Shimmering veil'].basePrice /= 1000;
 		Game.Upgrades['Reinforced membrane'].basePrice /= 1000;
-		Game.Upgrades['Delicate touch'].basePrice /= 1000;
-		Game.Upgrades['Steadfast murmur'].basePrice /= 1000;
-		Game.Upgrades['Glittering edge'].basePrice /= 1000;
+		Game.Upgrades['Delicate touch'].basePrice /= 100;
+		Game.Upgrades['Steadfast murmur'].basePrice /= 100;
+		Game.Upgrades['Glittering edge'].basePrice /= 100;
 		var brokenVeil = new Game.Upgrade('Shimmering veil [broken]', '', 0, [9, 10]); brokenVeil.pool = ['toggle']; Game.UpgradesByPool['toggle'].push(brokenVeil); brokenVeil.order = 40005;
 		addLoc('This Shimmering Veil has collapsed due to excess decay. Because of this, reactivating it again will take <b>%1x</b> more cookies than usual.');
 		brokenVeil.descFunc = function() {
@@ -862,14 +863,19 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilRestoreC = 0;
 		Game.veilPreviouslyCollapsed = false;
 		Game.collapseVeil = function() {
-			Game.Lock('Shimmering veil [on]');
-			Game.Lock('Shimmering veil [off]');
-			Game.Upgrades['Shimmering veil [broken]'].earn();
-			Game.veilRestoreC = Game.getVeilCooldown();
-			Game.veilPreviouslyCollapsed = true;
-			decay.purifyAll(Math.pow(Game.veilHP / Game.veilMaxHP, Game.veilAbsorbFactor * Game.getVeilReturn()), 0, 1);
-			Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [30, 5]);
-			PlaySound('snd/spellFail.mp3',1);
+			if (Game.Has('Sparkling wonder') && Math.random() < 0.1) {
+				Game.veilHP = Game.veilMaxHP;
+				Game.Notify('Veil revived', 'Your Sparkling wonder saved your veil from collapse and healed it back to full health!', [23, 34]);
+			} else {
+				Game.Lock('Shimmering veil [on]');
+				Game.Lock('Shimmering veil [off]');
+				Game.Upgrades['Shimmering veil [broken]'].earn();
+				Game.veilRestoreC = Game.getVeilCooldown();
+				Game.veilPreviouslyCollapsed = true;
+				decay.purifyAll(Math.pow(Game.veilHP / Game.veilMaxHP, Game.veilAbsorbFactor * Game.getVeilReturn()), 0, 1);
+				Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [30, 5]);
+				PlaySound('snd/spellFail.mp3',1);
+			}
 		}
 		Game.loseShimmeringVeil = function(c) { } //prevent veil from being lost from traditional methods
 		//veil graphics down below
@@ -1300,6 +1306,11 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Uranium rolling pins'].parents=[Game.Upgrades['Cat ladies']];
 			Game.PrestigeUpgrades.push(Game.Upgrades['Uranium rolling pins']);
 			Game.last.posY=-740; Game.last.posX=800;
+
+			this.achievements.push(new Game.Upgrade('Sparkling wonder', ('The <b>Shimmering Veil</b> has a <b>10%</b> chance to be revived to full health on collapse.')+('<q>Just within reach, yet at what cost?</q>'), 1500000000000000, [23, 34])); Game.last.pool='prestige'; 
+			Game.Upgrades['Sparkling wonder'].parents=[Game.Upgrades['Glittering edge']];
+			Game.PrestigeUpgrades.push(Game.Upgrades['Sparkling wonder']);
+			Game.last.posY=662; Game.last.posX=-622;
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
@@ -1309,7 +1320,8 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Purity vaccines'].order=1;
 			Game.Upgrades['Unshackled Purity'].order=770;
 			Game.Upgrades['Unshackled Elder Pledge'].order=771;
-			Game.Upgrades['Uranium rolling pins'].order=274;
+			Game.Upgrades['Uranium rolling pins'].order=275;
+			Game.Upgrades['Sparkling wonder'].order = 283;
 			LocalizeUpgradesAndAchievs();
 	
 		}
@@ -1480,7 +1492,7 @@ Game.registerMod("Kaizo Cookies", {
 			strIn = str[5].split(',');
 			if (isv(strIn[0])) { Game.veilHP = parseFloat(strIn[0]); }
 			if (Game.Has('Shimmering veil')) { 
-				Game.Loop();
+				Game.Logic();
 				if (strIn[1] == 'on') {
 					Game.Upgrades['Shimmering veil [off]'].earn();
 					Game.Lock('Shimmering veil [on]'); Game.Unlock('Shimmering veil [on]'); 
