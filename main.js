@@ -121,7 +121,8 @@ Game.registerMod("Kaizo Cookies", {
 				veil: 0,
 				buff: 0,
 				multipleBuffs: 0,
-				fthof: 0
+				fthof: 0,
+				purityCap: 0
 			},
 			firstNotif: {
 				initiate: 1,
@@ -134,7 +135,8 @@ Game.registerMod("Kaizo Cookies", {
 				veil: 1,
 				buff: 1,
 				multipleBuffs: 1,
-				fthof: 1
+				fthof: 1,
+				purityCap: 0
 			}
 		}
 		decay.notifCalls = {
@@ -199,7 +201,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.purify = function(buildId, mult, close, cap, uncapped) {
 			if (decay.mults[buildId] >= cap) { 
-				if (!uncapped) { return true; } else {
+				if (!uncapped) { return false; } else {
 					mult /= Math.pow(mult[buildId] / cap, decay.pastCapPow);
 				}
 			}
@@ -221,7 +223,7 @@ Game.registerMod("Kaizo Cookies", {
 			var u = false;
 			if (Game.Has('Unshackled Purity')) { u = true; }
 			for (let i in decay.mults) {
-				decay.purify(i, mult, close, cap, u);
+				if (decay.purify(i, mult, close, cap, u)) { decay.triggerNotif('purityCap'); }
 			}
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('creation');
@@ -268,7 +270,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.notifs = {
 			initiate: {
 				title: 'decay',
-				desc: 'Due to aging and corruption in your facilities, CpS continuously decreases over time. You can temporarily stop it from decreasing with certain actions, such as clicking the big cookie; or purify the decay\'s effects by, for example, clicking a Golden or Wrath cookie.',
+				desc: 'Due to aging and corruption in your facilities, CpS continuously decreases over time. You can temporarily stop it from decreasing with certain actions, such as clicking the big cookie; or purify the decay\'s effects by, for example, clicking a Golden or Wrath cookie.<br>To compensate, you get a +700% CpS multiplier that very slowly, decreases over time.',
 				icon: [3, 1, custImg],
 				pref: 'decay.prefs.preventNotifs.initiate',
 				first: 'decay.prefs.firstNotif.initiate',
@@ -348,6 +350,13 @@ Game.registerMod("Kaizo Cookies", {
 				icon: [22, 11],
 				pref: 'decay.prefs.preventNotifs.fthof',
 				first: 'decay.prefs.firstNotif.fthof',
+			},
+			purityCap: {
+				title: 'Purity limit',
+				desc: 'All methods of purification have a hard limit on how much purity they can apply. This limit varies per the method.<br>(Telling you this because you just reached a purity limit)',
+				icon: [2, 1, custImg],
+				pref: 'decay.prefs.preventNotifs.purityCap',
+				first: 'decay.prefs.firstNotif.purityCap'
 			}
 		}
 		decay.triggerNotif = function(key) {
@@ -575,7 +584,7 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Elder spice', 'You attracts <b>2</b> less wrinklers.');
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen)) } else { buff.time--; }'));
 
-		Game.registerHook('cps', function(m) { return m * 4; }); //quadruples cps to make up for the decay
+		Game.registerHook('cps', function(m) { return m * (1 + 7 * Math.pow(decay.gen, 12)); }); //octuples cps to make up for the decay
 
 		
 		//ways to purify/refresh/stop decay
@@ -682,7 +691,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.storeToRefresh=1;
 		}
 		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString()
-			 .replace('Game.elderWrath=1;', 'Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay.")')
+			 .replace('Game.elderWrath=1;', 'if (decay.gen > 1) { Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay."); } else { Game.Notify("Purification complete!"); }')
 			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
 			 .replace(`Game.Unlock('Elder Pledge');`, '')
 			 .replace(`(Game.Has('Elder Pact') && Game.Upgrades['Elder Pledge'].unlocked==0)`, `(Game.Has('One mind') && Game.Upgrades['Elder Pledge'].unlocked==0)`)
@@ -882,6 +891,11 @@ Game.registerMod("Kaizo Cookies", {
 		//Shimmer pool
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes['golden'].popFunc.toString().replace("if (me.wrath>0) list.push('clot','multiply cookies','ruin cookies');","if (me.wrath>0) list.push('clot','ruin cookies');"));//Removing lucky from the wrath cookie pool
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes['golden'].popFunc.toString().replace("if (Game.BuildingsOwned>=10 && Math.random()<0.25) list.push('building special');","if (Game.BuildingsOwned>=10 && me.wrath==0 && Math.random()<0.25) list.push('building special');"));//Removing bulding specail from the wrath cookie pool
+
+		//making buildlings start with level 1
+		for (let i in Game.Objects) {
+			Game.Objects[i].level = Math.max(1, Game.Objects[i].level);
+		}
 
 		/*=====================================================================================
         Minigames 
