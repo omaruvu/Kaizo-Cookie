@@ -1438,7 +1438,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.removeNews = function(message, noComma) {
 			var comma = ','; if (noComma) { comma = ''; }
-			eval('Game.getNewTicker='+Game.getNewTicker.toString().replace("'"+message"'"+comma, newMessage));
+			eval('Game.getNewTicker='+Game.getNewTicker.toString().replace("'"+message+"'"+comma, newMessage));
 		}
 
 		/*=====================================================================================
