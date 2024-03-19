@@ -62,8 +62,17 @@ function geometricMean(arr) {
 	return Math.exp(sum) //wtf is an antilog
 }
 
+function allValues(checkpoint) {
+	var str = '[DEBUGGING: '+checkpoint+']';
+	str += 'Cookies in bank: '+Game.cookies;
+	str += 'CBTA: '+Game.cookiesEarned;
+	str += 'CPS: '+Game.cookiesPs;
+	str += decay.gen;
+	str += '[DEBUGGER OF '+checkpoint+' END]'
+	console.log(str);
+}
+
 var gp = Game.Objects['Wizard tower'].minigame //grimoire proxy
-var gap = Game.Objects['Farm'].minigame //garden proxy
 var grimoireUpdated = false;
 var gardenUpdated = false;
 
@@ -407,7 +416,9 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.registerHook('logic', decay.checkTriggerNotifs);
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
-		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes["golden"].popFunc.toString().replace("if (me.wrath) Game.Win('Wrath cookie');", "if (me.wrath) { decay.triggerNotif('wrath'); Game.Win('Wrath cookie'); }"))
+		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes["golden"].popFunc.toString().replace("if (me.wrath) Game.Win('Wrath cookie');", "if (me.wrath) { decay.triggerNotif('wrath'); Game.Win('Wrath cookie'); }"));
+
+		allValues('decay init');
 		
 		//ui and display and stuff
 		decay.term = function(mult) {
@@ -529,6 +540,8 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.setRates();
 		Game.registerHook('check', decay.setRates);
+
+		allValues('decay ui and scaling');
 		
 		//decay's effects
 		Game.registerHook('logic', decay.updateAll);
@@ -590,6 +603,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		Game.registerHook('cps', function(m) { return m * (1 + 7 * Math.pow(decay.gen, 12)); }); //octuples cps to make up for the decay
 
+		allValues('decay effects');
 		
 		//ways to purify/refresh/stop decay
 		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "") { decay.purifyAll(2.5, 0.5, 5); decay.stop(4); }'));
@@ -701,6 +715,7 @@ Game.registerMod("Kaizo Cookies", {
 			 .replace(`(Game.Has('Elder Pact') && Game.Upgrades['Elder Pledge'].unlocked==0)`, `(Game.Has('One mind') && Game.Upgrades['Elder Pledge'].unlocked==0)`)
 		);
 
+		allValues('decay purification & halt');
 		
 		//decay halt: shimmering veil
 		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace(`Game.Has('Shimmering veil [off]')`, 'false'));
@@ -901,6 +916,8 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Objects[i].level = Math.max(1, Game.Objects[i].level);
 		}
 
+		allValues('veil; decay complete');
+
 		/*=====================================================================================
         Minigames 
         =======================================================================================*/
@@ -1022,7 +1039,8 @@ Game.registerMod("Kaizo Cookies", {
 				Game.Objects['Wizard tower'].minigame.spells['conjure baked goods'].failDesc=loc("Trigger a %1-minute clot and lose half of your cookies owned.",15);
 			}
 		});
-		
+
+		allValues('other minigame (no pantheon)');
 		
 		/*=====================================================================================
         Upgrades
@@ -1074,7 +1092,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Kitten strategists'].basePrice=9000000000000000000000000000000000000000000000000000000
 
 		Game.Upgrades['Wrinkly cookies'].power=15;
-		Game.Upgrades['Wrinkly cookies'].ddesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>'
+		Game.Upgrades['Wrinkly cookies'].ddesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>';
 
 		/*=====================================================================================
         Dragon auras
@@ -1111,7 +1129,9 @@ Game.registerMod("Kaizo Cookies", {
         Game.dragonAuras[11].desc="Golden cookies give <b>10%</b> more cookies."+'<br>'+"Golden cookies may trigger a <b>Dragon\'s hoard</b>.";
 		Game.dragonAuras[12].desc="Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy appear <b>twice as often</b>.";
         Game.dragonAuras[15].desc="All cookie production <b>multiplied by 1.5</b>.";
-		Game.dragonAuras[21].desc="Each wrinkler always wither 100% of your CpS and popping wrinklers no longer slow down decay, but wrinklers no longer accumulate cookie loss when eating."
+		Game.dragonAuras[21].desc="Each wrinkler always wither 100% of your CpS and popping wrinklers no longer slow down decay, but wrinklers no longer accumulate cookie loss when eating.";
+
+		allValues('auras');
 
 		/*=====================================================================================
         because Cookiemains wanted so
@@ -1237,6 +1257,8 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Butter biscuit (with butter)'].basePrice=999999999999999999999999999999999999999999999999999999999*butterBiscuitMult
 		Game.Upgrades['Everybutter biscuit'].basePrice=999999999999999999999999999999999999999999999999999999999999*butterBiscuitMult
 		Game.Upgrades['Personal biscuit'].basePrice=999999999999999999999999999999999999999999999999999999999999999*butterBiscuitMult
+
+		allValues('pantheon');
 
 		/*=====================================================================================
         Custom upgrade
@@ -1391,7 +1413,7 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 		});
-		console.log('init complete!');
+		allValues('init completion');
 	},
 	save: function(){
         let str = kaizoCookiesVer + '/';
@@ -1499,5 +1521,6 @@ Game.registerMod("Kaizo Cookies", {
 			}
 		}
 	    Game.storeToRefresh=1;
+		allValues('load completion');
     }
 });
