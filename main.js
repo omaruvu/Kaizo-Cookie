@@ -116,7 +116,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltTickingPow = 2; //the more it is, the less that the current decay tickspeed will affect decHalt
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 2.5; //the more it is, the slower wrinklers spawn with increased decay
-		decay.wrinklerApproachFactor = 1.5; //the more it is, the slower wrinklers approach the big cookie with increased decay
+		decay.wrinklerApproachFactor = 2.5; //the more it is, the slower wrinklers approach the big cookie with increased decay
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.pastCapPow = 0.1; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.bankedPurification = 0; //multiplier to mult and close 
@@ -659,8 +659,8 @@ Game.registerMod("Kaizo Cookies", {
 			return false;
 		}
 		decay.wrinklerApproach = function() {
-			var base = 60 / Game.eff('wrinklerApproach');
-			base *= 1 + Game.auraMult("Dragon God") * 4;
+			var base = 15 / Game.eff('wrinklerApproach');
+			base *= 1 + Game.auraMult("Dragon God") * 2;
 			return base / (Math.log(1 / decay.gen) / Math.log(decay.wrinklerApproachFactor));
 		}
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 * Math.log(1 / decay.gen) / Math.log(decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
@@ -1387,7 +1387,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.dragonAuras[5].desc="Buildings sell back for <b>50%</b> instead of 25% of their cost. <br>Selling buildings <b>halts decay</b> temporarily based on the amount of buildings sold."
 		Game.dragonAuras[6].desc="Get <b>1%</b> (multiplicative) closer to <b>+60%</b> golden cookie frequency for each <b>x1.02</b> CpS multiplier from your purity.<br>(Note: this effect reduces the initial amount of time on Golden cookie click)";
 		Game.dragonAuras[7].desc="While not purifying decay, you accumulate <b>purification power</b> that will be spent in the next purification; the banked purification power is kept even when this aura is off.";
-        Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS."+'<br>'+"Wrinklers approach the big cookie <b>5 times</b> slower.";
+        Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS."+'<br>'+"Wrinklers approach the big cookie <b>3 times</b> slower.";
 		Game.dragonAuras[9].desc="Get <b>2.5%</b> (multiplicative) closer to <b>+125%</b> Golden cookie frequency for each <b>x0.5</b> CpS multiplier from your decay.<br>(Note: this effect reduces the initial amount of time on Golden cookie click)"
         Game.dragonAuras[11].desc="Golden cookies give <b>10%</b> more cookies."+'<br>'+"Golden cookies may trigger a <b>Dragon\'s hoard</b>.";
 		Game.dragonAuras[12].desc="Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy from Wrath cookies appear <b>4x as often</b>.";
