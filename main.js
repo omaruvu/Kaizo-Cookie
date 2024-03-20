@@ -185,10 +185,11 @@ Game.registerMod("Kaizo Cookies", {
 		decay.update = function(buildId, tickSpeed) { 
 			if (Game.Has('Purity vaccines')) { return decay.mults[buildId]; }
 			var c = decay.mults[buildId];
+			//split into parts for debugging purposes
     		c *= Math.pow(
 				Math.pow(
 					1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))), 
-					(Math.max(1, Math.pow(c, (Game.Has('Unshackled Purity'))?0.9:1.2))) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1) / (Math.pow(Math.log(Math.max(1, decay.momentum - decay.momentumOnHaltBuffer)) / Math.log(decay.momentumOnHaltLogFactor), decay.momentumOnHaltPowFactor))
+					(Math.max(1, Math.pow(c, (Game.Has('Unshackled Purity'))?0.9:1.2))) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1) / (Math.pow(1 + Math.log(Math.max(1, decay.momentum - decay.momentumOnHaltBuffer)) / Math.log(decay.momentumOnHaltLogFactor), decay.momentumOnHaltPowFactor))
 				), 
 			tickSpeed);
 			return c;
@@ -196,8 +197,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 5555) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
 			var t = decay.getTickspeed();
-			//var c = decay.update(20, t);
-			var c = decay.gen;
+			var c = decay.update(20, t);
 			if (!isFinite(1 / c)) { if (!isNaN(c)) { console.log('Infinity reached. decay mult: '+c); for (let i in decay.mults) { decay.mults[i] = 1 / Number.MAX_VALUE; } decay.infReached = true; } }
 			for (let i in decay.mults) {
 				decay.mults[i] = c;
