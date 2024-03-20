@@ -1541,7 +1541,7 @@ Game.registerMod("Kaizo Cookies", {
             {  
                 newList.push('News : ascend at 365.');
 				newList.push('News : Gone too far, or not enough? Protests rising against "intense competition for seemingly boring stuff."');
-				newList.push('News : it was discovered that the '+Game.bakeryName+' is actually a-');
+				newList.push('News : it was discovered that the '+name+' is actually a-');
 				newList.push('News : Cookie Hermits think of new recipes, locals are shocked: "Taste like grass.".');
 				newList.push('News : crazed citizen quits job and leaves family to "grind ascends"');
 				if (Game.Has('Cookie egg')) newList.push('<q>'+"Give me food master."+'</q><sig>'+"krumblor"+'</sig>');
@@ -1554,109 +1554,108 @@ Game.registerMod("Kaizo Cookies", {
 				newList.push('News : "check the pins" crowned the phrase of the year!');
             }
 			
-			if (Game.elderWrath==1) newList.push(choose([
+			if (Game.elderWrath==1) { newList.push(choose([
 				'News : the elders are rioting, they are destroying a nearby factory'
-				
-			]));
+			])); }
 
-			if (Game.Objects['Farm'].amount>0) newList.concat([
+			if (Game.Objects['Farm'].amount>0) newList = newList.concat([
 				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.'
 			]);
-			if (Game.Objects['Farm'].amount>25) { newList.concat([
+			if (Game.Objects['Farm'].amount>25) { newList = newList.concat([
 				'News: a new law has been introduced that limited the stem length of all cookie plants to a maximum of 1 light year.'
 			]); }
-			if (Game.Objects['Farm'].amount>50) { newList.concat([
+			if (Game.Objects['Farm'].amount>50) { newList = newList.concat([
 				'News: storage out of control! Cookie plants are dying after a recent invasion of cookies that broke through the greenhouse roof; officials blame the warehouse construction company.'
 			]); }
-			if (Game.Objects['Farm'].amount>100) { newList.concat([
+			if (Game.Objects['Farm'].amount>100) { newList = newList.concat([
 				'News: experts suggest that cookies from cookie plants are unsafe to eat if not heated to at least 6,000,000 celsius.',
 				'News: farmers report difficulty distinguishing between the cookies on the cookie plants and all the cookies around them.',
 				'News: another farmer dies from suffocation.'
 			]); }
 
-			if (Game.Objects['Prism'].amount>25) { newList.concat([
+			if (Game.Objects['Prism'].amount>25) { newList = newList.concat([
 				'News: Prisms are starting to exclusively use gamma rays to produce the smallest cookies possible.'
 			]); }
-			if (Game.Objects['Prism'].amount>50) { newList.concat([
+			if (Game.Objects['Prism'].amount>50) { newList = newList.concat([
 				'News: '
 			]); }
-			if (Game.Objects['Prism'].amount>100) { newList.concat([
+			if (Game.Objects['Prism'].amount>100) { newList = newList.concat([
 				'News: can we turn cookies back into light? Please?'
 			]); }
 
-			if (Game.Objects['Chancemaker'].amount>25) { newList.concat([
+			if (Game.Objects['Chancemaker'].amount>25) { newList = newList.concat([
 				'News: it is considered lucky if the Chancemakers don\'t produce any cookies.'
 			]); }
-			if (Game.Objects['Chancemaker'].amount>50) { newList.concat([
+			if (Game.Objects['Chancemaker'].amount>50) { newList = newList.concat([
 				'News: experts are considering the "quantom dislocation" optimization, wonders if the Chancemakers are powerful enough to dislocate a mass of cookies of 1,123,901,284 light years cubed.'
 			]); }
-			if (Game.Objects['Chancemaker'].amount>100) { newList.concat([
+			if (Game.Objects['Chancemaker'].amount>100) { newList = newList.concat([
 				'News: you will see this news because RNG said yes.',
 				'News: is the eyeballs really necessary? Experts consider removing one eyeball from each Chancemaker to save space to store more cookies.'
 			]); }
 
-			if (Game.Objects['Fractal engines'].amount>25) { newList.concat([
+			if (Game.Objects['Fractal engines'].amount>25) { newList = newList.concat([
 				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. '
 			]); }
-			if (Game.Objects['Fractal engines'].amount>50) { newList.concat([
+			if (Game.Objects['Fractal engines'].amount>50) { newList = newList.concat([
 				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. ',
 				'News: Fractal engines are encountering difficulty replicating. Experts are working hard to figure out where they are amongst the mass of cookies.'
 			]); }
-			if (Game.Objects['Fractal engines'].amount>100) { newList.concat([
+			if (Game.Objects['Fractal engines'].amount>100) { newList = newList.concat([
 				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. Wait, we also can\'t?',
 				'News: No, Fractal engines can\'t replicate into a larger copy of itself, either.'
 			]); }
 
-			if (Game.Objects['Javascript console'].amount>25) { newList.concat([
+			if (Game.Objects['Javascript console'].amount>25) { newList = newList.concat([
 				'News: if (me.when == "change code") { console.log(NaN); }',
 				'News: programmers complain that they "can\'t see a thing" after using the new "all-natural sunlight" displays!.'
 			]); }
-			if (Game.Objects['Javascript console'].amount>50) { newList.concat([
+			if (Game.Objects['Javascript console'].amount>50) { newList = newList.concat([
 				'News: this code is too unsightreadable.'
 			]); }
-			if (Game.Objects['Javascript console'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList.concat([
+			if (Game.Objects['Javascript console'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList = newList.concat([
 				'News: price of LED skyrockets with the introduction of 1e18 x 1.8e18 wide screens.',
 				'News: is it really necessary to write code with indent size 8?',
 				'News: the source of the Great Cookie Space Patch has been attributed to the overuse of Javascript Consoles that take up too much space.'
 			]); }
 
-			if (Game.Objects['Idleverse'].amount>25) { newList.concat([
+			if (Game.Objects['Idleverse'].amount>25) { newList = newList.concat([
 				'News: experts question the appropriateness of the name "Idleverse", suggesting that they should be renamed to "Activeverse".'
 			]); }
-			if (Game.Objects['Idleverse'].amount>50) { newList.concat([
+			if (Game.Objects['Idleverse'].amount>50) { newList = newList.concat([
 				'News: Idleverses are being employed as bowling bulbs in recreational facilities. "Where else would you put them?" rhetorically-questions officials.'
 			]); }
-			if (Game.Objects['Idleverse'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList.concat([
+			if (Game.Objects['Idleverse'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList = newList.concat([
 				'News: experts suggest removing at least '+Math.floor(Game.Objects['Idleverse'].amount / 2)+' Idleverses after a catastrophic Idleverse Chained XK-Collapse scenario. '+name+', being the great baker, simply reverses time. "This will only happen again" warns experts.',
 				'News: is Idleverses even worth keeping? Or should we remove some, so we can have more space to store cookies?',
 				'News: scientists within Idleverses predict a Big Crunch to their universes. '
 			]); }
 
-		    if (Game.Objects['Cortex baker'].amount>0) newList.concat([
+		    if (Game.Objects['Cortex baker'].amount>0) { newList = newList.concat([
 				'News: Cortex baker implodes, unknown plant puzzles blamed',
 				'News: it was discovered that thoughts can have thoughts "that is a tought thing to think"'
-			]);
-			if (Game.Objects['Cortex baker'].amount>25) { newList.concat([
+			]); }
+			if (Game.Objects['Cortex baker'].amount>25) { newList = newList.concat([
 				'News: You have a big brain.'
 			]); }
-			if (Game.Objects['Cortex baker'].amount>50) { newList.concat([
+			if (Game.Objects['Cortex baker'].amount>50) { newList = newList.concat([
 				'News: "Cortex baker galaxy" can be seen during astronomical twilight.',
 				'News: ordinary people found to have seizures after being in the presence of Cortex bakers for more than 1.5 microseconds. Due to space being clogged with wrinkly cookies, officials have no choice but to let them remain near people.'
 			]); }
 
-			if (Game.Objects['Cortex baker'].amount>100) { newList.concat([
+			if (Game.Objects['Cortex baker'].amount>100) { newList = newList.concat([
 				'News: "The mass" Cortex baker cluster 3d9cjk reaches a record high of 1,204,589 congealed Cortex bakers! Experts suggest separating each Cortex Baker by at least 1 more kilometer; officials won\'t budge.',
 				'News: Cortex bakers question the morality of thinking cookies into other Cortex bakers; advised to "keep working" even if there is nowhere else to put the cookies.'
 			]); }
 
-			if (Game.Objects['You'].amount>25) { newList.concat([
+			if (Game.Objects['You'].amount>25) { newList = newList.concat([
 				'News: local baker "'+name+'" and clones found to be the cause of at least 52,603 human rights violations; 99% of which are due to poor ventilation and overcrowding.',
 				'News: '+name+'\'s clones are found to be harmful to philosophy.'
 			]); }
-			if (Game.Objects['You'].amount>50) { newList.concat([
+			if (Game.Objects['You'].amount>50) { newList = newList.concat([
 				'News: Who am I? Where did I come from? Where will I go?'
 			]); }
-			if (Game.Objects['You'].amount>100) { newList.concat([
+			if (Game.Objects['You'].amount>100) { newList = newList.concat([
 				'News: '+name+'\'s clones are beginning to shrink. Experts expect nuclear fusion to occur in the next 4 hours.'
 			]); }
 
