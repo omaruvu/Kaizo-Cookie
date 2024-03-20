@@ -106,7 +106,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.incMult = 0.04; //decay mult is decreased by this multiplicative every second
 		decay.min = 0.15; //the minimum power that the update function uses; the lower it is, the slower the decay will pick up
 		decay.momentum = 1; //increases with each game tick, but decreased on certain actions (hardcoded to be at least 1)
-		decay.smoothMomentumFactor = 1.5; //some momentum is negated so it isnt very obvious with the log scaling; the more it is, the smoother it will be (not necessarily a good thing as it also delays momentum)
+		decay.smoothMomentumFactor = 0.25; //some momentum is negated so it isnt very obvious with the log scaling; the less it is, the smoother it will be (not necessarily a good thing as it also delays momentum)
 		decay.momentumFactor = 2; //the more this is, the less powerful momentum is (very strongly affects momentum)
 		decay.momentumIncFactor = 2; //the closer this is to 1, the more that momentum will increase as momentum increases (slightly)
 		decay.halt = 1; //simulates decay stopping from clicking
@@ -130,7 +130,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.timeSinceLastPurify = 0; //unlike decay.momentum, this is very literal and cant really be manipulated like it
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
 		decay.purifyMomentumMult = 2; //multiplied to the amount decrease
-		decay.haltReverseMomentumFactor = 0.9; //each point of halt called when decay.stop multiplies the halt for this amount
+		decay.haltReverseMomentumFactor = 0.99; //each point of halt called when decay.stop multiplies the momentum with this amount
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
@@ -244,7 +244,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.getTickspeed = function() {
 			var tickSpeed = 1;
-			tickSpeed *= 1 + (Math.max(Math.log(Math.max(decay.momentum, 1)), 0) / Math.log(decay.momentumFactor)) * Math.pow(1 - 1 / decay.momentum, decay.smoothMomentumFactor);
+			tickSpeed *= 1 + (Math.max(Math.log(decay.momentum), 0) / Math.log(decay.momentumFactor)) * (1 - 1 / Math.pow(decay.momentum, decay.smoothMomentumFactor)) / 2;
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
@@ -343,8 +343,8 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.stop = function(val) {
 			decay.halt = val * Game.eff('haltPower');
-			decay.momentum = 1 + (decay.momentum - 1) * Math.pow(decay.haltReverseMomentumFactor, val * Game.eff('haltPower'));
-			decay.momentum -= val / 100;
+			decay.momentum = 1 + (decay.momentum - 1) * Math.pow(decay.haltReverseMomentumFactor, Math.log2(Math.max(val, 1) * Game.eff('haltPower')));
+			decay.momentum -= Math.log2(Math.max(val, 1) * Game.eff('haltPower')) / 20;
 			if (decay.momentum < 1) { decay.momentum = 1; }
 			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltKeep); 
 		}
@@ -776,7 +776,7 @@ Game.registerMod("Kaizo Cookies", {
 		allValues('decay effects');
 		
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "") { decay.purifyAll(2.5, 0.5, 5); decay.stop(4); }'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "") { decay.purifyAll(2.5, 0.5, 5); decay.stop(1); }'));
 		decay.clickBCStop = function() {
 			decay.stop(0.5);
 		}
@@ -1045,6 +1045,7 @@ Game.registerMod("Kaizo Cookies", {
 				Game.Upgrades['Shimmering veil [broken]'].earn();
 				Game.veilRestoreC = Game.getVeilCooldown();
 				Game.veilPreviouslyCollapsed = true;
+				//need to fix this at some point to make it actually reflect the amount of decay it absorbed
 				decay.purifyAll(Math.pow(Game.veilHP / Game.veilMaxHP, Game.veilAbsorbFactor * Game.getVeilReturn()), 0, 1);
 				Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [30, 5]);
 				PlaySound('snd/spellFail.mp3',1);
@@ -1969,7 +1970,7 @@ Game.registerMod("Kaizo Cookies", {
     load: function(str){
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
-		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime + banked purification, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, wrinklers sucked]
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime + banked purification, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, momentum (this got added too late)]
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
@@ -2033,7 +2034,7 @@ Game.registerMod("Kaizo Cookies", {
 				counter++;
 			}
 			strIn = str[7];
-			//pending...
+			if (isv(strIn)) { decay.momentum = parseFloat(strIn); }
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
