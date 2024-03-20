@@ -230,7 +230,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.getTickspeed = function() {
 			var tickSpeed = 1;
-			tickSpeed *= 1 + (Math.max(Math.log(Math.max(decay.momentum, 1)), 0) / Math.log(decay.momentumFactor)) * Math.pow(1 - 1 / momentum, decay.smoothMomentumFactor);
+			tickSpeed *= 1 + (Math.max(Math.log(Math.max(decay.momentum, 1)), 0) / Math.log(decay.momentumFactor)) * Math.pow(1 - 1 / decay.momentum, decay.smoothMomentumFactor);
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
