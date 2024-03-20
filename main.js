@@ -1545,7 +1545,7 @@ Game.registerMod("Kaizo Cookies", {
 				newList.push('News : crazed citizen quits job and leaves family to "grind ascends"');
 				if (Game.Has('Cookie egg')) newList.push('<q>'+"Give me food master."+'</q><sig>'+"krumblor"+'</sig>');
 				newList.push('News : ancient hieroglyphs deciphered to resemble 365 cookies of a heavenly origin. "We\'re not sure what that means," ponder scientists.');
-				newlist.push('News : local news stations overrun by suggestions: "Didnt know modding was this annoying.".');
+				newList.push('News : local news stations overrun by suggestions: "Didnt know modding was this annoying.".');
                 newList.push('News : you should grail.');
 				newList.push('News : encyclopaedia\'s head editor denies allegations that he is a “daddy”, says to the public “stop calling me that”');
 				newList.push('News : time manipulation growing old for the fiercely competitive baker industry, researchers pursue ways of the future by predicting ahead. "Everything is pre-determined, if you think about it."');
