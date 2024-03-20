@@ -118,6 +118,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.pastCapPow = 0.15; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
+		decay.bankedPurification = 0; //multiplier to mult and close 
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
@@ -200,6 +201,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
+			decay.bankedPurification += Game.auraMult('Fierce hoarder') / (Game.fps * Math.pow(1 + decay.bankPurification, 1 / 3));
 			decay.gen = decay.mults[20];
 			//Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
@@ -246,8 +248,9 @@ Game.registerMod("Kaizo Cookies", {
 			var u = false;
 			if (Game.Has('Unshackled Purity')) { u = true; }
 			for (let i in decay.mults) {
-				if (decay.purify(i, mult, close, cap, u)) { decay.triggerNotif('purityCap'); }
+				if (decay.purify(i, mult * (1 + decay.bankedPurification), 1 - Math.pow(1 / (1 + decay.bankedPurification), 0.5) * (1 - close), cap * (1 + decay.bankedPurification), u)) { decay.triggerNotif('purityCap'); }
 			}
+			decay.bankedPurification *= 0.1;
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('creation');
 				if (godLvl == 1) {
@@ -1345,11 +1348,14 @@ Game.registerMod("Kaizo Cookies", {
         }else if (choice=='blood frenzy')`));//When Ancestral Metamorphosis is seclected it pushes a effect called Dragon's hoard that gives 24 hours worth of CpS
 
         Game.dragonAuras[2].desc="Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy and Dragonflight is <b>50%</b> more powerful.";
-		Game.dragonAuras[6].desc="All upgrades are <b>10% cheaper</b>.";
-		Game.dragonAuras[7].desc="All buildings are <b>5% cheaper</b>.";
+		Game.dragonAuras[5].desc="Selling buildings <b>halts decay</b> temporarily based on the amount of buildings sold."
+		Game.dragonAuras[6].desc="Get <b>2%</b> (multiplicative) closer to <b>+135%</b> golden cookie frequency for each <b>x1.025</b> CpS multiplier from your purity.<br>(Note: this effect makes the timer run faster instead of making it start with less time)";
+		Game.dragonAuras[7].desc="While not purifying decay, you accumulate <b>purification power</b> that will be spent in the next purification; the banked purification power is kept even when this aura is off.";
         Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS."+'<br>'+"Wrinklers approach the big cookie <b>5 times</b> slower.";
+		Game.dragonAuras[9].desc="Get <b>1%</b> (multiplicative) closer to <b>+70%</b> golden cookie frequency for each <b>x0.75</b> CpS multiplier from your decay.<br>(Note: this effect makes the timer run faster instead of making it start with less time)"
         Game.dragonAuras[11].desc="Golden cookies give <b>10%</b> more cookies."+'<br>'+"Golden cookies may trigger a <b>Dragon\'s hoard</b>.";
-		Game.dragonAuras[12].desc="Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy appear <b>twice as often</b>.";
+		Game.dragonAuras[12].desc="Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy appear <b>4x as often</b>.";
+		Game.dragonAuras[13].desc="Having purity now makes buffs run out slower, for up to <b>-50%</b> buff duration decrease rate. Decay is less effective against buff length."
         Game.dragonAuras[15].desc="All cookie production <b>multiplied by 1.5</b>.";
 		Game.dragonAuras[21].desc="Each wrinkler always wither 100% of your CpS and popping wrinklers no longer slow down decay, but wrinklers no longer accumulate cookie loss when eating.";
 
