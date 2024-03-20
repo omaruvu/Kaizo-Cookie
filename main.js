@@ -115,9 +115,10 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
 		decay.haltTickingPow = 2; //the more it is, the less that the current decay tickspeed will affect decHalt
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
-		decay.wrinklerSpawnFactor = 0.8; //the more it is, the faster wrinklers spawn
+		decay.wrinklerSpawnFactor = 2.5; //the more it is, the slower wrinklers spawn with increased decay
+		decay.wrinklerApproachFactor = 1.5; //the more it is, the slower wrinklers approach the big cookie with increased decay
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
-		decay.pastCapPow = 0.15; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
+		decay.pastCapPow = 0.1; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.bankedPurification = 0; //multiplier to mult and close 
 		decay.timeSinceLastPurify = 0;
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
@@ -324,7 +325,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			wrinkler: {
 				title: 'Wrinklers',
-				desc: 'Wrinklers now wither a very large amount of CpS each and loses cookies on pop, but if you manage to pop them before they reach the big cookie, your decay gets stopped for much longer than just clicking!<br>Also, the withering affects clicks, unlike in vanilla',
+				desc: 'Wrinklers now spawn if you have a lot of decay, and approaches the cookie faster the more decay you have. They wither a very large amount of CpS each and loses cookies on pop, but if you manage to pop them before they reach the big cookie, your decay gets stopped for much longer than just clicking!<br>Also, the withering affects clicks, unlike in vanilla',
 				icon: [19, 8],
 				pref: 'decay.prefs.preventNotifs.wrinkler',
 				first: 'decay.prefs.firstNotif.wrinkler'
@@ -550,7 +551,7 @@ Game.registerMod("Kaizo Cookies", {
 
 			var w = 1 - 0.8;
 			w *= Math.pow(0.99, Math.log10(c));
-			decay.wrinklerSpawnFactor = 1 - w;
+			decay.wrinklerSpawnFactor = 1 + (2 * w);
 			if (Game.hasGod) { 
 				var godLvl = Game.hasGod('scorn');
 				if (godLvl == 1) { decay.wrinklerSpawnThreshold = 1 - Math.pow(w * 3, 0.25); decay.wcPow = 0.25 * 2; }
@@ -657,8 +658,13 @@ Game.registerMod("Kaizo Cookies", {
 			if (x2 > -0.5 * rect.w && x2 < 0.5 * rect.w && y2 > -0.5 * rect.h && y2 < 0.5 * rect.h) return true;
 			return false;
 		}
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 / Math.pow(decay.gen, decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
-		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(12*Game.eff("wrinklerApproach")*(1+Game.auraMult("Dragon God")*4));'))//Changing Wrinkler movement speed
+		decay.wrinklerApproach = function() {
+			var base = 12 / Game.eff('wrinklerApproach');
+			base *= 1 + Game.auraMult("Dragon God") * 4;
+			return base / (Math.log(1 / decay.gen) / Math.log(decay.wrinklerApproachFactor));
+		}
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 * Math.log(1 / decay.gen) / Math.log(decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
+		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(decay.wrinklerApproach());'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Math.max(Game.cookiesPsRawHighest, Game.cookiesPs))/Game.fps; }'));
 		addLoc('-%1!');
@@ -1447,7 +1453,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		//godzamok + earth shatterer
 		for (let i in Game.Objects) {
-			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace(`if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);`, `if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01,1+sold*0.01);`).replace(`else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);`, `else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005,1+sold*0.004);`).replace(`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025);`,`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025,1+sold*0.0015);`).replace('if (success && Game.hasGod)', 'if (success && Game.auraMult("Earth Shatterer")) { decay.stop(sold * 0.04); } if (success && Game.hasGod)'));
+			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace(`if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);`, `if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01,1+sold*0.01);`).replace(`else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);`, `else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005,1+sold*0.004);`).replace(`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025);`,`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025,1+sold*0.0015);`).replace('if (success && Game.hasGod)', 'if (success && Game.auraMult("Earth Shatterer")) { decay.stop(sold * Game.auraMult("Earth Shatterer") * 0.02); } if (success && Game.hasGod)'));
 		}
 		
 		addLoc('Buff boosts clicks by +%1% for every building sold for %2 seconds, ');
@@ -1706,7 +1712,7 @@ Game.registerMod("Kaizo Cookies", {
 			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker.". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
 			this.achievements.push(new Game.Upgrade('Purity vaccines', '<b>Stops all decay.</b><q>Developed for the time of need.</q>', 7, [20, 6])); Game.last.pool='debug'; Game.UpgradesByPool['debug'].push(Game.last);
 
-			this.achievements.push(new Game.Upgrade('Unshackled Purity',("Purification is <b>no longer limited by caps</b>; however, increasing purity past the cap will require increasing amounts of purification power. <br>The decay rate increase from purity increase <b>-25%</b>.")+'<q>One of the strongest antidotes that has been found; it can cure all known diseases.</q>',11111100000000000,[4,1,custImg])); Game.last.pool='prestige';
+			this.achievements.push(new Game.Upgrade('Unshackled Purity',("Purification is <b>no longer limited by caps</b>; however, increasing purity past the cap will require an increased amount of purification power. <br>The decay rate increase from purity increase <b>-25%</b>.")+'<q>One of the strongest antidotes that has been found; it can cure all known diseases.</q>',11111100000000000,[4,1,custImg])); Game.last.pool='prestige';
 			Game.Upgrades['Unshackled Purity'].parents=[Game.Upgrades['Unshackled flavor'],Game.Upgrades['Unshackled berrylium'],Game.Upgrades['Unshackled blueberrylium'],Game.Upgrades['Unshackled chalcedhoney'],Game.Upgrades['Unshackled buttergold'],Game.Upgrades['Unshackled sugarmuck'],Game.Upgrades['Unshackled jetmint'],Game.Upgrades['Unshackled cherrysilver'],Game.Upgrades['Unshackled hazelrald'],Game.Upgrades['Unshackled mooncandy'],Game.Upgrades['Unshackled astrofudge'],Game.Upgrades['Unshackled alabascream'],Game.Upgrades['Unshackled iridyum'],Game.Upgrades['Unshackled glucosmium'],Game.Upgrades['Unshackled glimmeringue']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Unshackled Purity'])
 			Game.last.posY=195,Game.last.posX=750
