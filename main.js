@@ -248,7 +248,7 @@ Game.registerMod("Kaizo Cookies", {
 			var u = false;
 			if (Game.Has('Unshackled Purity')) { u = true; }
 			for (let i in decay.mults) {
-				if (decay.purify(i, mult * (1 + decay.bankedPurification), 1 - Math.pow(1 / (1 + decay.bankedPurification), 0.5) * (1 - close), cap * (1 + decay.bankedPurification), u)) { decay.triggerNotif('purityCap'); }
+				if (decay.purify(i, mult + decay.bankedPurification, 1 - Math.pow(1 / (1 + decay.bankedPurification), 0.5) * (1 - close), cap * (1 + decay.bankedPurification), u)) { decay.triggerNotif('purityCap'); }
 			}
 			decay.bankedPurification *= 0.1;
 			if (Game.hasGod) {
