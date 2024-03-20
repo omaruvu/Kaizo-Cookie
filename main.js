@@ -105,8 +105,11 @@ Game.registerMod("Kaizo Cookies", {
 		decay.gen = decay.mults[20];
 		decay.incMult = 0.04; //decay mult is decreased by this multiplicative every second
 		decay.min = 0.15; //the minimum power that the update function uses; the lower it is, the slower the decay will pick up
+		decay.momentum = 1; //increases with each game tick, but decreased on certain actions (hardcoded to be at least 1)
+		decay.smoothMomentumFactor = 1.5; //some momentum is negated so it isnt very obvious with the log scaling; the more it is, the smoother it will be (not necessarily a good thing as it also delays momentum)
+		decay.momentumFactor = 2; //the more this is, the less powerful momentum is (very strongly affects momentum)
 		decay.halt = 1; //simulates decay stopping from clicking
-		decay.haltOvertime = 0; //each halt, a fraction of the halt time is added to this; overtime will be expended when the main halt time runs out, but overtime is less effective at stopping decay
+		decay.haltOvertime = 0; //each stop, a fraction of the halt time is added to this; overtime will be expended when the main halt time runs out, but overtime is less effective at stopping decay
 		decay.haltOTLimit = 4; //OT stands for overtime
 		decay.decHalt = 0.33; // the amount that decay.halt decreases by every second
 		decay.haltFactor = 0.5; //how quickly decay recovers from halt
@@ -114,13 +117,16 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltOTDec = 0.5; //"halt overtime decrease", decHalt also applies to overtime but multiplied by this
 		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
 		decay.haltTickingPow = 2; //the more it is, the less that the current decay tickspeed will affect decHalt
+		decay.momentumOnHaltBuffer = 100; //for its effect on halting, this amount of negated from it when calcualting
+		decay.momentumOnHaltLogFactor = 3; //the more it is, the less momentum will affect halting power
+		decay.momentumOnHaltPowFactor = 0.5; //the less it is, the less momentum will affect halting power
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 2.5; //the more it is, the slower wrinklers spawn with increased decay
 		decay.wrinklerApproachFactor = 2.5; //the more it is, the slower wrinklers approach the big cookie with increased decay
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.pastCapPow = 0.1; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.bankedPurification = 0; //multiplier to mult and close 
-		decay.timeSinceLastPurify = 0;
+		decay.timeSinceLastPurify = 0; //unlike decay.momentum, this is very literal and cant really be manipulated like it
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
@@ -173,10 +179,12 @@ Game.registerMod("Kaizo Cookies", {
 			multipleBuffs: 0,
 			buildVariance: 0
 		}
+
+		//decay core
 		decay.update = function(buildId, tickSpeed) { 
 			if (Game.Has('Purity vaccines')) { return decay.mults[buildId]; }
 			var c = decay.mults[buildId];
-    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))) * (Math.max(1, Math.pow(c,(Game.Has('Unshackled Purity'))?0.9:1.2)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), tickSpeed);
+    		c *= Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))) * (Math.max(1, Math.pow(c,(Game.Has('Unshackled Purity'))?0.9:1.2)) * Math.pow(Math.log(Math.max(1, decay.momentum - decay.momentumOnHaltBuffer) / Math.log(decay.momentumOnHaltLogFactor), decay.momentumOnHaltPowFactor) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1)), tickSpeed);
 			return c;
 		} 
 		decay.updateAll = function() {
@@ -210,8 +218,12 @@ Game.registerMod("Kaizo Cookies", {
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
+		decay.updateMomentum = function() {
+			
+		}
 		decay.getTickspeed = function() {
 			var tickSpeed = 1;
+			tickSpeed *= 1 + (Math.max(Math.log(Math.max(decay.momentum, 1)), 0) / Math.log(decay.momentumFactor)) * Math.pow(1 - 1 / momentum, decay.smoothMomentumFactor);
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
@@ -274,6 +286,7 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in decay.mults) {
 				decay.refresh(i, to);
 			}
+			decay.timeSinceLastPurify = 0;
 			Game.recalculateGains = 1;
 		}
 		//stands for "regain acceleration"
