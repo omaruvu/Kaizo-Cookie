@@ -659,7 +659,7 @@ Game.registerMod("Kaizo Cookies", {
 			return false;
 		}
 		decay.wrinklerApproach = function() {
-			var base = 12 / Game.eff('wrinklerApproach');
+			var base = 60 / Game.eff('wrinklerApproach');
 			base *= 1 + Game.auraMult("Dragon God") * 4;
 			return base / (Math.log(1 / decay.gen) / Math.log(decay.wrinklerApproachFactor));
 		}
