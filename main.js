@@ -720,10 +720,17 @@ Game.registerMod("Kaizo Cookies", {
 		});
 		
 		//purification: elder pledge & elder covenant
-		for (let i in Game.UpgradesByPool['tech']) {
-			Game.UpgradesByPool['tech'][i].basePrice /= 1000000;
-		}
 		Game.UpgradesById[64].basePrice /= 1000000;
+		Game.UpgradesById[65].basePrice /= 1000000;
+		Game.UpgradesById[66].basePrice /= (1000000 / 4);
+		Game.UpgradesById[67].basePrice /= (1000000 / 16);
+		Game.UpgradesById[68].basePrice /= (1000000 / 64);
+		Game.UpgradesById[69].basePrice /= (1000000 / 256);
+		Game.UpgradesById[70].basePrice /= (1000000 / 1024);
+		Game.UpgradesById[71].basePrice /= (1000000 / 4096);
+		Game.UpgradesById[72].basePrice /= (1000000 / 16384);
+		Game.UpgradesById[73].basePrice /= (1000000 / 65536);
+		Game.UpgradesById[87].basePrice *= 1000;
 		Game.registerHook('check', function() {
 			if (Game.Objects['Grandma'].amount>=25) { Game.Unlock('Bingo center/Research facility'); }
 		});
