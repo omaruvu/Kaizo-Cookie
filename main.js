@@ -679,7 +679,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.getBuffLoss = function() {
 			if (Game.auraMult('Epoch Manipulator')) {
 				if (decay.gen > 1) {
-					return 1 - Game.auraMult('Epoch Manipulator') * (1 / 3) * (2 - 1 / decay.gen);
+					return 1 - Game.auraMult('Epoch Manipulator') * 0.5 * (2 - 1 / decay.gen);
 				} else {
 					return 1 / Math.pow(decay.gen, decay.buffDurPow);
 				}
