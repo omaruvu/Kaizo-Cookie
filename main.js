@@ -120,7 +120,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltTickingPow = 2; //the more it is, the less that the current decay tickspeed will affect decHalt
 		decay.momentumOnHaltBuffer = 10; //for its effect on halting, this amount is negated from it when calcualting
 		decay.momentumOnHaltLogFactor = 3; //the more it is, the less momentum will affect halting power
-		decay.momentumOnHaltPowFactor = 0.5; //the less it is, the less momentum will affect halting power
+		decay.momentumOnHaltPowFactor = 2; //the less it is, the less momentum will affect halting power
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 2.5; //the more it is, the slower wrinklers spawn with increased decay
 		decay.wrinklerApproachFactor = 2.5; //the more it is, the slower wrinklers approach the big cookie with increased decay
@@ -185,7 +185,12 @@ Game.registerMod("Kaizo Cookies", {
 		decay.update = function(buildId, tickSpeed) { 
 			if (Game.Has('Purity vaccines')) { return decay.mults[buildId]; }
 			var c = decay.mults[buildId];
-    		c *= Math.pow(Math.pow(1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))), (Math.max(1, Math.pow(c,(Game.Has('Unshackled Purity'))?0.9:1.2)) * (Math.log(Math.pow(Math.max(1, decay.momentum - decay.momentumOnHaltBuffer), decay.momentumOnHaltPowFactor)) / Math.log(decay.momentumOnHaltLogFactor)) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1))), tickSpeed);
+    		c *= Math.pow(
+				Math.pow(
+					1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))), 
+					(Math.max(1, Math.pow(c, (Game.Has('Unshackled Purity'))?0.9:1.2))) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1) / (Math.pow(Math.log(Math.max(1, decay.momentum - decay.momentumOnHaltBuffer)) / Math.log(decay.momentumOnHaltLogFactor), decay.momentumOnHaltPowFactor)))
+				), 
+			tickSpeed);
 			return c;
 		} 
 		decay.updateAll = function() {
