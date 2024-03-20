@@ -184,9 +184,7 @@ Game.registerMod("Kaizo Cookies", {
 				decay.mults[i] = c;
 			}
 			decay.regainAcc();
-			if (Game.T % 2) {
-				Game.recalculateGains = 1;	
-			}
+			Game.recalculateGains = 1;	//uh oh
 			decay.cpsList.push(Game.unbuffedCps);
 			if (decay.cpsList.length > Game.fps * 1.5) {
 				decay.cpsList.shift();
