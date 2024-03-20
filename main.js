@@ -129,7 +129,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.bankedPurification = 0; //multiplier to mult and close 
 		decay.timeSinceLastPurify = 0; //unlike decay.momentum, this is very literal and cant really be manipulated like it
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
-		decay.purifyMomentumMult = 1; //multiplied to the amount decrease
+		decay.purifyMomentumMult = 2; //multiplied to the amount decrease
 		decay.haltReverseMomentumFactor = 0.9; //each point of halt called when decay.stop multiplies the halt for this amount
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
@@ -220,7 +220,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (Game.pledgeT > 0) {
 				var strength = Game.getPledgeStrength();
-				decay.purifyAll(strength[0], strength[1], strength[2]);
+				decay.purifyAll(strength[0], strength[1], strength[2], 'pledge');
 			}
 			if (Game.pledgeC > 0) {
 				Game.pledgeC--;
@@ -298,13 +298,16 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (decay.mults[buildId] > cap && !uncapped) { decay.mults[buildId] = cap; }
 		}
-		decay.purifyAll = function(mult, close, cap) {
+		decay.purifyAll = function(mult, close, cap, id) {
+			if (typeof id === 'undefined') { id = ''; }
 			var u = false;
 			if (Game.Has('Unshackled Purity')) { u = true; }
 			for (let i in decay.mults) {
 				if (decay.purify(i, mult + decay.bankedPurification, 1 - Math.pow(1 / (1 + decay.bankedPurification), 0.5) * (1 - close), cap * (1 + decay.bankedPurification), u)) { decay.triggerNotif('purityCap'); }
 			}
-			decay.momentum = Math.max(decay.momentum - (mult - 1) * decay.purifyMomentumMult * mult, 1);
+			if (id !== 'pledge') {
+				decay.momentum = Math.max(decay.momentum - (mult - 1) * decay.purifyMomentumMult * mult, 1);
+			}
 			decay.bankedPurification *= 0.5;
 			decay.timeSinceLastPurify = 0;
 			if (Game.hasGod) {
@@ -821,7 +824,7 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Sacrificial rolling pins', 'The Elder Pledge is <b>10 times</b> cheaper.<q>As its name suggests, it suffers so that everyone can live tomorrow.</q>');
 		Game.Upgrades['One mind'].clickFunction = function() { };
 		Game.Upgrades['Elder Pact'].clickFunction = function() { };
-		replaceDesc('Elder Pledge', 'Purifies the decay, at least for a short, short while.<br>Price also scales with highest raw CpS this ascend.<q>Although, yes - the cost is now uncapped; the scaling is now much, much weaker.</q>');
+		replaceDesc('Elder Pledge', 'Purifies the decay, at least for a short while. Does not affect decay momentum at all.<br>Price also scales with highest raw CpS this ascend.<q>Although, yes - the cost is now uncapped; the scaling is now much, much weaker.</q>');
 		Game.Upgrades['Elder Pledge'].buyFunction = function() {
 			Game.pledges++;
 			Game.pledgeT=Game.getPledgeDuration();
