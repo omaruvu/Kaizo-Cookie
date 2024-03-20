@@ -156,7 +156,8 @@ Game.registerMod("Kaizo Cookies", {
 				fthof: 0,
 				purityCap: 0,
 				buildVariance: 0,
-				momentum: 0
+				momentum: 0,
+				boost: 0
 			},
 			firstNotif: {
 				initiate: 1,
@@ -172,7 +173,8 @@ Game.registerMod("Kaizo Cookies", {
 				fthof: 1,
 				purityCap: 1,
 				buildVariance: 1,
-				momentum: 1
+				momentum: 1,
+				boost: 1
 			}
 		}
 		decay.notifCalls = {
@@ -183,7 +185,8 @@ Game.registerMod("Kaizo Cookies", {
 			buff: 0,
 			multipleBuffs: 0,
 			buildVariance: 0,
-			momentum: 0
+			momentum: 0,
+			boost: 0
 		}
 
 		//decay core
@@ -249,7 +252,6 @@ Game.registerMod("Kaizo Cookies", {
 				else if (godLvl == 2) { tickSpeed *= 0.8; }
 				else if (godLvl == 3) { tickSpeed *= 0.9; }
 			}
-			if (Game.hasBuff('Devastation').arg2) { tickSpeed *= Game.hasBuff('Devastation').arg2; }
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
 			tickSpeed *= Math.pow(1.1, Math.max(0, Game.gcBuffCount() - 1));
 			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
@@ -455,6 +457,14 @@ Game.registerMod("Kaizo Cookies", {
 				pref: 'decay.prefs.preventNotifs.momentum',
 				first: 'decay.prefs.firstNotif.momentum',
 				nocall: 'decay.notifCalls.buildVariance'
+			},
+			boost: {
+				title: 'Purity boosts',
+				desc: 'Some upgrades decrease your decay, but not all decreases decrease the same thing! There are three main ways:<br>"Decay rate" - The amount of decay that gets generated per second<br>"Decay momentum" - The decay momentum, which increases the decay rate if the decay is left uninterrupted<br>"Decay propagation" - Decay rates AND decay momentum',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.boost',
+				first: 'decay.prefs.firstNotif.boost',
+				nocall: 'decay.notifCalls.boost'
 			}
 		}
 		decay.triggerNotif = function(key) {
@@ -1523,10 +1533,12 @@ Game.registerMod("Kaizo Cookies", {
 				//Changing the desc
 				var temp = Game.Objects['Temple'].minigame;
 				if (l('templeInfo') === null) { return false; }
+				if (decay.prefs.firstNotif['momentum']) { decay.triggerNotif('momentum'); }
+				decay.triggerNotif('boost');
 				pp = temp;
-				temp.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[1])+'</span>';
-				temp.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.5, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.4])+'</span>';
-				temp.gods['ruin'].desc3='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.25, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.15])+'</span>';
+				temp.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay momentum by %1% with every building sold.",[1])+'</span>';
+				temp.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.5, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay momentum by %1% with every building sold.",[0.4])+'</span>';
+				temp.gods['ruin'].desc3='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.25, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay momentum by %1% with every building sold.",[0.15])+'</span>';
 
 				temp.gods['mother'].desc1='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",8)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",20)+'</span>';
 				temp.gods['mother'].desc2='<span class="green">'+loc("Milk is <b>%1% more powerful</b>.",4)+'</span> <span class="red">'+loc("Golden and wrath cookies appear %1% less.",15)+'</span>';
