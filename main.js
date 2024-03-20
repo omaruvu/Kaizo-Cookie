@@ -1131,9 +1131,11 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes['golden'].popFunc.toString().replace("if (Game.BuildingsOwned>=10 && Math.random()<0.25) list.push('building special');","if (Game.BuildingsOwned>=10 && me.wrath==0 && Math.random()<0.25) list.push('building special');"));//Removing bulding specail from the wrath cookie pool
 
 		//making buildlings start with level 1
+		/*
 		for (let i in Game.Objects) {
 			Game.Objects[i].level = Math.max(1, Game.Objects[i].level);
 		}
+  		*/
 
 		allValues('spells; decay complete');
 
