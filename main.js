@@ -1529,14 +1529,52 @@ Game.registerMod("Kaizo Cookies", {
 				
 			]));
 
+			if (Game.Objects['Farm'].amount>0) newList.concat([
+				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.'
+			]);
+			if (Game.Objects['Farm'].amount>25) { newList.concat([
+				'News: a new law has been introduced that limited the stem length of all cookie plants to a maximum of 1 light year.'
+			]); }
+			if (Game.Objects['Farm'].amount>50) { newList.concat([
+				'News: storage out of control! Cookie plants are dying after a recent invasion of cookies that broke through the greenhouse roof; officials blame the warehouse construction company.'
+			]); }
+			if (Game.Objects['Farm'].amount>100) { newList.concat([
+				'News: experts suggest that cookies from cookie plants are unsafe to eat if not heated to at least 6,000,000 celsius.',
+				'News: farmers report difficulty distinguishing between the cookies on the cookie plants and all the cookies around them.',
+				'News: another farmer dies from suffocation.'
+			]); }
+
+			if (Game.Objects['Prism'].amount>25) { newList.concat([
+				'News: Prisms are starting to exclusively use gamma rays to produce the smallest cookies possible.
+			]); }
+			if (Game.Objects['Prism'].amount>50) { newList.concat([
+				'News: '
+			]); }
+			if (Game.Objects['Prism'].amount>100) { newList.concat([
+				'News: can we turn cookies back into light? Please?'
+			]); }
+
+			if (Game.Objects['Chancemaker'].amount>25) { newList.concat([
+				'News: it is considered lucky if the Chancemakers don\'t produce any cookies.'
+			]); }
+			if (Game.Objects['Chancemaker'].amount>50) { newList.concat([
+				'News: experts are considering the "quantom dislocation" optimization, wonders if the Chancemakers are powerful enough to dislocate a mass of cookies of 1,123,901,284 light years cubed.'
+			]); }
+			if (Game.Objects['Chancemaker'].amount>100) { newList.concat([
+				'News: you will see this news because RNG said yes.',
+				'News: is the eyeballs really necessary? Experts consider removing one eyeball from each Chancemaker to save space to store more cookies.'
+			]); }
+
 			if (Game.Objects['Fractal engines'].amount>25) { newList.concat([
 				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. '
 			]); }
 			if (Game.Objects['Fractal engines'].amount>50) { newList.concat([
 				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. ',
+				'News: Fractal engines are encountering difficulty replicating. Experts are working hard to figure out where they are amongst the mass of cookies.'
 			]); }
 			if (Game.Objects['Fractal engines'].amount>100) { newList.concat([
-				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. Wait, we also can\'t?'
+				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. Wait, we also can\'t?',
+				'News: No, Fractal engines can\'t replicate into a larger copy of itself, either.'
 			]); }
 
 			if (Game.Objects['Javascript console'].amount>25) { newList.concat([
@@ -1591,10 +1629,6 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Objects['You'].amount>100) { newList.concat([
 				'News: '+name+'\'s clones are beginning to shrink. Experts expect nuclear fusion to occur in the next 4 hours.'
 			]); }
-			
-			if (Game.Objects['Farm'].amount>0) newList.push(choose([
-				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.'
-			]));
 
 			if (Game.Objects['Wizard tower'].level>10) newList.push(choose([
 				'News : local baker levels wizard towers past level 10, disowned by family.'
