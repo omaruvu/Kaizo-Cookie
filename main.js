@@ -1,3 +1,4 @@
+
 var decay = {};
 var kaizoCookiesVer = 'v1.1.2'
 
@@ -676,7 +677,7 @@ Game.registerMod("Kaizo Cookies", {
 			//maybe make decay increase wrinkler cap?
 		}
 		replaceDesc('Elder spice', 'You attracts <b>2</b> less wrinklers.');
-		decay.getBuffLoss() {
+		decay.getBuffLoss = function() {
 			if (Game.auraMult('Epoch manipulator')) {
 				if (decay.gen > 1) {
 					return 1 - Game.auraMult('Epoch manipulator') * (1 / 3) * (2 - 1 / decay.gen);
