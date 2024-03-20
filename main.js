@@ -129,6 +129,8 @@ Game.registerMod("Kaizo Cookies", {
 		decay.bankedPurification = 0; //multiplier to mult and close 
 		decay.timeSinceLastPurify = 0; //unlike decay.momentum, this is very literal and cant really be manipulated like it
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
+		decay.purifyMomentumMult = 5; //multiplied to the amount decrease
+		decay.haltReverseMomentumFactor = 0.9; //each point of halt called when decay.stop multiplies the halt for this amount
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
@@ -153,7 +155,8 @@ Game.registerMod("Kaizo Cookies", {
 				multipleBuffs: 0,
 				fthof: 0,
 				purityCap: 0,
-				buildVariance: 0
+				buildVariance: 0,
+				momentum: 0
 			},
 			firstNotif: {
 				initiate: 1,
@@ -168,7 +171,8 @@ Game.registerMod("Kaizo Cookies", {
 				multipleBuffs: 1,
 				fthof: 1,
 				purityCap: 1,
-				buildVariance: 1
+				buildVariance: 1,
+				momentum: 1
 			}
 		}
 		decay.notifCalls = {
@@ -178,7 +182,8 @@ Game.registerMod("Kaizo Cookies", {
 			decayII: 0,
 			buff: 0,
 			multipleBuffs: 0,
-			buildVariance: 0
+			buildVariance: 0,
+			momentum: 0
 		}
 
 		//decay core
@@ -196,6 +201,7 @@ Game.registerMod("Kaizo Cookies", {
 		} 
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 5555) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
+			if (decay.momentum < 1) { decay.momentum = 1; }
 			var t = decay.getTickspeed();
 			var c = decay.update(20, t);
 			if (!isFinite(1 / c)) { if (!isNaN(c)) { console.log('Infinity reached. decay mult: '+c); for (let i in decay.mults) { decay.mults[i] = 1 / Number.MAX_VALUE; } decay.infReached = true; } }
@@ -203,7 +209,7 @@ Game.registerMod("Kaizo Cookies", {
 				decay.mults[i] = c;
 			}
 			decay.regainAcc();
-			//decay.momentum = decay.updateMomentum();
+			decay.momentum = decay.updateMomentum(decay.momentum);
 			Game.recalculateGains = 1;	//uh oh
 			decay.cpsList.push(Game.unbuffedCps);
 			if (decay.cpsList.length > Game.fps * 1.5) {
@@ -226,9 +232,8 @@ Game.registerMod("Kaizo Cookies", {
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
-		decay.updateMomentum = function() {
-			var m = decay.momentum;
-			var mult = Math.pow(1 + decay.incMult, 5) / (10 * Game.fps);
+		decay.updateMomentum = function(m) {
+			var mult = decay.getMomentumMult * Math.pow(1 + decay.incMult, 5) / (10 * Game.fps);
 			if (Game.pledgeT > 0) { mult *= 2; }
 			m += (Math.log(m * Math.max(1 - Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 0)) / Math.log(decay.momentumIncFactor)) * mult;
 			
@@ -246,12 +251,29 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (Game.hasBuff('Devastation').arg2) { tickSpeed *= Game.hasBuff('Devastation').arg2; }
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
-			tickSpeed *= Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1));
+			tickSpeed *= Math.pow(1.1, Math.max(0, Game.gcBuffCount() - 1));
 			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
 			if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
 			if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
 
 			return tickSpeed;
+		}
+		decay.getMomentumMult = function() {
+			//getTickspeed but for momentum
+			var tickSpeed = 1;
+			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
+			if (Game.hasGod) {
+				var godLvl = Game.hasGod('asceticism');
+				if (godLvl == 1) { tickSpeed *= 0.7; }
+				else if (godLvl == 2) { tickSpeed *= 0.8; }
+				else if (godLvl == 3) { tickSpeed *= 0.9; }
+			}
+			if (Game.hasBuff('Devastation').arg2) { tickSpeed *= Game.hasBuff('Devastation').arg2; }
+			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
+			tickSpeed *= Math.pow(3, Math.max(0, Game.gcBuffCount() - 1));
+			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
+			if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
+			if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
 		}
 		decay.purify = function(buildId, mult, close, cap, uncapped) {
 			if (decay.mults[buildId] >= cap) { 
@@ -279,7 +301,8 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in decay.mults) {
 				if (decay.purify(i, mult + decay.bankedPurification, 1 - Math.pow(1 / (1 + decay.bankedPurification), 0.5) * (1 - close), cap * (1 + decay.bankedPurification), u)) { decay.triggerNotif('purityCap'); }
 			}
-			decay.bankedPurification *= 0.1;
+			decay.momentum = Math.max(decay.momentum - (mult - 1) * decay.purifyMomentumMult, 1);
+			decay.bankedPurification *= 0.5;
 			decay.timeSinceLastPurify = 0;
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('creation');
@@ -314,6 +337,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.stop = function(val) {
 			decay.halt = val * Game.eff('haltPower');
+			decay.momentum = 1 + (decay.momentum - 1) * Math.pow(decay.haltReverseMomentumFactor, val * Game.eff('haltPower'));
 			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltKeep); 
 		}
  		decay.get = function(buildId) {
@@ -396,7 +420,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			multipleBuffs: {
 				title: 'Buff stacking',
-				desc: 'Stacking more than one Golden cookie buff significantly increases your rate of decay.',
+				desc: 'Stacking more than one Golden cookie buff slightly increases your rate of decay, but especially the decay\'s momentum.',
 				icon: [23, 6],
 				pref: 'decay.prefs.preventNotifs.multipleBuffs',
 				first: 'decay.prefs.firstNotif.multipleBuffs',
@@ -423,6 +447,14 @@ Game.registerMod("Kaizo Cookies", {
 				pref: 'decay.prefs.preventNotifs.buildVariance',
 				first: 'decay.prefs.firstNotif.buildVariance',
 				nocall: 'decay.notifCalls.buildVariance'
+			},
+			momentum: {
+				title: 'Decay momentum',
+				desc: 'If you don\'t do anything about the decay for a while, the rate of growth will start to slowly increase and your clicks will get less effective at stopping decay; this is momentum. Purifying decay can reverse some momentum, but a far more effective method to reverse momentum is to do the things that stop decay, such as clicking the big cookie or popping wrinklers before they start sucking.',
+				icon: [0, 0],
+				pref: 'decay.prefs.preventNotifs.momentum',
+				first: 'decay.prefs.firstNotif.momentum',
+				nocall: 'decay.notifCalls.buildVariance'
 			}
 		}
 		decay.triggerNotif = function(key) {
@@ -448,6 +480,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (!Game.buffCount()) { decay.notifCalls['buff'] = 0; }
 			if (!(Game.buffCount() - 1)) { decay.notifCalls['multipleBuffs'] = 0; }
 			if (Game.Objects['Idleverse'].amount == 0 && Game.Objects['Cortex baker'].amount == 0) { decay.notifCalls['buildVariance'] = 0; }
+			if (decay.momentum <= 5) { decay.notifCalls['momentum'] = 0; }
 		}
 		Game.buffCount = function() {
 			var count = 0;
@@ -469,6 +502,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
 			if (Game.gcBuffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
 			if (Game.Objects['Idleverse'].amount > 0 && Game.Objects['Cortex baker'].amount > 0) { decay.triggerNotif('buildVariance'); }
+			if (decay.momentum > 5) { decay.triggerNotif('momentum'); }
 		}
 		Game.registerHook('logic', decay.checkTriggerNotifs);
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
@@ -591,7 +625,7 @@ Game.registerMod("Kaizo Cookies", {
 			decay.min = Math.min(1, 0.15 + (1 - d) * 3.5);
 
 			var dh = 0.5;
-			dh *= 1 / Math.pow(d, 5);
+			dh *= 1 / Math.pow(d, 2);
 			decay.decHalt = dh;
 
 			decay.buffDurPow = 0.5 - 0.15 * Game.auraMult('Epoch Manipulator');
