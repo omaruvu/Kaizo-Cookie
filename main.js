@@ -73,8 +73,8 @@ function allValues(checkpoint) {
 	console.log(str);
 }
 
-var gp = Game.Objects['Wizard tower'].minigame //grimoire proxy
-var pp = Game.Objects['Temple'].minigame //pantheon proxy
+let gp = Game.Objects['Wizard tower'].minigame //grimoire proxy
+let pp = Game.Objects['Temple'].minigame //pantheon proxy
 var grimoireUpdated = false;
 var gardenUpdated = false;
 var pantheonUpdated = false;
@@ -618,6 +618,9 @@ Game.registerMod("Kaizo Cookies", {
 				Game.rebuildGrimoire();
 				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
 				eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
+				eval("gp.spells['summon crafty pixies'].desc=" + '"' + Game.Objects['Wizard tower'].minigame.spells['summon crafty pixies'].desc.replace('2', '10') + '"');//chaning the desc of the spell
+				eval("gp.spells['spontaneous edifice'].win=" + Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].win.toString().replace("{if ((Game.Objects[i].amount<max || n==1) && Game.Objects[i].getPrice()<=Game.cookies*2 && Game.Objects[i].amount<400) buildings.push(Game.Objects[i]);}", "{if ((Game.Objects[i].amount<max || n==1) && Game.Objects[i].getPrice()<=Game.cookies*2 && Game.Objects[i].amount<1000) buildings.push(Game.Objects[i]);}"))//SE works up to 1k
+				eval("gp.spells['spontaneous edifice'].desc=" + '"' + Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].desc.replace('400', '1000') + '"');
 				eval('gp.draw='+gp.draw.toString().replace(`Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/s",Beautify((M.magicPS||0)*Game.fps,2))+')'):'')`,
 														 `Math.min(Math.floor(M.magicM),Beautify(M.magic))+'/'+Beautify(Math.floor(M.magicM))+(M.magic<M.magicM?(' ('+loc("+%1/min",Beautify((M.magicPS||0)*Game.fps*60,3))+')'):'')`)
 					.replace(`loc("Spells cast: %1 (total: %2)",[Beautify(M.spellsCast),Beautify(M.spellsCastTotal)]);`,
@@ -1139,18 +1142,11 @@ Game.registerMod("Kaizo Cookies", {
         =======================================================================================*/
         eval('Game.modifyBuildingPrice='+Game.modifyBuildingPrice.toString().replace("if (Game.hasBuff('Crafty pixies')) price*=0.98;","if (Game.hasBuff('Crafty pixies')) price*=0.90;"))//Buffing the crafty pixies effect from 2% to 10%
 
-		Game.registerHook('check', () => {//This makes it so it only actives the code if the minigame is loaded
-			if (Game.Objects['Wizard tower'].minigameLoaded) {
-				eval("Game.Objects['Wizard tower'].minigame.spells['summon crafty pixies'].desc=" + '"' + Game.Objects['Wizard tower'].minigame.spells['summon crafty pixies'].desc.replace('2', '10') + '"');//chaning the desc of the spell
-				eval("Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].win=" + Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].win.toString().replace("{if ((Game.Objects[i].amount<max || n==1) && Game.Objects[i].getPrice()<=Game.cookies*2 && Game.Objects[i].amount<400) buildings.push(Game.Objects[i]);}", "{if ((Game.Objects[i].amount<max || n==1) && Game.Objects[i].getPrice()<=Game.cookies*2 && Game.Objects[i].amount<1000) buildings.push(Game.Objects[i]);}"))//SE works up to 1k
-				eval("Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].desc=" + '"' + Game.Objects['Wizard tower'].minigame.spells['spontaneous edifice'].desc.replace('400', '1000') + '"');
-			}
-		});
-
         //Garden changes
 		Game.registerHook('check', () => {
 			if (Game.Objects['Farm'].minigameLoaded && !gardenUpdated) {
 		        M=Game.Objects['Farm'].minigame//Declaring M.soilsById so computeEffs works (this took hours to figure out)
+				if (l('gardenStats') === null) { return false; }
 		        M.soilsById.soilsById = [];
 		        var n = 0;
 		        for (var i in M.soils) {
@@ -1362,13 +1358,16 @@ Game.registerMod("Kaizo Cookies", {
 		/*=====================================================================================
         because Cookiemains wanted so
         =======================================================================================*/
+		var secondGrimoireDone = false;
 		Game.registerHook('check', () => {
-			if (Game.Objects['Wizard tower'].minigameLoaded) {
-				grimoire=Game.Objects['Wizard tower'].minigame;
+			if (Game.Objects['Wizard tower'].minigameLoaded && !secondGrimoireDone) {
+				var grimoire=Game.Objects['Wizard tower'].minigame;
+				if (l('grimoireInfo') === null) { return false; }
                 grimoire.spells['hand of fate'].failFunc=function(fail){return fail+0.3*Game.shimmerTypes['golden'].n; };
 
 				eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("//if (Math.random()<0.2) choices.push('clot','cursed finger','ruin cookies');","if (Math.random()<0.2) choices.push('clot','cursed finger','ruin cookies');"))//Making this unused code used
 		        eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("if (Game.BuildingsOwned>=10 && Math.random()<0.25) choices.push('building special');","if (Game.BuildingsOwned>=10 && Math.random()<0.10) choices.push('building special');"))//Changing building special to 10%
+				secondGrimoireDone = true;
 			}
 		});
 
@@ -1416,11 +1415,12 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		
 		addLoc('Buff boosts clicks by +%1% for every building sold for %2 seconds, ');
-		addLoc('but also temporarily increases decay propagation by %1% with every building sold.')
+		addLoc('but also temporarily increases decay propagation by %1% with every building sold.');
 		Game.registerHook('check', () => {
 			if (Game.Objects['Temple'].minigameLoaded && !pantheonUpdated) {
 				//Changing the desc
 				var temp = Game.Objects['Temple'].minigame;
+				if (l('templeInfo') === null) { return false; }
 				pp = temp;
 				temp.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[1])+'</span>';
 				temp.gods['ruin'].desc2='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [0.5, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay propagation by %1% with every building sold.",[0.4])+'</span>';
