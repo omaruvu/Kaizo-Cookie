@@ -1575,7 +1575,7 @@ Game.registerMod("Kaizo Cookies", {
 			]); }
 
 			if (Game.Objects['Prism'].amount>25) { newList.concat([
-				'News: Prisms are starting to exclusively use gamma rays to produce the smallest cookies possible.
+				'News: Prisms are starting to exclusively use gamma rays to produce the smallest cookies possible.'
 			]); }
 			if (Game.Objects['Prism'].amount>50) { newList.concat([
 				'News: '
