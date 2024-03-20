@@ -276,6 +276,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
 			if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
 			if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
+			return tickSpeed;
 		}
 		decay.purify = function(buildId, mult, close, cap, uncapped) {
 			if (decay.mults[buildId] >= cap) { 
