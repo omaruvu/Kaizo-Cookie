@@ -1,4 +1,3 @@
-
 var decay = {};
 var kaizoCookiesVer = 'v1.1.2'
 
@@ -1594,14 +1593,14 @@ Game.registerMod("Kaizo Cookies", {
 				'News: is the eyeballs really necessary? Experts consider removing one eyeball from each Chancemaker to save space to store more cookies.'
 			]); }
 
-			if (Game.Objects['Fractal engines'].amount>25) { newList = newList.concat([
+			if (Game.Objects['Fractal engine'].amount>25) { newList = newList.concat([
 				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. '
 			]); }
-			if (Game.Objects['Fractal engines'].amount>50) { newList = newList.concat([
+			if (Game.Objects['Fractal engine'].amount>50) { newList = newList.concat([
 				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. ',
 				'News: Fractal engines are encountering difficulty replicating. Experts are working hard to figure out where they are amongst the mass of cookies.'
 			]); }
-			if (Game.Objects['Fractal engines'].amount>100) { newList = newList.concat([
+			if (Game.Objects['Fractal engine'].amount>100) { newList = newList.concat([
 				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. Wait, we also can\'t?',
 				'News: No, Fractal engines can\'t replicate into a larger copy of itself, either.'
 			]); }
