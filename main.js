@@ -1940,6 +1940,7 @@ Game.registerMod("Kaizo Cookies", {
 			strIn = str[5].split(',');
 			allValues('load; pledge and halt');
 			if (isv(strIn[0])) { Game.veilHP = parseFloat(strIn[0]); }
+			/*
 			if (Game.Has('Shimmering veil')) { 
 				Game.Logic();
 				if (strIn[1] == 'on') {
@@ -1965,6 +1966,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (isv(strIn[2])) { Game.veilRestoreC = parseFloat(strIn[2]); }
 			if (isv(strIn[3])) { Game.veilPreviouslyCollapsed = Boolean(strIn[3]); }
+   			*/
 			allValues('load; veil');
 			var counter = 0;
 			strIn = str[6].split(',');
