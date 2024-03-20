@@ -730,7 +730,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.UpgradesById[71].basePrice /= (1000000 / 4096);
 		Game.UpgradesById[72].basePrice /= (1000000 / 16384);
 		Game.UpgradesById[73].basePrice /= (1000000 / 65536);
-		Game.UpgradesById[87].basePrice *= 1000;
+		Game.UpgradesById[87].basePrice *= 1000000;
 		Game.registerHook('check', function() {
 			if (Game.Objects['Grandma'].amount>=25) { Game.Unlock('Bingo center/Research facility'); }
 		});
