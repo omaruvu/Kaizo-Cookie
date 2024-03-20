@@ -201,7 +201,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
-			decay.bankedPurification += Game.auraMult('Fierce hoarder') / (Game.fps * Math.pow(1 + decay.bankPurification, 1 / 3));
+			decay.bankedPurification += Game.auraMult('Fierce hoarder') / (10 * Game.fps * Math.pow(1 + decay.bankPurification, 0.5));
 			decay.gen = decay.mults[20];
 			//Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); infReached = false; }
