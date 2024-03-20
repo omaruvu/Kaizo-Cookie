@@ -212,7 +212,7 @@ Game.registerMod("Kaizo Cookies", {
 				decay.mults[i] = c;
 			}
 			decay.regainAcc();
-			//decay.momentum = decay.updateMomentum(decay.momentum);
+			decay.momentum = decay.updateMomentum(decay.momentum);
 			Game.recalculateGains = 1;	//uh oh
 			decay.cpsList.push(Game.unbuffedCps);
 			if (decay.cpsList.length > Game.fps * 1.5) {
