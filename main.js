@@ -564,7 +564,7 @@ Game.registerMod("Kaizo Cookies", {
 
 			decay.min = Math.min(1, 0.15 + (1 - d) * 3.5);
 
-			var dh = 0.25;
+			var dh = 0.5;
 			dh *= 1 / Math.pow(d, 5);
 			decay.decHalt = dh;
 
