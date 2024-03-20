@@ -236,7 +236,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
 		decay.updateMomentum = function(m) {
-			var mult = decay.getMomentumMult * Math.pow(1 + decay.incMult, 5) / (10 * Game.fps);
+			var mult = decay.getMomentumMult() * Math.pow(1 + decay.incMult, 5) / (10 * Game.fps);
 			if (Game.pledgeT > 0) { mult *= 2; }
 			m += (Math.log(m * Math.max(1 - Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 0)) / Math.log(decay.momentumIncFactor)) * mult;
 			
