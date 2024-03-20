@@ -1623,7 +1623,7 @@ Game.registerMod("Kaizo Cookies", {
             {
                 newList.push('<q>'+"JS is the best coding language."+'</q><sig>'+"no one"+'</sig>');
 				newList.push('News : aleph reference REAL!');
-				newList.push('News : "There is so many bugs in this thing it is actully insane." said tired programmer');
+				newList.push('News : "There is so many bugs in this thing it is actully insane." said tired programmer.');
 				newList.push('News : "Say NO to ecm!" said protester.');
 				newList.push('News : person called "rice" fails to execute a "combo", whatever that is.');
 				newList.push('News : ticker broken, please insert another click.');
@@ -1646,14 +1646,14 @@ Game.registerMod("Kaizo Cookies", {
             }
 			
 			if (Game.elderWrath==1) { newList.push(choose([
-				'News : the elders are rioting, they are destroying a nearby factory'
+				'News : the elders are rioting, they are destroying a nearby factory!'
 			])); }
 
 			if (Game.Objects['Farm'].amount>0) newList = newList.concat([
 				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.'
 			]);
 			if (Game.Objects['Farm'].amount>25) { newList = newList.concat([
-				'News: a new law has been introduced that limited the stem length of all cookie plants to a maximum of 1 light year.'
+				'News: a new law has been introduced that limited the stem length of all cookie plants to a maximum of 1 µm.'
 			]); }
 			if (Game.Objects['Farm'].amount>50) { newList = newList.concat([
 				'News: storage out of control! Cookie plants are dying after a recent invasion of cookies that broke through the greenhouse roof; officials blame the warehouse construction company.'
@@ -1664,11 +1664,22 @@ Game.registerMod("Kaizo Cookies", {
 				'News: another farmer dies from suffocation.'
 			]); }
 
+			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
+				'News: As it turns out, there is 1e200,405,192,204 times more antimatter than matter. Expert found cause to be "dimensions", whatever that means.',
+				'News: Experts advise against turning antimatter to cookies, reason being "there is already way too much cookies, and antimatter can help clear out some cookies"'
+			]); }
+			if (Game.Objects['Antimatter condenser'].amount>50) { newList = newList.concat([
+				'News: if there is so much cookies, why is there so little anticookies?'
+			]); }
+			if (Game.Objects['Antimatter condenser'].amount>100) { newList = newList.concat([
+				'[news destroyed by antimatter]'
+			]); }
+
 			if (Game.Objects['Prism'].amount>25) { newList = newList.concat([
 				'News: Prisms are starting to exclusively use gamma rays to produce the smallest cookies possible.'
 			]); }
 			if (Game.Objects['Prism'].amount>50) { newList = newList.concat([
-				'News: '
+				'News: Prisms encounter issues outputting light, found cause to be cookies blocking the window! Officials will drop the next nuke tomorrow at 5:30, hopefully that\'ll clear it up a bit more.'
 			]); }
 			if (Game.Objects['Prism'].amount>100) { newList = newList.concat([
 				'News: can we turn cookies back into light? Please?'
@@ -1702,7 +1713,8 @@ Game.registerMod("Kaizo Cookies", {
 				'News: programmers complain that they "can\'t see a thing" after using the new "all-natural sunlight" displays.'
 			]); }
 			if (Game.Objects['Javascript console'].amount>50) { newList = newList.concat([
-				'News: this code is too unsightreadable.'
+				'News: this code is too unsightreadable.',
+				'undefined'
 			]); }
 			if (Game.Objects['Javascript console'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList = newList.concat([
 				'News: price of LED skyrockets with the introduction of 1e18 x 1.8e18 wide screens.',
