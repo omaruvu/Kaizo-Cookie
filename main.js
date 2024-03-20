@@ -120,6 +120,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.pastCapPow = 0.15; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.bankedPurification = 0; //multiplier to mult and close 
 		decay.timeSinceLastPurify = 0;
+		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
@@ -672,7 +673,7 @@ Game.registerMod("Kaizo Cookies", {
 			//maybe make decay increase wrinkler cap?
 		}
 		replaceDesc('Elder spice', 'You attracts <b>2</b> less wrinklers.');
-		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / (Math.min(1, decay.gen)) } else { buff.time--; }'));
+		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / Math.pow(Math.min(1, decay.gen), decay.buffDurPow) } else { buff.time--; }'));
 
 		Game.registerHook('cps', function(m) { return m * (2 + 14 * Math.pow(1 - decay.incMult, 12)); }); //octuples cps to make up for the decay
 
