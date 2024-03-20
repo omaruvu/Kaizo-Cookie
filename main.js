@@ -1497,6 +1497,53 @@ Game.registerMod("Kaizo Cookies", {
 		decay.getNews = function() {
 			var newList = [];
 			//add your new messages here
+            if (Math.random()<0.001)
+            {
+                newList.push('<q>'+"JS is the best coding language."+'</q><sig>'+"no one"+'</sig>');
+				newList.push('News : aleph reference REAL!');
+				newList.push('News : "There is so many bugs in this thing it is actully insane." said tired programmer');
+				newList.push('News : "Say NO to ecm!" said protester.');
+				newList.push('News : person called "rice" fails to execute a "combo", whatever that is.');
+				newList.push('News : ticker broken, please insert another click.');
+            }
+            if (Math.random()<0.01)
+            {  
+                newList.push('News : ascend at 365.');
+				newList.push('News : Gone too far, or not enough? Protests rising against "intense competition for seemingly boring stuff."');
+				newList.push('News : it was discovered that the '+Game.bakeryName+' is actually a-');
+				newList.push('News : Cookie Hermits think of new recipes, locals are shocked: "Taste like grass.".');
+				newList.push('News : crazed citizen quits job and leaves family to "grind ascends"');
+				if (Game.Has('Cookie egg')) newList.push('<q>'+"Give me food master."+'</q><sig>'+"krumblor"+'</sig>');
+				newList.push('News : ancient hieroglyphs deciphered to resemble 365 cookies of a heavenly origin. "We\'re not sure what that means," ponder scientists.');
+				newlist.push('News : local news stations overrun by suggestions: "Didnt know modding was this annoying.".');
+                newList.push('News : you should grail.');
+				newList.push('News : encyclopaedia\'s head editor denies allegations that he is a “daddy”, says to the public “stop calling me that”');
+				newList.push('News : time manipulation growing old for the fiercely competitive baker industry, researchers pursue ways of the future by predicting ahead. "Everything is pre-determined, if you think about it."');
+				if ((Game.AchievementsOwned==622)) newList.push('News : you did it, you can go outside now.');
+				newList.push('News : "check the pins" crowned the phrase of the year!');
+            }
+			
+			if (Game.elderWrath==1) newList.push(choose([
+				'News : the elders are rioting, they are destroying a nearby factory'
+				
+			]));
+
+		    if (Game.Objects['Cortex baker'].amount>0) newList.push(choose([
+				'News: cortex baker implodes, unknown plant puzzles blamed',
+				'News: it was discovered that thoughts can have thoughts "that is a tought thing to think"'
+			]));
+			
+			if (Game.Objects['Farm'].amount>0) newList.push(choose([
+				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy'
+			]));
+
+			if (Game.Objects['Wizard tower'].level>10) newList.push(choose([
+				'News : local baker levels wizard towers past level 10, disowned by family.'
+			]));
+
+			if (Game.Objects['Factory'].amount>0) newList.push(choose([
+				'News : competitor involved in destroying equipment scandal.'
+			]));
 			return newList;
 		}
 		Game.registerHook('ticker', decay.getNews);
