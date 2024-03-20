@@ -564,7 +564,7 @@ Game.registerMod("Kaizo Cookies", {
 			decay.min = Math.min(1, 0.15 + (1 - d) * 3.5);
 
 			var dh = 0.25;
-			dh *= 1 / Math.pow(d, 2);
+			dh *= 1 / Math.pow(d, 5);
 			decay.decHalt = dh;
 
 			decay.buffDurPow = 0.5 - 0.15 * Game.auraMult('Epoch Manipulator');
@@ -1607,7 +1607,7 @@ Game.registerMod("Kaizo Cookies", {
 
 			if (Game.Objects['Javascript console'].amount>25) { newList = newList.concat([
 				'News: if (me.when == "change code") { console.log(NaN); }',
-				'News: programmers complain that they "can\'t see a thing" after using the new "all-natural sunlight" displays!.'
+				'News: programmers complain that they "can\'t see a thing" after using the new "all-natural sunlight" displays.'
 			]); }
 			if (Game.Objects['Javascript console'].amount>50) { newList = newList.concat([
 				'News: this code is too unsightreadable.'
@@ -1850,7 +1850,7 @@ Game.registerMod("Kaizo Cookies", {
 			str += ',';
 		}
 		str += decay.gen;
-		str += '/' + decay.halt + ',' + decay.haltOvertime + '/';
+		str += '/' + decay.halt + ',' + decay.haltOvertime + ',' + decay.bankedPurification + '/';
 		str += Game.pledgeT + ',' + Game.pledgeC;
 		str += '/' + Game.veilHP + ',';
 		if (Game.Has('Shimmering veil')) {
@@ -1878,7 +1878,7 @@ Game.registerMod("Kaizo Cookies", {
     load: function(str){
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
-		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, wrinklers sucked]
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime + banked purification, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, wrinklers sucked]
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
@@ -1894,6 +1894,7 @@ Game.registerMod("Kaizo Cookies", {
 			strIn = str[3].split(',');
 			if (isv(strIn[0])) { decay.halt = parseFloat(strIn[0]); }
 			if (isv(strIn[1])) { decay.haltOvertime = parseFloat(strIn[1]); }
+			if (isv(strIn[2])) { decay.bankedPurification = parseFloat(strIn[2]); }
 			strIn = str[4].split(',');
 			if (isv(strIn[0])) { Game.pledgeT = parseFloat(strIn[0]); } else { Game.pledgeT = 0; }
 			if (isv(strIn[1])) { Game.pledgeC = parseFloat(strIn[1]); }
