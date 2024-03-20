@@ -129,7 +129,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.bankedPurification = 0; //multiplier to mult and close 
 		decay.timeSinceLastPurify = 0; //unlike decay.momentum, this is very literal and cant really be manipulated like it
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
-		decay.purifyMomentumMult = 5; //multiplied to the amount decrease
+		decay.purifyMomentumMult = 1; //multiplied to the amount decrease
 		decay.haltReverseMomentumFactor = 0.9; //each point of halt called when decay.stop multiplies the halt for this amount
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
@@ -236,7 +236,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.infReached) { decay.onInf(); infReached = false; }
 		}
 		decay.updateMomentum = function(m) {
-			var mult = decay.getMomentumMult() * Math.pow(1 + decay.incMult, 5) / (10 * Game.fps);
+			var mult = decay.getMomentumMult() * Math.pow(1 + decay.incMult, 5) / (20 * Game.fps);
 			if (Game.pledgeT > 0) { mult *= 2; }
 			m += (Math.log(m * Math.max(1 - Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 0)) / Math.log(decay.momentumIncFactor)) * mult;
 			
@@ -304,7 +304,7 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in decay.mults) {
 				if (decay.purify(i, mult + decay.bankedPurification, 1 - Math.pow(1 / (1 + decay.bankedPurification), 0.5) * (1 - close), cap * (1 + decay.bankedPurification), u)) { decay.triggerNotif('purityCap'); }
 			}
-			decay.momentum = Math.max(decay.momentum - (mult - 1) * decay.purifyMomentumMult, 1);
+			decay.momentum = Math.max(decay.momentum - (mult - 1) * decay.purifyMomentumMult * mult, 1);
 			decay.bankedPurification *= 0.5;
 			decay.timeSinceLastPurify = 0;
 			if (Game.hasGod) {
@@ -341,6 +341,8 @@ Game.registerMod("Kaizo Cookies", {
 		decay.stop = function(val) {
 			decay.halt = val * Game.eff('haltPower');
 			decay.momentum = 1 + (decay.momentum - 1) * Math.pow(decay.haltReverseMomentumFactor, val * Game.eff('haltPower'));
+			decay.momentum -= val / 100;
+			if (decay.momentum < 1) { decay.momentum = 1; }
 			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltKeep); 
 		}
  		decay.get = function(buildId) {
@@ -423,7 +425,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			multipleBuffs: {
 				title: 'Buff stacking',
-				desc: 'Stacking more than one Golden cookie buff slightly increases your rate of decay, but especially the decay\'s momentum.',
+				desc: 'Stacking more than one Golden cookie buff slightly increases your rate of decay, but especially increases the decay\'s momentum.',
 				icon: [23, 6],
 				pref: 'decay.prefs.preventNotifs.multipleBuffs',
 				first: 'decay.prefs.firstNotif.multipleBuffs',
@@ -1455,7 +1457,7 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.SelectDragonAura='+Game.SelectDragonAura.toString().replace(`Game.ToggleSpecialMenu(1);`, `Game.ToggleSpecialMenu(1); decay.setRates();`))
 
         Game.dragonAuras[2].desc="Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy and Dragonflight is <b>50%</b> more powerful.";
-		Game.dragonAuras[5].desc="Buildings sell back for <b>50%</b> instead of 25% of their cost. <br>Selling buildings <b>halts decay</b> temporarily based on the amount of buildings sold."
+		Game.dragonAuras[5].desc="Buildings sell back for <b>50%</b> instead of 25% of their cost. <br>Selling buildings <b>halts decay</b> temporarily based on the square root of the amount of buildings sold."
 		Game.dragonAuras[6].desc="Get <b>1%</b> (multiplicative) closer to <b>+60%</b> golden cookie frequency for each <b>x1.02</b> CpS multiplier from your purity.<br>(Note: this effect reduces the initial amount of time on Golden cookie click)";
 		Game.dragonAuras[7].desc="While not purifying decay, you accumulate <b>purification power</b> that will be spent in the next purification; the banked purification power is kept even when this aura is off.";
         Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS."+'<br>'+"Wrinklers approach the big cookie <b>3 times</b> slower.";
@@ -1524,7 +1526,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		//godzamok + earth shatterer
 		for (let i in Game.Objects) {
-			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace(`if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);`, `if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01,1+sold*0.01);`).replace(`else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);`, `else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005,1+sold*0.004);`).replace(`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025);`,`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025,1+sold*0.0015);`).replace('if (success && Game.hasGod)', 'if (success && Game.auraMult("Earth Shatterer")) { decay.stop(sold * Game.auraMult("Earth Shatterer") * 0.02); } if (success && Game.hasGod)'));
+			eval('Game.Objects["'+i+'"].sell='+Game.Objects[i].sell.toString().replace(`if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01);`, `if (godLvl==1) Game.gainBuff('devastation',10,1+sold*0.01,1+sold*0.01);`).replace(`else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005);`, `else if (godLvl==2) Game.gainBuff('devastation',10,1+sold*0.005,1+sold*0.004);`).replace(`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025);`,`else if (godLvl==3) Game.gainBuff('devastation',10,1+sold*0.0025,1+sold*0.0015);`).replace('if (success && Game.hasGod)', 'if (success && Game.auraMult("Earth Shatterer")) { decay.stop(Math.sqrt(sold) * Game.auraMult("Earth Shatterer") * 0.5); } if (success && Game.hasGod)'));
 		}
 		
 		addLoc('Buff boosts clicks by +%1% for every building sold for %2 seconds, ');
