@@ -1496,6 +1496,7 @@ Game.registerMod("Kaizo Cookies", {
         =======================================================================================*/
 		decay.getNews = function() {
 			var newList = [];
+			var name = Game.bakeryName;
 			//add your new messages here
             if (Math.random()<0.001)
             {
@@ -1528,13 +1529,71 @@ Game.registerMod("Kaizo Cookies", {
 				
 			]));
 
-		    if (Game.Objects['Cortex baker'].amount>0) newList.push(choose([
-				'News: cortex baker implodes, unknown plant puzzles blamed',
+			if (Game.Objects['Fractal engines'].amount>25) { newList.concat([
+				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. '
+			]); }
+			if (Game.Objects['Fractal engines'].amount>50) { newList.concat([
+				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. ',
+			]); }
+			if (Game.Objects['Fractal engines'].amount>100) { newList.concat([
+				'News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. News: Fractal engines are now forbidden to replicate into an exact copy of itself. Wait, we also can\'t?'
+			]); }
+
+			if (Game.Objects['Javascript console'].amount>25) { newList.concat([
+				'News: if (me.when == "change code") { console.log(NaN); }',
+				'News: programmers complain that they "can\'t see a thing" after using the new "all-natural sunlight" displays!.'
+			]); }
+			if (Game.Objects['Javascript console'].amount>50) { newList.concat([
+				'News: this code is too unsightreadable.'
+			]); }
+			if (Game.Objects['Javascript console'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList.concat([
+				'News: price of LED skyrockets with the introduction of 1e18 x 1.8e18 wide screens.',
+				'News: is it really necessary to write code with indent size 8?',
+				'News: the source of the Great Cookie Space Patch has been attributed to the overuse of Javascript Consoles that take up too much space.'
+			]); }
+
+			if (Game.Objects['Idleverse'].amount>25) { newList.concat([
+				'News: experts question the appropriateness of the name "Idleverse", suggesting that they should be renamed to "Activeverse".'
+			]); }
+			if (Game.Objects['Idleverse'].amount>50) { newList.concat([
+				'News: Idleverses are being employed as bowling bulbs in recreational facilities. "Where else would you put them?" rhetorically-questions officials.'
+			]); }
+			if (Game.Objects['Idleverse'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList.concat([
+				'News: experts suggest removing at least '+Math.floor(Game.Objects['Idleverse'].amount / 2)+' Idleverses after a catastrophic Idleverse Chained XK-Collapse scenario. '+name+', being the great baker, simply reverses time. "This will only happen again" warns experts.',
+				'News: is Idleverses even worth keeping? Or should we remove some, so we can have more space to store cookies?',
+				'News: scientists within Idleverses predict a Big Crunch to their universes. '
+			]); }
+
+		    if (Game.Objects['Cortex baker'].amount>0) newList.concat([
+				'News: Cortex baker implodes, unknown plant puzzles blamed',
 				'News: it was discovered that thoughts can have thoughts "that is a tought thing to think"'
-			]));
+			]);
+			if (Game.Objects['Cortex baker'].amount>25) { newList.concat([
+				'News: You have a big brain.'
+			]); }
+			if (Game.Objects['Cortex baker'].amount>50) { newList.concat([
+				'News: "Cortex baker galaxy" can be seen during astronomical twilight.',
+				'News: ordinary people found to have seizures after being in the presence of Cortex bakers for more than 1.5 microseconds. Due to space being clogged with wrinkly cookies, officials have no choice but to let them remain near people.'
+			]); }
+
+			if (Game.Objects['Cortex baker'].amount>100) { newList.concat([
+				'News: "The mass" Cortex baker cluster 3d9cjk reaches a record high of 1,204,589 congealed Cortex bakers! Experts suggest separating each Cortex Baker by at least 1 more kilometer; officials won\'t budge.',
+				'News: Cortex bakers question the morality of thinking cookies into other Cortex bakers; advised to "keep working" even if there is nowhere else to put the cookies.'
+			]); }
+
+			if (Game.Objects['You'].amount>25) { newList.concat([
+				'News: local baker "'+name+'" and clones found to be the cause of at least 52,603 human rights violations; 99% of which are due to poor ventilation and overcrowding.',
+				'News: '+name+'\'s clones are found to be harmful to philosophy.'
+			]); }
+			if (Game.Objects['You'].amount>50) { newList.concat([
+				'News: Who am I? Where did I come from? Where will I go?'
+			]); }
+			if (Game.Objects['You'].amount>100) { newList.concat([
+				'News: '+name+'\'s clones are beginning to shrink. Experts expect nuclear fusion to occur in the next 4 hours.'
+			]); }
 			
 			if (Game.Objects['Farm'].amount>0) newList.push(choose([
-				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy'
+				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.'
 			]));
 
 			if (Game.Objects['Wizard tower'].level>10) newList.push(choose([
