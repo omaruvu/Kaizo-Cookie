@@ -545,6 +545,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Get lucky')) { d *= 0.99; }
 			if (Game.Has('One mind')) { d *= 0.985; }
 			if (Game.Has('Shimmering veil')) { d *= 0.985; }
+			if (Game.Has('Unshackled Purity')) { d *= 0.98; }
 			decay.incMult = 1 - d;
 
 			var w = 1 - 0.8;
@@ -565,6 +566,8 @@ Game.registerMod("Kaizo Cookies", {
 			var dh = 0.25;
 			dh *= 1 / Math.pow(d, 2);
 			decay.decHalt = dh;
+
+			decay.buffDurPow = 0.5 - 0.15 * Game.auraMult('Epoch manipulator');
 		}
 		decay.getBuildingContribution = function() {
 			//the bigger the building, the more "space" they take up, thus increasing decay by more
@@ -662,7 +665,7 @@ Game.registerMod("Kaizo Cookies", {
 		addLoc('You lost <b>%1</b>!');
 		eval('Game.UpdateWrinklers='+replaceAll("var godLvl=Game.hasGod('scorn');", 'var godLvl=0;', Game.UpdateWrinklers.toString()));
 		/*wrinkler pop*/ eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('Game.Earn(me.sucked);', 'Game.cookies = Math.max(0, Game.cookies - me.sucked); if (me.sucked > 0.5) { decay.triggerNotif("wrinkler"); }').replace(`Game.Notify(me.type==1?loc("Exploded a shiny wrinkler"):loc("Exploded a wrinkler"),loc("Found <b>%1</b>!",loc("%1 cookie",LBeautify(me.sucked))),[19,8],6);`, `Game.Notify(me.type==1?loc("Exploded a shiny wrinkler"):loc("Exploded a wrinkler"),loc("You lost <b>%1</b>!",loc("%1 cookie",LBeautify(me.sucked))),[19,8],6);`).replace(`Game.Popup('<div style="font-size:80%;">'+loc("+%1!",loc("%1 cookie",LBeautify(me.sucked)))+'</div>',Game.mouseX,Game.mouseY);`,`Game.Popup('<div style="font-size:80%;">'+loc("-%1!",loc("%1 cookie",LBeautify(me.sucked)))+'</div>',Game.mouseX,Game.mouseY);`));
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('var suckRate=1/20;', 'var suckRate=1/2;').replace('Game.cpsSucked=Math.min(1,sucking*suckRate);', 'Game.cpsSucked=1 - Math.min(1,Math.pow(suckRate, sucking)); if (Math.ceil(Game.auraMult("Dragon Guts") - 0.1)) { Game.cpsSucked = 1; }'));
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('var suckRate=1/20;', 'var suckRate=1/2;').replace('Game.cpsSucked=Math.min(1,sucking*suckRate);', 'Game.cpsSucked=1 - Math.min(1,Math.pow(suckRate, sucking)); if (Math.ceil(Game.auraMult("Dragon Guts") - 0.1)) { Game.cpsSucked = 0; }'));
 		Game.registerHook('cookiesPerClick', function(val) { return val * (1 - Game.cpsSucked); }); //withering affects clicking
         eval('Game.SpawnWrinkler='+Game.SpawnWrinkler.toString().replace('if (Math.random()<0.0001) me.type=1;//shiny wrinkler','if (Math.random()<1/8192) me.type=1;//shiny wrinkler'))
 		eval('Game.getWrinklersMax='+Game.getWrinklersMax.toString().replace(`n+=Math.round(Game.auraMult('Dragon Guts')*2);`, ''));
@@ -673,7 +676,18 @@ Game.registerMod("Kaizo Cookies", {
 			//maybe make decay increase wrinkler cap?
 		}
 		replaceDesc('Elder spice', 'You attracts <b>2</b> less wrinklers.');
-		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= 1 / Math.pow(Math.min(1, decay.gen), decay.buffDurPow) } else { buff.time--; }'));
+		decay.getBuffLoss() {
+			if (Game.auraMult('Epoch manipulator')) {
+				if (decay.gen > 1) {
+					return 1 - Game.auraMult('Epoch manipulator') * (1 / 3) * (2 - 1 / decay.gen);
+				} else {
+					return 1 / Math.pow(decay.gen, decay.buffDurPow);
+				}
+			} else {
+				return 1 / Math.pow(Math.min(1, decay.gen), decay.buffDurPow);
+			}
+		}
+		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= decay.getBuffLoss(); } else { buff.time--; }'));
 
 		Game.registerHook('cps', function(m) { return m * (2 + 14 * Math.pow(1 - decay.incMult, 12)); }); //octuples cps to make up for the decay
 
@@ -1351,18 +1365,23 @@ Game.registerMod("Kaizo Cookies", {
 			popup=loc("Dragon\'s hoard!")+'<br><small>'+loc("+%1!",loc("%1 cookie",LBeautify(valn)))+'</small>';
         }else if (choice=='blood frenzy')`));//When Ancestral Metamorphosis is seclected it pushes a effect called Dragon's hoard that gives 24 hours worth of CpS
 
+		
+		eval('Game.shimmerTypes["golden"].getTimeMod='+Game.shimmerTypes['golden'].getTimeMod.toString().replace(`m*=1-Game.auraMult('Arcane Aura')*0.05;`, `m*=((1 + Game.auraMult('Arcane aura') * 1.25) - Game.auraMult('Arcane aura') * 1.25 * Math.pow(0.975, Math.log2(1 / Math.min(1, decay.gen))));`));
+		eval('Game.shimmerTypes["golden"].getTimeMod='+Game.shimmerTypes['golden'].getTimeMod.toString().replace(`if (Game.hasBuff('Sugar blessing')) m*=0.9;`, `if (Game.hasBuff('Sugar blessing')) { m*=0.9; } m*=((1 + Game.auraMult('Master of the armory') * 0.6) - Game.auraMult('Master of the armory') * 0.6 * Math.pow(0.99, Math.log(Math.max(1, decay.gen)) / Math.log(1.02)));`));
+		eval('Game.SelectDragonAura='+Game.SelectDragonAura.toString().replace(`Game.ToggleSpecialMenu(1);`, `Game.ToggleSpecialMenu(1); decay.setRates();`))
+
         Game.dragonAuras[2].desc="Clicking is <b>5%</b> more powerful."+'<br>'+"Click frenzy and Dragonflight is <b>50%</b> more powerful.";
 		Game.dragonAuras[5].desc="Buildings sell back for <b>50%</b> instead of 25% of their cost. <br>Selling buildings <b>halts decay</b> temporarily based on the amount of buildings sold."
-		Game.dragonAuras[6].desc="Get <b>2%</b> (multiplicative) closer to <b>+135%</b> golden cookie frequency for each <b>x1.025</b> CpS multiplier from your purity.<br>(Note: this effect makes the timer run faster instead of making it start with less time)";
+		Game.dragonAuras[6].desc="Get <b>1%</b> (multiplicative) closer to <b>+60%</b> golden cookie frequency for each <b>x1.02</b> CpS multiplier from your purity.<br>(Note: this effect reduces the initial amount of time on Golden cookie click)";
 		Game.dragonAuras[7].desc="While not purifying decay, you accumulate <b>purification power</b> that will be spent in the next purification; the banked purification power is kept even when this aura is off.";
         Game.dragonAuras[8].desc="<b>+20%</b> prestige level effect on CpS."+'<br>'+"Wrinklers approach the big cookie <b>5 times</b> slower.";
-		Game.dragonAuras[9].desc="Get <b>1%</b> (multiplicative) closer to <b>+70%</b> golden cookie frequency for each <b>x0.75</b> CpS multiplier from your decay.<br>(Note: this effect makes the timer run faster instead of making it start with less time)"
+		Game.dragonAuras[9].desc="Get <b>2.5%</b> (multiplicative) closer to <b>+125%</b> Golden cookie frequency for each <b>x0.5</b> CpS multiplier from your decay.<br>(Note: this effect reduces the initial amount of time on Golden cookie click)"
         Game.dragonAuras[11].desc="Golden cookies give <b>10%</b> more cookies."+'<br>'+"Golden cookies may trigger a <b>Dragon\'s hoard</b>.";
-		Game.dragonAuras[12].desc="Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy appear <b>4x as often</b>.";
-		Game.dragonAuras[13].desc="Having purity now makes buffs run out slower, for up to <b>-50%</b> buff duration decrease rate. Decay is less effective against buff length."
+		Game.dragonAuras[12].desc="Wrath cookies give <b>10%</b> more cookies."+'<br>'+"Elder frenzy from Wrath cookies appear <b>4x as often</b>.";
+		Game.dragonAuras[13].desc="Having purity now makes positive buffs run out slower, for up to <b>-50%</b> buff duration decrease rate. Decay is less effective against buff duration."
         Game.dragonAuras[15].desc="All cookie production <b>multiplied by 1.5</b>.";
-		Game.dragonAuras[21].desc="Each wrinkler always wither 100% of your CpS and popping wrinklers no longer slow down decay, but wrinklers no longer accumulate cookie loss when eating.";
-
+		Game.dragonAuras[21].desc="Wrinklers no longer withers any CpS, but popping wrinklers no longer slow down decay.";
+		
 		allValues('auras');
 
 		/*=====================================================================================
