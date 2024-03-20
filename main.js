@@ -188,7 +188,7 @@ Game.registerMod("Kaizo Cookies", {
     		c *= Math.pow(
 				Math.pow(
 					1 - (1 - Math.pow((1 - decay.incMult / Game.fps), Math.max(1 - c, decay.min))), 
-					(Math.max(1, Math.pow(c, (Game.Has('Unshackled Purity'))?0.9:1.2))) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1) / (Math.pow(Math.log(Math.max(1, decay.momentum - decay.momentumOnHaltBuffer)) / Math.log(decay.momentumOnHaltLogFactor), decay.momentumOnHaltPowFactor)))
+					(Math.max(1, Math.pow(c, (Game.Has('Unshackled Purity'))?0.9:1.2))) - Math.min(Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 1) / (Math.pow(Math.log(Math.max(1, decay.momentum - decay.momentumOnHaltBuffer)) / Math.log(decay.momentumOnHaltLogFactor), decay.momentumOnHaltPowFactor))
 				), 
 			tickSpeed);
 			return c;
