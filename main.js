@@ -88,7 +88,7 @@ Game.registerMod("Kaizo Cookies", {
 		
 		
         // notification!
-		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.`, [21,32],10,1);
+		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.<br>Also, look in options for this mod's settings!`, [21,32],10,1);
 
 		// creating custImg variable
 		custImg=App?this.dir+"/img.png":"https://raw.githack.com/omaruvu/Kaizo-Cookie/main/modicons.png"
@@ -480,10 +480,14 @@ Game.registerMod("Kaizo Cookies", {
 			str += decay.writePrefButton('ascendOnInf', 'AscOnInfDecayButton', loc('Ascend on infinite decay')+' ON', loc('Ascend on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, ascend without gaining any prestige or heavenly chips")+')</label><br>';
 			str += decay.writePrefButton('wipeOnInf', 'WipeOnInfDecayButton', loc('Wipe save on infinite decay')+' ON', loc('Wipe save on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, wipe save")+')</label><br>';
 			str += 'Replay information snippets:<br>'
+			var str2 = '';
 			for (let i in decay.notifs) {
-				str += decay.writeInfoSnippetButton(i, i+' Button')+'';
+				str2 += decay.writeInfoSnippetButton(i, i+' Button')+'';
 			}
-			return str;
+			if (str2 == '') {
+				str2 = '<b>none.</b><br>(You can see and replay information snippets you\'ve collected throughout the game here. The first one occurs at 5,555 cookies baked this ascension.)';
+			}
+			return str + str2;
 		}
 		eval('Game.UpdateMenu='+Game.UpdateMenu.toString()
 			 .replace(`rs; game will reload")+')</label><br>'+`, `rs; game will reload")+')</label><br>'+decay.getPrefButtons()+`)
