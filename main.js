@@ -1635,14 +1635,11 @@ Game.registerMod("Kaizo Cookies", {
 			])); }
 
 			if (decay.incMult > 0.05) {
-                            newList = newList.concat([
-                           'News: Decay rates spreading linked to global warming, says expert.'
-                         ]);
-                        }
+                newList = newList.concat([
+                    'News: Decay rates spreading linked to global warming, says expert.'
+                ]);
+            }
 
-			if (decay.incMult>0.05) { newList = newList.concat([
-				'News: Decay rates spreading linked to global warming, says expert.'
-			]); }
 
 			if (Game.Objects['Cursor'].amount>25) { newList = newList.concat([
 				'News: Why are the cursors getting so big? What is the meaning of this?'
@@ -1890,7 +1887,7 @@ Game.registerMod("Kaizo Cookies", {
 		else Game.registerHook("create", this.createAchievements)
 		Game.registerHook("check", this.checkAchievements)
 
-		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} if (Game.Has("Golden sugar")) { Game.lumpMatureAge-=(hour*8); Game.lumpRipeAge-=(hour*8); }'));//Adding the effect of the upgrade
+		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} if (Game.Has("Golden sugar")) { Game.lumpMatureAge-=(hour*8); Game.lumpRipeAge-=(hour*8); Game.lumpOverripeAge-=(hour*8); }'));//Adding the effect of the upgrade
 
 		Game.registerHook('click',function() {
 			if (Game.Has("Cursedor [inactive]")) {
