@@ -55,10 +55,11 @@ function selectStatement(str, index, beginningCount) {
 }
 function geometricMean(arr) {
 	var sum = 0; 
+	var amountValid = 0;
 	for (let i = 0; i < arr.length; i++) {
-		sum += Math.log(arr[i]);
+		if (arr[i] != 0) { sum += Math.log(arr[i]); amountValid++; }
 	} 
-	sum /= arr.length;
+	sum /= amountValid;
 	return Math.exp(sum) //wtf is an antilog
 }
 
@@ -552,7 +553,6 @@ Game.registerMod("Kaizo Cookies", {
 			return ' (' + str + '%/s)';
 		}
 		eval('Game.Draw='+Game.Draw.toString().replace(`ify(Game.cookiesPs*(1-Game.cpsSucked),1)+'</div>';`, `ify(Game.cookiesPs*(1-Game.cpsSucked),1)+decay.getDec()+'</div>';`));
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('Game.recalculateGains=0;', 'Game.recalculateGains=0; decay.lastCpS = decay.curCpS; decay.curCpS = Game.unbuffedCps;'));
 		if (false) { Game.registerHook('draw', function() { if (Game.drawT % 3) { Game.UpdateMenu(); } }); } //feels like stretching the bounds of my computer a bit here
 
 		decay.diffStr = function() {
@@ -608,7 +608,7 @@ Game.registerMod("Kaizo Cookies", {
 		//decay scaling
 		decay.setRates = function() {
 			var d = 1;
-			var c = Game.cookiesEarned;
+			var c = Game.cookiesEarned + 1;
 			d *= Math.pow(0.99775, Math.log10(c));
 			d *= Math.pow(0.9985, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
 			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
@@ -663,7 +663,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Decillion fingers')) add*=	20;
 			if (Game.Has('Undecillion fingers')) add*=	20;
 			if (Game.Has('Unshackled cursors')) add*=	25;
-			c += Math.log10(add) * Game.Objects['Cursor'].amount * 0.1;
+			c += Math.log10(Math.max(add, 10)) * Game.Objects['Cursor'].amount * 0.1;
 			var grandmaPer = 1;
 			if (Game.Has('One mind')) { grandmaPer += Game.Objects['Grandma'].amount / 100; }
 			if (Game.Has('Communal brainsweep')) { grandmaPer += Game.Objects['Grandma'].amount / 100; }
@@ -2006,7 +2006,7 @@ Game.registerMod("Kaizo Cookies", {
 			strIn = str[5].split(',');
 			allValues('load; pledge and halt');
 			if (isv(strIn[0])) { Game.veilHP = parseFloat(strIn[0]); }
-			/*
+			
 			if (Game.Has('Shimmering veil')) { 
 				Game.Logic();
 				if (strIn[1] == 'on') {
@@ -2032,7 +2032,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (isv(strIn[2])) { Game.veilRestoreC = parseFloat(strIn[2]); }
 			if (isv(strIn[3])) { Game.veilPreviouslyCollapsed = Boolean(strIn[3]); }
-   			*/
+   			
 			allValues('load; veil');
 			var counter = 0;
 			strIn = str[6].split(',');
