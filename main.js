@@ -108,7 +108,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.min = 0.15; //the minimum power that the update function uses; the lower it is, the slower the decay will pick up
 		decay.momentum = 1; //increases with each game tick, but decreased on certain actions (hardcoded to be at least 1)
 		decay.smoothMomentumFactor = 0.25; //some momentum is negated so it isnt very obvious with the log scaling; the less it is, the smoother it will be (not necessarily a good thing as it also delays momentum)
-		decay.momentumFactor = 2; //the more this is, the less powerful momentum is (very strongly affects momentum)
+		decay.momentumFactor = 3; //the more this is, the less powerful momentum is (very strongly affects momentum)
 		decay.momentumIncFactor = 2; //the closer this is to 1, the more that momentum will increase as momentum increases (slightly)
 		decay.halt = 1; //simulates decay stopping from clicking
 		decay.haltOvertime = 0; //each stop, a fraction of the halt time is added to this; overtime will be expended when the main halt time runs out, but overtime is less effective at stopping decay
@@ -217,7 +217,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.getTickspeed = function() {
 			var tickSpeed = 1;
-			tickSpeed *= 1 + (Math.max(Math.log(decay.momentum), 0) / Math.log(decay.momentumFactor)) * (1 - 1 / Math.pow(decay.momentum, decay.smoothMomentumFactor)) / 2;
+			tickSpeed *= Math.max((Math.max(Math.log(decay.momentum), 0) / Math.log(decay.momentumFactor)) * (1 - 1 / Math.pow(decay.momentum, decay.smoothMomentumFactor)) / 2, 1);
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
