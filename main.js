@@ -158,7 +158,8 @@ Game.registerMod("Kaizo Cookies", {
 				purityCap: 0,
 				buildVariance: 0,
 				momentum: 0,
-				boost: 0
+				boost: 0,
+				autoclicker: 0
 			}
 		}
 
@@ -420,6 +421,12 @@ Game.registerMod("Kaizo Cookies", {
 				desc: 'Some upgrades decrease your decay, but not all decreases decrease the same thing! There are three main ways:<br>"Decay rate" - The amount of decay that gets generated per second<br>"Decay momentum" - The decay momentum, which increases the decay rate if the decay is left uninterrupted<br>"Decay propagation" - Decay rates AND decay momentum',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.boost'
+			},
+			autoclicker: {
+				title: 'Autoclickers',
+				desc: 'Please note: this mod is not balanced around autoclickers, and those will severely impact the intended experience. <br>If you are using an autoclicker and want to get the full experience, you should stop using them ASAP.',
+				icon: [12, 0],
+				pref: 'decay.prefs.preventNotifs.autoclicker'
 			}
 		}
 		decay.triggerNotif = function(key, bypass) {
@@ -1205,6 +1212,8 @@ Game.registerMod("Kaizo Cookies", {
 		for (let i in Game.Objects) {
 			Game.Objects[i].level = Math.max(1, Game.Objects[i].level);
 		}
+
+		eval('Game.ClickCookie='+Game.ClickCookie.toString().replace(`Game.Win('Uncanny clicker');`, `{ Game.Win('Uncanny clicker'); decay.triggerNotif('autoclicker'); }`));
 
 		Game.baseResearchTime = 10 * Game.fps;
 
