@@ -1216,7 +1216,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		eval('Game.ClickCookie='+Game.ClickCookie.toString().replace(`Game.Win('Uncanny clicker');`, `{ Game.Win('Uncanny clicker'); decay.triggerNotif('autoclicker'); }`));
 
-		Game.baseResearchTime = 10 * Game.fps;
+		Game.baseResearchTime = 10 * 60 * Game.fps;
 
 		allValues('spells; decay complete');
 
