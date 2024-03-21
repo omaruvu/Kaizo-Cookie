@@ -55,10 +55,11 @@ function selectStatement(str, index, beginningCount) {
 }
 function geometricMean(arr) {
 	var sum = 0; 
+	var amountValid = 0;
 	for (let i = 0; i < arr.length; i++) {
-		sum += Math.log(arr[i]);
+		if (arr[i] != 0) { sum += Math.log(arr[i]); amountValid++; }
 	} 
-	sum /= arr.length;
+	sum /= amountValid;
 	return Math.exp(sum) //wtf is an antilog
 }
 
@@ -662,7 +663,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Decillion fingers')) add*=	20;
 			if (Game.Has('Undecillion fingers')) add*=	20;
 			if (Game.Has('Unshackled cursors')) add*=	25;
-			c += Math.log10(add) * Game.Objects['Cursor'].amount * 0.1;
+			c += Math.log10(Math.max(add, 10)) * Game.Objects['Cursor'].amount * 0.1;
 			var grandmaPer = 1;
 			if (Game.Has('One mind')) { grandmaPer += Game.Objects['Grandma'].amount / 100; }
 			if (Game.Has('Communal brainsweep')) { grandmaPer += Game.Objects['Grandma'].amount / 100; }
