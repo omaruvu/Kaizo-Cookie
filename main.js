@@ -159,35 +159,7 @@ Game.registerMod("Kaizo Cookies", {
 				buildVariance: 0,
 				momentum: 0,
 				boost: 0
-			},
-			firstNotif: {
-				initiate: 1,
-				achievement: 1,
-				purity: 1,
-				wrinkler: 1,
-				wrath: 1,
-				gpoc: 1,
-				decayII: 1,
-				veil: 1,
-				buff: 1,
-				multipleBuffs: 1,
-				fthof: 1,
-				purityCap: 1,
-				buildVariance: 1,
-				momentum: 1,
-				boost: 1
 			}
-		}
-		decay.notifCalls = {
-			initiate: 0,
-			purity: 0,
-			gpoc: 0,
-			decayII: 0,
-			buff: 0,
-			multipleBuffs: 0,
-			buildVariance: 0,
-			momentum: 0,
-			boost: 0
 		}
 
 		//decay core
@@ -363,141 +335,99 @@ Game.registerMod("Kaizo Cookies", {
 				title: 'decay',
 				desc: 'Due to aging and corruption in your facilities, CpS continuously decreases over time. You can temporarily stop it from decreasing with certain actions, such as clicking the big cookie; or purify the decay\'s effects by, for example, clicking a Golden or Wrath cookie.<br>To compensate, you get a +700% CpS multiplier that very slowly, decreases over time.',
 				icon: [3, 1, custImg],
-				pref: 'decay.prefs.preventNotifs.initiate',
-				first: 'decay.prefs.firstNotif.initiate',
-				nocall: 'decay.notifCalls.initiate'
+				pref: 'decay.prefs.preventNotifs.initiate'
 			},
 			achievement: {
 				title: 'Achievements',
 				desc: 'Obtaining an achievement also purifies your decay by a very large amount.',
 				icon: [5, 6],
-				pref: 'decay.prefs.preventNotifs.achievement',
-				first: 'decay.prefs.firstNotif.achievement'
+				pref: 'decay.prefs.preventNotifs.achievement'
 			},
 			purity: {
 				title: 'Purity',
 				desc: 'If you can purify all of your decay, any extra purification power will be spent as an increase in CpS. The extra CpS (called "purity") acts as a sacrifical buffer for the decay; the more purity you have, the quicker the decay will be in eating through them.',
 				icon: [2, 1, custImg],
-				pref: 'decay.prefs.preventNotifs.purity',
-				first: 'decay.prefs.firstNotif.purity',
-				nocall: 'decay.notifCalls.purity'
+				pref: 'decay.prefs.preventNotifs.purity'
 			},
 			wrinkler: {
 				title: 'Wrinklers',
 				desc: 'Wrinklers now spawn if you have a lot of decay, and approaches the cookie faster the more decay you have. They wither a very large amount of CpS each and loses cookies on pop, but if you manage to pop them before they reach the big cookie, your decay gets stopped for much longer than just clicking!<br>Also, the withering affects clicks, unlike in vanilla',
 				icon: [19, 8],
-				pref: 'decay.prefs.preventNotifs.wrinkler',
-				first: 'decay.prefs.firstNotif.wrinkler'
+				pref: 'decay.prefs.preventNotifs.wrinkler'
 			},
 			wrath: {
 				title: 'Wrath cookies',
 				desc: 'Wrath cookies now replaces Golden cookies according to the amount of decay you have when it spawns; the more decay you have, the more often it replaces Golden cookies. Luckily, it still purifies decay the same way as Golden cookies do.',
 				icon: [15, 5],
-				pref: 'decay.prefs.preventNotifs.wrath',
-				first: 'decay.prefs.firstNotif.wrath'
+				pref: 'decay.prefs.preventNotifs.wrath'
 			},
 			gpoc: {
 				title: 'Grandmapocalypse', 
 				desc: 'The Grandmapocalypse, in the vanilla sense, no longer exists. It has been replaced by the decay mechanic. As well, all other Grandmapocalypse-related items now help you combat the decay.',
 				icon: [27, 11],
-				pref: 'decay.prefs.preventNotifs.gpoc',
-				first: 'decay.prefs.firstNotif.gpoc',
-				nocall: 'decay.notifCalls.gpoc'
+				pref: 'decay.prefs.preventNotifs.gpoc'
 			}, 
 			decayII: {
 				title: 'decay: the return',
 				desc: 'The decay gets stronger as you progress through the game, but you also obtain more items to help you fight it as the game goes on. ',
 				icon: [3, 1, custImg],
-				pref: 'decay.prefs.preventNotifs.decayII',
-				first: 'decay.prefs.firstNotif.decayII',
-				nocall: 'decay.notifCalls.decayII'
+				pref: 'decay.prefs.preventNotifs.decayII'
 			},
 			veil: {
 				title: 'Shimmering Veil',
 				desc: 'While there is no sources to directly examine your Shimmering Veil\'s welldoing, you can infer its health from the brightness of the veil around the big cookie, as well as the particles swirling around it.',
 				icon: [9, 10],
-				pref: 'decay.prefs.preventNotifs.veil',
-				first: 'decay.prefs.firstNotif.veil'
+				pref: 'decay.prefs.preventNotifs.veil'
 			},
 			buff: {
 				title: 'Buffs under decay',
 				desc: 'Positive buffs now run out faster the more decay you have accumulated. Stay vigilant!<br>(This uses the current amount of decay, which means that any decay accumulated before the buff was obtained will also contribute to the buff running out faster)',
 				icon: [22, 6],
-				pref: 'decay.prefs.preventNotifs.buff',
-				first: 'decay.prefs.firstNotif.buff',
-				nocall: 'decay.notifCalls.buff'
+				pref: 'decay.prefs.preventNotifs.buff'
 			},
 			multipleBuffs: {
 				title: 'Buff stacking',
 				desc: 'Stacking more than one Golden cookie buff slightly increases your rate of decay, but especially increases the decay\'s momentum.',
 				icon: [23, 6],
-				pref: 'decay.prefs.preventNotifs.multipleBuffs',
-				first: 'decay.prefs.firstNotif.multipleBuffs',
-				nocall: 'decay.notifCalls.multipleBuffs'
+				pref: 'decay.prefs.preventNotifs.multipleBuffs'
 			},
 			fthof: {
 				title: 'Force the Hand of Fate',
 				desc: 'Notice: Force the Hand of Fate has had its effect pool adjusted and two effects have been removed from the pools (namely, building special and elder frenzy). Planners may not be accurate.<br>(Also, Golden cookies spawned by it does not purify decay.)',
 				icon: [22, 11],
-				pref: 'decay.prefs.preventNotifs.fthof',
-				first: 'decay.prefs.firstNotif.fthof',
+				pref: 'decay.prefs.preventNotifs.fthof'
 			},
 			purityCap: {
 				title: 'Purity limit',
 				desc: 'All methods of purification have a hard limit on how much purity they can apply. This limit varies per the method.<br>(Telling you this because you just reached a purity limit)',
 				icon: [2, 1, custImg],
-				pref: 'decay.prefs.preventNotifs.purityCap',
-				first: 'decay.prefs.firstNotif.purityCap'
+				pref: 'decay.prefs.preventNotifs.purityCap'
 			},
 			buildVariance: {
 				title: 'Building size',
 				desc: 'You might know that your amount of buildings affect decay, but did you know that the buildings\' size affects it too? The more space that a building would take up lore-wise, the more decay it contributes.',
 				icon: [2, 6],
-				pref: 'decay.prefs.preventNotifs.buildVariance',
-				first: 'decay.prefs.firstNotif.buildVariance',
-				nocall: 'decay.notifCalls.buildVariance'
+				pref: 'decay.prefs.preventNotifs.buildVariance'
 			},
 			momentum: {
 				title: 'Decay momentum',
 				desc: 'If you don\'t do anything about the decay for a while, the rate of growth will start to slowly increase and your clicks will get less effective at stopping decay; this is momentum. Purifying decay can reverse some momentum, but a far more effective method to reverse momentum is to do the things that stop decay, such as clicking the big cookie or popping wrinklers before they start sucking.',
 				icon: [0, 0],
-				pref: 'decay.prefs.preventNotifs.momentum',
-				first: 'decay.prefs.firstNotif.momentum',
-				nocall: 'decay.notifCalls.buildVariance'
+				pref: 'decay.prefs.preventNotifs.momentum'
 			},
 			boost: {
 				title: 'Purity boosts',
 				desc: 'Some upgrades decrease your decay, but not all decreases decrease the same thing! There are three main ways:<br>"Decay rate" - The amount of decay that gets generated per second<br>"Decay momentum" - The decay momentum, which increases the decay rate if the decay is left uninterrupted<br>"Decay propagation" - Decay rates AND decay momentum',
 				icon: [0, 0],
-				pref: 'decay.prefs.preventNotifs.boost',
-				first: 'decay.prefs.firstNotif.boost',
-				nocall: 'decay.notifCalls.boost'
+				pref: 'decay.prefs.preventNotifs.boost'
 			}
 		}
-		decay.triggerNotif = function(key) {
+		decay.triggerNotif = function(key, bypass) {
 			if (typeof eval(decay.notifs[key].pref) === 'undefined') { console.log('Corresponding pref not found. Input: '+key); return false; }
-			if (eval(decay.notifs[key].pref)) { return false; }
+			if (eval(decay.notifs[key].pref) && typeof bypass !== 'undefined' && !bypass) { return false; }
 			if (!decay.unlocked) { return false; }
-			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') { 
-				if (eval(decay.notifs[key].nocall)) { return true; } else { eval(decay.notifs[key].nocall+'=1;'); } 
-			}
-			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc+'<div class="line"></div><a style="float:right;" onclick="'+decay.notifs[key].pref+'=1;==CLOSETHIS()==">'+loc("Don't show this again")+'</a>', decay.notifs[key].icon, (eval(decay.notifs[key].first)?1e21:6), false, true);
-			eval(decay.notifs[key].first+'=0;');
-		}
-		decay.refreshTrigger = function(key) {
-			if (typeof eval(decay.notifs[key].nocall) !== 'undefined') {
-				if (eval(decay.notifs[key].nocall)) { eval(decay.notifs[key].nocall+'=0'); }
-			}
-		}
-		decay.checkRefreshes = function() {
-			if (!decay.unlocked) { decay.notifCalls['initiate'] = 0; }
-			if (decay.gen <= 1.2) { decay.notifCalls['purity'] = 0; }
-			if (decay.gen > 0.5) { decay.notifCalls['gpoc'] = 0; }
-			if (decay.incMult < 0.04) { decay.notifCalls['decayII'] = 0; }
-			if (!Game.buffCount()) { decay.notifCalls['buff'] = 0; }
-			if (!(Game.buffCount() - 1)) { decay.notifCalls['multipleBuffs'] = 0; }
-			if (Game.Objects['Idleverse'].amount == 0 && Game.Objects['Cortex baker'].amount == 0) { decay.notifCalls['buildVariance'] = 0; }
-			if (decay.momentum <= 5) { decay.notifCalls['momentum'] = 0; }
+			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc, decay.notifs[key].icon, 1e21, false, true);
+			eval(decay.notifs[key].pref+'=1;');
 		}
 		Game.buffCount = function() {
 			var count = 0;
@@ -509,7 +439,6 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in Game.buffs) { if (decay.gcBuffs.includes(Game.buffs[i].type.name)) { count++; } }
 			return count;
 		}
-		Game.registerHook('check', decay.checkRefreshes);
 		decay.checkTriggerNotifs = function() {
 			if (Game.drawT % 10 != 0) { return false; }
 			if (decay.unlocked) { decay.triggerNotif('initiate'); }
@@ -532,6 +461,33 @@ Game.registerMod("Kaizo Cookies", {
 			if (mult > 1) { return 'purity'; }
 			return 'decay';
 		}
+		decay.writePrefButton = function(prefName,button,on,off,callback,invert) {
+			//I love stealing code from orteil
+			var invert=invert?1:0;
+			if (!callback) callback='';
+			callback+='PlaySound(\'snd/tick.mp3\');';
+			return '<a class="smallFancyButton prefButton option'+((decay.prefs[prefName]^invert)?'':' off')+'" id="'+button+'" '+Game.clickStr+'="Game.Toggle(\''+prefName+'\',\''+button+'\',\''+on+'\',\''+off+'\',\''+invert+'\');'+callback+'">'+(decay.prefs[prefName]?on:off)+'</a>';
+		}
+		decay.writeInfoSnippetButton = function(prefName, button) {
+			if (!eval(decay.notifs[prefName].pref)) { return ''; }
+			return '<a class="smallFancyButton prefButton" id="'+button+'"'+Game.clickStr+'="decay.triggerNotif("'+prefName+'", true);">'+decay.notifs[prefName].title+'</a>';
+		}
+		addLoc('Ascend on infinite decay');
+		addLoc('Wipe save on infinite decay');
+		addLoc('Upon reaching infinite decay, ascend without gaining any prestige or heavenly chips');
+		decay.getPrefButtons = function() {
+			var str = '';
+			str += decay.writePrefButton('ascendOnInf', 'AscOnInfDecayButton', loc('Ascend on infinite decay')+' ON', loc('Ascend on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, ascend without gaining any prestige or heavenly chips")+')</label><br>';
+			str += decay.writePrefButton('wipeOnInf', 'WipeOnInfDecayButton', loc('Wipe save on infinite decay')+' ON', loc('Wipe save on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, wipe save")+')</label><br>';
+			str += 'Replay information snippets:'
+			for (let i in decay.notifs) {
+				str += decay.writeInfoSnippetButton(i, i+' Button');
+			}
+			return str;
+		}
+		eval('Game.UpdateMenu='+Game.UpdateMenu.toString()
+			 .replace(`rs; game will reload")+')</label><br>'+`, `rs; game will reload")+')</label><br>'+decay.getPrefButtons()+`)
+		);
 		
 		decay.getDec = function() {
 			if (decay.cpsList.length < Game.fps * 1.5) { return ''; }
