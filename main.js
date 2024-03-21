@@ -1625,11 +1625,16 @@ Game.registerMod("Kaizo Cookies", {
 				newList.push('News : time manipulation growing old for the fiercely competitive baker industry, researchers pursue ways of the future by predicting ahead. "Everything is pre-determined, if you think about it."');
 				if ((Game.AchievementsOwned==622)) newList.push('News : you did it, you can go outside now.');
 				newList.push('News : "check the pins" crowned the phrase of the year!');
+				newList.push('nEWS: aLL CAPITAL LETTERS REVERSED IN FREAK MAGIC ACCIDENT!')
             }
 			
 			if (Game.elderWrath==1) { newList.push(choose([
 				'News : the elders are rioting, they are destroying a nearby factory!'
 			])); }
+
+			if (decay.incMult>0.05) { newList = newList.concat([
+				'News: Decay rates spreading linked to global warming, says expert.'
+			)]; }
 
 			if (Game.Objects['Cursor'].amount>25) { newList = newList.concat([
 				'News: Why are the cursors getting so big? What is the meaning of this?'
@@ -1658,7 +1663,8 @@ Game.registerMod("Kaizo Cookies", {
 			]); }
 
 			if (Game.Objects['Farm'].amount>0) newList = newList.concat([
-				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.'
+				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.',
+				'News: Maniac spurts about "Pizza": locals confused, it sounds like a giant red cookie.'
 			]);
 			if (Game.Objects['Farm'].amount>25) { newList = newList.concat([
 				'News: a new law has been introduced that limited the stem length of all cookie plants to a maximum of 1 µm.',
