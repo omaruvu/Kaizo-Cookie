@@ -1544,7 +1544,7 @@ Game.registerMod("Kaizo Cookies", {
 
 				addLoc('Purifying decay grants a buff.');
 				addLoc('-%1% decay for %2 seconds.');
-				temp.gods['creation'].descBefore='<span class="green">'+loc('Purifying decay grants a buff that weakens decay.')+'</span>';
+				temp.gods['creation'].descBefore='<span class="green">'+loc('Purifying decay grants a buff that weakens decay propagation.')+'</span>';
 				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [32, 4])+'</span>';
 				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [16, 16])+'</span>';
 				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [8, 64])+'</span>';
