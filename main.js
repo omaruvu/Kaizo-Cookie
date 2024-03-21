@@ -607,7 +607,7 @@ Game.registerMod("Kaizo Cookies", {
 		//decay scaling
 		decay.setRates = function() {
 			var d = 1;
-			var c = Game.cookiesEarned;
+			var c = Game.cookiesEarned + 1;
 			d *= Math.pow(0.99775, Math.log10(c));
 			d *= Math.pow(0.9985, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
 			d *= Math.pow(0.998, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
