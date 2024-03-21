@@ -1636,7 +1636,7 @@ Game.registerMod("Kaizo Cookies", {
 
 			if (decay.incMult>0.05) { newList = newList.concat([
 				'News: Decay rates spreading linked to global warming, says expert.'
-			))]; }
+			]); }
 
 			if (Game.Objects['Cursor'].amount>25) { newList = newList.concat([
 				'News: Why are the cursors getting so big? What is the meaning of this?'
