@@ -70,7 +70,8 @@ function allValues(checkpoint) {
 	str += '\nCBTA: '+Game.cookiesEarned;
 	str += '\nCPS: '+Game.cookiesPs;
 	str += '\nDecay general: '+decay.gen;
-	str += '\n[DEBUGGER OF '+checkpoint+' END]'
+	str += '\nDecay momentum: '+decay.momentum;
+	str += '\n[DEBUGGER OF '+checkpoint+' END]';
 	console.log(str);
 }
 
@@ -308,7 +309,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		//stands for "regain acceleration"
 		decay.regainAcc = function() { 
-			var decHaltMult = Math.pow(decay.getTickspeed(), decay.haltTickingPow);
+			var decHaltMult = Math.pow(Math.max(decay.getTickspeed(), 1), decay.haltTickingPow);
     		decay.halt = Math.max(0, decay.halt - decay.decHalt * decHaltMult / Game.fps);
 			if (decay.halt == 0) {
 				decay.haltOvertime = Math.max(0, decay.haltOvertime - decay.decHalt * decHaltMult / Game.fps);
