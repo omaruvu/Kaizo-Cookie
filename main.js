@@ -2052,7 +2052,7 @@ Game.registerMod("Kaizo Cookies", {
 			var counter = 0;
 			strIn = str[6];
 			for (let i in decay.prefs.preventNotifs) {
-				if (isv(strIn[0][counter])) { decay.prefs.preventNotifs[i] = parseInt(strIn[0][counter]); }
+				if (isv(strIn[counter])) { decay.prefs.preventNotifs[i] = parseInt(strIn[counter]); }
 				counter++;
 			}
 			strIn = str[7];
