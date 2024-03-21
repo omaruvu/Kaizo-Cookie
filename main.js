@@ -1614,11 +1614,24 @@ Game.registerMod("Kaizo Cookies", {
 			]); }
 			if (Game.Objects['Cursor'].amount>50) { newList = newList.concat([
 				'News: what if, instead of having more fingers, we just made them click harder?',
-				'News: warehouses found to be made of 99.8% fingers and 0.2% cookies, causing massive riots.'
+				'News: cookies and cursors-storing warehouses found to be made of 99.8% fingers and 0.2% cookies, causing massive riots.'
 			]); }
 			if (Game.Objects['Cursor'].amount>100) { newList = newList.concat([
 				'News: new "Million fingered" variety Cursors found to be the cause of death for several infants!',
 				'News: finger-cutting jobs open for hire! Starting rate at fingers per hour!'
+			]); }
+
+			var grand = Game.Objects['Grandma'].amount;
+			if (Game.Objects['Grandma'].amount>25) { newList = newList.concat([
+				'News: analysis shows a possible type of grandmas opposite to that of normal grandmas, just like antimatter. Experts have coined it "grandpas".',
+				'News: analysis shows that every year, on average, each grandma is getting '+Beautify(1 + Math.pow(grand, 2) * Game.Has('One mind') + Math.pow(grand, 4) * Game.Has('Communal brainsweep') + Math.pow(grand, 7) * Game.Has('Elder Pact'))+'% bigger every year.'
+			]); }
+			if (Game.Objects['Grandma'].amount>50) { newList = newList.concat([
+				'AMBER ALERT: GRANDMA GONE MISSING. REPORT ANY POSSIBLE SIGHTINGS OF GRANDMA "'+choose(Game.grandmaNames).toUpperCase()+'" TO THE LOCAL AUTHORITY.'
+			]); }
+			if (Game.Objects['Grandma'].amount>100) { newList = newList.concat([
+				'<i>"No."</i><sig>-grandma</sig>',
+				'<i>"It is not our fault."</i><sig>-grandma</sig>',
 			]); }
 
 			if (Game.Objects['Farm'].amount>0) newList = newList.concat([
