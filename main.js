@@ -1609,6 +1609,18 @@ Game.registerMod("Kaizo Cookies", {
 				'News : the elders are rioting, they are destroying a nearby factory!'
 			])); }
 
+			if (Game.Objects['Cursor'].amount>25) { newList = newList.concat([
+				'News: Why are the cursors getting so big? What is the meaning of this?'
+			]); }
+			if (Game.Objects['Cursor'].amount>50) { newList = newList.concat([
+				'News: what if, instead of having more fingers, we just made them click harder?',
+				'News: warehouses found to be made of 99.8% fingers and 0.2% cookies, causing massive riots.'
+			]); }
+			if (Game.Objects['Cursor'].amount>100) { newList = newList.concat([
+				'News: new "Million fingered" variety Cursors found to be the cause of death for several infants!',
+				'News: finger-cutting jobs open for hire! Starting rate at fingers per hour!'
+			]); }
+
 			if (Game.Objects['Farm'].amount>0) newList = newList.concat([
 				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.'
 			]);
