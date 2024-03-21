@@ -119,7 +119,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltKeep = 0.3; //the fraction of halt time that is kept when halted again
 		decay.haltOTDec = 0.25; //"halt overtime decrease", decHalt also applies to overtime (when decHalt is not in effect) but multiplied by this
 		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
-		decay.haltTickingPow = 0.33; //the more it is, the more that the current decay tickspeed will affect decHalt
+		decay.haltTickingPow = 0.75; //the more it is, the more that the current decay tickspeed will affect decHalt
 		decay.momentumOnHaltBuffer = 10; //for its effect on halting, this amount is negated from it when calcualting
 		decay.momentumOnHaltLogFactor = 3; //the more it is, the less momentum will affect halting power
 		decay.momentumOnHaltPowFactor = 2; //the less it is, the less momentum will affect halting power
@@ -228,7 +228,7 @@ Game.registerMod("Kaizo Cookies", {
 				else if (godLvl == 3) { tickSpeed *= 0.9; }
 			}
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
-			tickSpeed *= Math.pow(1.1, Math.max(0, Game.gcBuffCount() - 1));
+			tickSpeed *= Math.pow(1.5, Math.max(0, Game.gcBuffCount() - 1));
 			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
 			if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
 			if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
@@ -247,7 +247,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (Game.hasBuff('Devastation').arg2) { tickSpeed *= Game.hasBuff('Devastation').arg2; }
 			if (Game.Has('Elder Covenant')) { tickSpeed *= 1.5; }
-			tickSpeed *= Math.pow(3, Math.max(0, Game.gcBuffCount() - 1));
+			tickSpeed *= Math.pow(2.5, Math.max(0, Game.gcBuffCount() - 1));
 			if (Game.hasBuff('Storm of creation').arg1) { tickSpeed *= 1 - Game.hasBuff('Storm of creation').arg1; }
 			if (Game.hasBuff('Unending flow').arg1) { tickSpeed *= 1 - Game.hasBuff('Unending flow').arg1; }
 			if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
