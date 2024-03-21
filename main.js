@@ -1634,6 +1634,12 @@ Game.registerMod("Kaizo Cookies", {
 				'News : the elders are rioting, they are destroying a nearby factory!'
 			])); }
 
+			if (decay.incMult > 0.05) {
+                            newList = newList.concat([
+                           'News: Decay rates spreading linked to global warming, says expert.'
+                         ]);
+                        }
+
 			if (decay.incMult>0.05) { newList = newList.concat([
 				'News: Decay rates spreading linked to global warming, says expert.'
 			]); }
