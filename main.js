@@ -552,7 +552,6 @@ Game.registerMod("Kaizo Cookies", {
 			return ' (' + str + '%/s)';
 		}
 		eval('Game.Draw='+Game.Draw.toString().replace(`ify(Game.cookiesPs*(1-Game.cpsSucked),1)+'</div>';`, `ify(Game.cookiesPs*(1-Game.cpsSucked),1)+decay.getDec()+'</div>';`));
-		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('Game.recalculateGains=0;', 'Game.recalculateGains=0; decay.lastCpS = decay.curCpS; decay.curCpS = Game.unbuffedCps;'));
 		if (false) { Game.registerHook('draw', function() { if (Game.drawT % 3) { Game.UpdateMenu(); } }); } //feels like stretching the bounds of my computer a bit here
 
 		decay.diffStr = function() {
