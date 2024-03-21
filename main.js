@@ -424,7 +424,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.triggerNotif = function(key, bypass) {
 			if (typeof eval(decay.notifs[key].pref) === 'undefined') { console.log('Corresponding pref not found. Input: '+key); return false; }
-			if (eval(decay.notifs[key].pref) && typeof bypass !== 'undefined' && !bypass) { return false; }
+			if (eval(decay.notifs[key].pref)) { if (typeof bypass === 'undefined' || !bypass) { return false; } }
 			if (!decay.unlocked) { return false; }
 			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc, decay.notifs[key].icon, 1e21, false, true);
 			eval(decay.notifs[key].pref+'=1;');
@@ -470,7 +470,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.writeInfoSnippetButton = function(prefName, button) {
 			if (!eval(decay.notifs[prefName].pref)) { return ''; }
-			return '<a class="smallFancyButton" id="'+button+'"'+Game.clickStr+'="decay.triggerNotif("'+prefName+'", true);">'+decay.notifs[prefName].title+'</a>';
+			return '<a class="smallFancyButton" id="'+button+'"'+Game.clickStr+'="decay.triggerNotif("'+prefName+'", true);">'+decay.notifs[prefName].title+'</a><br>';
 		}
 		addLoc('Ascend on infinite decay');
 		addLoc('Wipe save on infinite decay');
@@ -481,7 +481,7 @@ Game.registerMod("Kaizo Cookies", {
 			str += decay.writePrefButton('wipeOnInf', 'WipeOnInfDecayButton', loc('Wipe save on infinite decay')+' ON', loc('Wipe save on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, wipe save")+')</label><br>';
 			str += 'Replay information snippets:<br>'
 			for (let i in decay.notifs) {
-				str += decay.writeInfoSnippetButton(i, i+' Button')+'<br>';
+				str += decay.writeInfoSnippetButton(i, i+' Button')+'';
 			}
 			return str;
 		}
