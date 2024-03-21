@@ -470,7 +470,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.writeInfoSnippetButton = function(prefName, button) {
 			if (!eval(decay.notifs[prefName].pref)) { return ''; }
-			return '<a class="smallFancyButton" id="'+button+'"'+Game.clickStr+'="decay.triggerNotif("'+prefName+'", true);">'+decay.notifs[prefName].title+'</a><br>';
+			return '<a class="smallFancyButton" id="'+button+'"'+Game.clickStr+'="decay.triggerNotif(\''+prefName+'\', true);">'+decay.notifs[prefName].title+'</a><br>';
 		}
 		addLoc('Ascend on infinite decay');
 		addLoc('Wipe save on infinite decay');
