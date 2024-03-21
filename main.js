@@ -1490,7 +1490,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		
 		addLoc('Buff boosts clicks by +%1% for every building sold for %2 seconds, ');
-		addLoc('but also temporarily increases decay propagation by %1% with every building sold.');
+		addLoc('but also temporarily increases decay momentum by %1% with every building sold.');
 		Game.registerHook('check', () => {
 			if (Game.Objects['Temple'].minigameLoaded && !pantheonUpdated) {
 				//Changing the desc
