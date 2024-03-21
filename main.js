@@ -1377,11 +1377,11 @@ Game.registerMod("Kaizo Cookies", {
 
 		var getStrThousandFingersGain=function(x)//Variable for the desc of unshackled cursor 
 		{return loc("Multiplies the gain from %1 by <b>%2</b>.",[getUpgradeName("Thousand fingers"),x]);}
-		Game.Upgrades['Unshackled cursors'].ddesc=getStrThousandFingersGain(20)+'<q>These hands tell a story.</q>';//Changing the desc to reflect all the changes
+		Game.Upgrades['Unshackled cursors'].baseDesc=getStrThousandFingersGain(20)+'<q>These hands tell a story.</q>';//Changing the desc to reflect all the changes
 
 		eval('Game.GetTieredCpsMult='+Game.GetTieredCpsMult.toString().replace("tierMult+=me.id==1?0.5:(20-me.id)*0.1;","tierMult+=me.id==1?0.45:(20-me.id)*0.09;"))//All unshackled upgrades produce 10% less
 
-        for (var i in Game.Objects) {//This is used so we can change the message that appears on all tired upgrades when a unshackled buiding is bought
+		for (var i in Game.Objects) {//This is used so we can change the message that appears on all tired upgrades when a unshackled buiding is bought
             for (var ii in Game.Objects[i].tieredUpgrades) {
                 var me=Game.Objects[i].tieredUpgrades[ii];
                 if (!(ii=='fortune')&&me.descFunc){eval('me.descFunc='+me.descFunc.toString().replace('this.buildingTie.id==1?0.5:(20-this.buildingTie.id)*0.1)*100','this.buildingTie.id==1?0.45:(20-this.buildingTie.id)*0.09)*100'));}
@@ -1391,7 +1391,7 @@ Game.registerMod("Kaizo Cookies", {
         for (var i in Game.Objects) {//This is used so we can change the desc of all unshackled upgrades
             var s=Game.Upgrades['Unshackled '+Game.Objects[i].plural];
             var id=Game.Objects[i].id;
-            if (!(i=='Cursor')) {s.ddesc=s.ddesc.replace(s.ddesc.slice(0,s.ddesc.indexOf('<q>')),'Tiered upgrades for <b>'+i+'</b> provide an extra <b>'+(id==1?'45':(20-id)*9)+'%</b> production.<br>Only works with unshackled upgrade tiers.');}
+            if (!(i=='Cursor')) {s.baseDesc=s.baseDesc.replace(s.baseDesc.slice(0,s.baseDesc.indexOf('<q>')),'Tiered upgrades for <b>'+i+'</b> provide an extra <b>'+(id==1?'45':(20-id)*9)+'%</b> production.<br>Only works with unshackled upgrade tiers.');}
         }
 
 		Game.registerHook('check', function() {
@@ -1425,7 +1425,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.Upgrades['Kitten strategists'].basePrice=9000000000000000000000000000000000000000000000000000000
 
 		Game.Upgrades['Wrinkly cookies'].power=15;
-		Game.Upgrades['Wrinkly cookies'].ddesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>';
+		Game.Upgrades['Wrinkly cookies'].baseDesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>';
 
 		/*=====================================================================================
         Dragon auras
@@ -1623,7 +1623,6 @@ Game.registerMod("Kaizo Cookies", {
             {
                 newList.push('<q>'+"JS is the best coding language."+'</q><sig>'+"no one"+'</sig>');
 				newList.push('News : aleph reference REAL!');
-				newList.push('News : "There is so many bugs in this thing it is actully insane." said tired programmer.');
 				newList.push('News : "Say NO to ecm!" said protester.');
 				newList.push('News : person called "rice" fails to execute a "combo", whatever that is.');
 				newList.push('News : ticker broken, please insert another click.');
@@ -1639,7 +1638,8 @@ Game.registerMod("Kaizo Cookies", {
 				newList.push('News : ancient hieroglyphs deciphered to resemble 365 cookies of a heavenly origin. "We\'re not sure what that means," ponder scientists.');
 				newList.push('News : local news stations overrun by suggestions: "Didnt know modding was this annoying.".');
                 newList.push('News : you should grail.');
-				newList.push('News : encyclopaedia\'s head editor denies allegations that he is a “daddy”, says to the public “stop calling me that”');
+				newList.push('News : encyclopaedia\'s head editor denies allegations that he is a “daddy”, says to the public “stop calling me that”.');
+				newList.push('News : hybrid human still keeps to the tradition of calling the head editor "daddy", refuses to take bribes.');
 				newList.push('News : time manipulation growing old for the fiercely competitive baker industry, researchers pursue ways of the future by predicting ahead. "Everything is pre-determined, if you think about it."');
 				if ((Game.AchievementsOwned==622)) newList.push('News : you did it, you can go outside now.');
 				newList.push('News : "check the pins" crowned the phrase of the year!');
@@ -1787,7 +1787,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
-			this.achievements.push(new Game.Upgrade('Golden sugar',(" Sugar lumps mature <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
+			this.achievements.push(new Game.Upgrade('Golden sugar',("Sugar lumps ripe <b>8 hours sooner</b> and.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
 			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 50% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,1,custImg])); Game.last.pool='prestige';
 			Game.Upgrades['Cursedor'].parents=[Game.Upgrades['Luminous gloves']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Cursedor'])
@@ -1797,7 +1797,7 @@ Game.registerMod("Kaizo Cookies", {
 		    this.achievements.push(new Game.Upgrade('Cursedor [inactive]',("Activating this will give you a <b>random Effect</b> if you click the big cookie.<div class=\"warning\">But there is a 50% chance of you ascending every time you click the big cookie.</div>"),0,[0,1,custImg]));
 			Game.last.pool='toggle';Game.last.toggleInto='Cursedor [active]';
 
-			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of you ascending.<br>Turning it off will revert those effects.<br>"),0,[0,1,custImg]));
+			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of you ascending.<br>Turning it off will revert those effects.</b>"),0,[0,1,custImg]));
 		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [inactive]';Game.last.timerDisplay=function(){if (!Game.Upgrades['Cursedor [inactive]'].bought) return -1; else return 1-Game.fps*60*60*60*60*60*60;};
 
 			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker.". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
@@ -1847,7 +1847,7 @@ Game.registerMod("Kaizo Cookies", {
 		else Game.registerHook("create", this.createAchievements)
 		Game.registerHook("check", this.checkAchievements)
 
-		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} if (Game.Has("Golden sugar")) { Game.lumpMatureAge-=(hour*8); }'));//Adding the effect of the upgrade
+		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} if (Game.Has("Golden sugar")) { Game.lumpMatureAge-=(hour*8); Game.lumpRipeAge-=(hour*8); }'));//Adding the effect of the upgrade
 
 		Game.registerHook('click',function() {
 			if (Game.Has("Cursedor [inactive]")) {
