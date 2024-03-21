@@ -667,6 +667,7 @@ Game.registerMod("Kaizo Cookies", {
 				var gp = Game.Objects['Wizard tower'].minigame;
 				if (typeof gp === 'undefined') { return false; }
 				if (l('grimoireInfo') === null) { return false; } 
+				if (typeof gp.spells === 'undefined') { return false; }
 				var M = gp;
 				decay.addSpells();
 				Game.rebuildGrimoire();
