@@ -59,7 +59,7 @@ function geometricMean(arr) {
 	for (let i = 0; i < arr.length; i++) {
 		if (arr[i] != 0) { sum += Math.log(arr[i]); amountValid++; }
 	} 
-	sum /= amountValid;
+	sum /= Math.max(1, amountValid);
 	return Math.exp(sum) //wtf is an antilog
 }
 
