@@ -1212,6 +1212,7 @@ Game.registerMod("Kaizo Cookies", {
 		for (let i in Game.Objects) {
 			Game.Objects[i].level = Math.max(1, Game.Objects[i].level);
 		}
+		Game.LoadMinigames();
 
 		eval('Game.ClickCookie='+Game.ClickCookie.toString().replace(`Game.Win('Uncanny clicker');`, `{ Game.Win('Uncanny clicker'); decay.triggerNotif('autoclicker'); }`));
 
