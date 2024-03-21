@@ -302,6 +302,7 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in decay.mults) {
 				decay.refresh(i, to);
 			}
+			decay.momentum = 1;
 			decay.timeSinceLastPurify = 0;
 			Game.recalculateGains = 1;
 		}
