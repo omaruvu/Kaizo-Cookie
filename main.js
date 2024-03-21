@@ -470,7 +470,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.writeInfoSnippetButton = function(prefName, button) {
 			if (!eval(decay.notifs[prefName].pref)) { return ''; }
-			return '<a class="smallFancyButton prefButton" id="'+button+'"'+Game.clickStr+'="decay.triggerNotif("'+prefName+'", true);">'+decay.notifs[prefName].title+'</a>';
+			return '<a class="smallFancyButton" id="'+button+'"'+Game.clickStr+'="decay.triggerNotif("'+prefName+'", true);">'+decay.notifs[prefName].title+'</a>';
 		}
 		addLoc('Ascend on infinite decay');
 		addLoc('Wipe save on infinite decay');
@@ -479,9 +479,9 @@ Game.registerMod("Kaizo Cookies", {
 			var str = '';
 			str += decay.writePrefButton('ascendOnInf', 'AscOnInfDecayButton', loc('Ascend on infinite decay')+' ON', loc('Ascend on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, ascend without gaining any prestige or heavenly chips")+')</label><br>';
 			str += decay.writePrefButton('wipeOnInf', 'WipeOnInfDecayButton', loc('Wipe save on infinite decay')+' ON', loc('Wipe save on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, wipe save")+')</label><br>';
-			str += 'Replay information snippets:'
+			str += 'Replay information snippets:<br>'
 			for (let i in decay.notifs) {
-				str += decay.writeInfoSnippetButton(i, i+' Button');
+				str += decay.writeInfoSnippetButton(i, i+' Button')+'<br>';
 			}
 			return str;
 		}
@@ -1496,7 +1496,7 @@ Game.registerMod("Kaizo Cookies", {
 				//Changing the desc
 				var temp = Game.Objects['Temple'].minigame;
 				if (l('templeInfo') === null) { return false; }
-				if (decay.prefs.firstNotif['momentum']) { decay.triggerNotif('momentum'); }
+				if (!decay.prefs.preventNotifs['momentum']) { decay.triggerNotif('momentum'); }
 				decay.triggerNotif('boost');
 				pp = temp;
 				temp.gods['ruin'].desc1='<span class="green">'+ loc("Buff boosts clicks by +%1% for every building sold for %2 seconds, ", [1, 10])+'</span> <span class="red">'+loc("but also temporarily increases decay momentum by %1% with every building sold.",[1])+'</span>';
