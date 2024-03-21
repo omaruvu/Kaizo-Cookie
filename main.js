@@ -1206,6 +1206,8 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Objects[i].level = Math.max(1, Game.Objects[i].level);
 		}
 
+		Game.baseResearchTime = 10 * Game.fps;
+
 		allValues('spells; decay complete');
 
 		/*=====================================================================================
@@ -1627,7 +1629,8 @@ Game.registerMod("Kaizo Cookies", {
 				'News: analysis shows that every year, on average, each grandma is getting '+Beautify(1 + Math.pow(grand, 2) * Game.Has('One mind') + Math.pow(grand, 4) * Game.Has('Communal brainsweep') + Math.pow(grand, 7) * Game.Has('Elder Pact'))+'% bigger every year.'
 			]); }
 			if (Game.Objects['Grandma'].amount>50) { newList = newList.concat([
-				'AMBER ALERT: GRANDMA GONE MISSING. REPORT ANY POSSIBLE SIGHTINGS OF GRANDMA "'+choose(Game.grandmaNames).toUpperCase()+'" TO THE LOCAL AUTHORITY.'
+				'AMBER ALERT: GRANDMA GONE MISSING. REPORT ANY POSSIBLE SIGHTINGS OF GRANDMA "'+choose(Game.grandmaNames).toUpperCase()+'" TO THE LOCAL AUTHORITY.',
+				'SCIENTIFIC BREAKTHROUGH! Our top scientists just discovered that each grandma ages 1 year per year!'
 			]); }
 			if (Game.Objects['Grandma'].amount>100) { newList = newList.concat([
 				'<i>"No."</i><sig>-grandma</sig>',
@@ -1638,7 +1641,8 @@ Game.registerMod("Kaizo Cookies", {
 				'News : local cookie manufacturer grows "Mother of beets"; Farmers outraged by root entanglement strategy.'
 			]);
 			if (Game.Objects['Farm'].amount>25) { newList = newList.concat([
-				'News: a new law has been introduced that limited the stem length of all cookie plants to a maximum of 1 µm.'
+				'News: a new law has been introduced that limited the stem length of all cookie plants to a maximum of 1 µm.',
+				'News: local cookie manufacturer have started using the sun to grow cookie plants.'
 			]); }
 			if (Game.Objects['Farm'].amount>50) { newList = newList.concat([
 				'News: storage out of control! Cookie plants are dying after a recent invasion of cookies that broke through the greenhouse roof; officials blame the warehouse construction company.'
@@ -1647,6 +1651,26 @@ Game.registerMod("Kaizo Cookies", {
 				'News: experts suggest that cookies from cookie plants are unsafe to eat if not heated to at least 6,000,000 celsius.',
 				'News: farmers report difficulty distinguishing between the cookies on the cookie plants and all the cookies around them.',
 				'News: another farmer dies from suffocation.'
+			]); }
+
+			if (Game.Objects['Mine'].amount>25) { newList = newList.concat([
+				'News: interdimensional portals within cookie mineshafts have been discovered that leads to "Earth". The mineshaft is now permanently closed.'
+			]); }
+			if (Game.Objects['Mine'].amount>50) { newList = newList.concat([
+				'News: cookie mineshafts are closing up in order to become storage for the ever-growing pile of cookies.'
+			]); }
+			if (Game.Objects['Mine'].amount>100) { newList = newList.concat([
+				'News: I\'m not sure what\'s in those underground tunnels, it\'s not like those tunnels are mine.'
+			]); }
+
+			if (Game.Objects['Factory'].amount>25) { newList = newList.concat([
+				'News: your Factories are now producing as much as cookies as before.'
+			]); }
+			if (Game.Objects['Factory'].amount>50) { newList = newList.concat([
+				'News: Factories going awry after the mechanical failure of the cookie output, factory now filled with cookies & possibly will become a cookie volcano in the next hour!'
+			]); }
+			if (Game.Objects['Factory'].amount>100) { newList = newList.concat([
+				'News: new legislation suggests that all cookie-producing Factories be repurposed to '+(Game.Objects['Factory'].amount>250?'planet':'warehouse')+'-producing factories.'
 			]); }
 
 			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
