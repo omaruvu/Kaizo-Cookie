@@ -1625,7 +1625,9 @@ Game.registerMod("Kaizo Cookies", {
 				newList.push('News : time manipulation growing old for the fiercely competitive baker industry, researchers pursue ways of the future by predicting ahead. "Everything is pre-determined, if you think about it."');
 				if ((Game.AchievementsOwned==622)) newList.push('News : you did it, you can go outside now.');
 				newList.push('News : "check the pins" crowned the phrase of the year!');
-				newList.push('nEWS: aLL CAPITAL LETTERS REVERSED IN FREAK MAGIC ACCIDENT!')
+				newList.push('nEWS: aLL CAPITAL LETTERS REVERSED IN FREAK MAGIC ACCIDENT!');
+				newList.push('News: Modders make "custom news tickers", public baffled at thought of corruption in the news.');
+				newList.push('News: News: Words Words doubled doubled after after player player purchases purchases a a tiered tiered upgrade upgrade')
             }
 			
 			if (Game.elderWrath==1) { newList.push(choose([
