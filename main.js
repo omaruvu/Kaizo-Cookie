@@ -1931,10 +1931,6 @@ Game.registerMod("Kaizo Cookies", {
 		for (let i in decay.prefs.preventNotifs) {
 			str += decay.prefs.preventNotifs[i];
 		}
-		str += ',';
-		for (let i in decay.prefs.firstNotif) {
-			str += decay.prefs.firstNotif[i];
-		}
 		str += '/';
 		str += Game.cookiesSucked;
         return str;
@@ -1995,14 +1991,9 @@ Game.registerMod("Kaizo Cookies", {
    			
 			allValues('load; veil');
 			var counter = 0;
-			strIn = str[6].split(',');
+			strIn = str[6];
 			for (let i in decay.prefs.preventNotifs) {
 				if (isv(strIn[0][counter])) { decay.prefs.preventNotifs[i] = parseInt(strIn[0][counter]); }
-				counter++;
-			}
-			counter = 0;
-			for (let i in decay.prefs.firstNotif) {
-				if (isv(strIn[1][counter])) { decay.prefs.firstNotif[i] = parseInt(strIn[1][counter]); }
 				counter++;
 			}
 			strIn = str[7];
