@@ -667,6 +667,10 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('check', () => {
 			if (Game.Objects['Wizard tower'].minigameLoaded && !grimoireUpdated) {
 				var gp = Game.Objects['Wizard tower'].minigame;
+				console.log(gp);
+				console.log(typeof gp);
+				console.log(gp.spells);
+				console.log(typeof gp.spells);
 				if (typeof gp === 'undefined') { console.log('grimoire1 failed. gp: '+gp); return false; }
 				if (l('grimoireInfo') === null) { console.log('grimoire2 failed. grimoireInfo:'+l('grimoireInfo')); return false; } 
 				if (typeof gp.spells === 'undefined') { console.log('grimoire3 failed. gp.spells: '+gp.spells); return false; }
