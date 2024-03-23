@@ -529,6 +529,7 @@ Game.registerMod("Kaizo Cookies", {
 		if (false) { Game.registerHook('draw', function() { if (Game.drawT % 3) { Game.UpdateMenu(); } }); } //feels like stretching the bounds of my computer a bit here
 
 		decay.diffStr = function() {
+			if (!decay.unlocked) { return ''; }
 			var str = '<b>CpS multiplier from '+decay.term(decay.gen)+': </b>';
 			if (decay.gen < 0.00001) {
 				str += '1 / ';
@@ -547,6 +548,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 
 		decay.momentumStr = function() {
+			if (!decay.unlocked) { return ''; }
 			var str = '<b>Decay rate multiplier from your momentum:</b> x';
 			str += Beautify(decay.getTickspeedMultFromMomentum(), 3);
 			return str;
