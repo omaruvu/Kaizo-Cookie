@@ -1131,7 +1131,8 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			gp.spellsById.push(gp.spells['manifest spring']);
 			} else {
-				Game.Notify('Unable to add custom spells!', 'To fix, try reloading your game. Please contact the developers if it doesn\'t resolve.', 0, 1e21, false, true);
+				Game.Notify('Unable to add custom spells!', 'To fix, try reloading your game. Please contact the developers if it doesn\'t resolve, and please save a screenshot of your console.', 0, 1e21, false, true);
+				console.log(gp.spells.toString() + ', '+typeof gp.spells);
 			}
 			
 			new Game.buffType('unending flow', function(time, pow) {
