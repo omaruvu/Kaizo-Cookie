@@ -1392,13 +1392,13 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.goldenClicks>=7) { Game.Unlock('Get lucky'); }
 		});
 
-        Game.Upgrades['Pure heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000
-        Game.Upgrades['Ardent heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000
-        Game.Upgrades['Sour heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000
-        Game.Upgrades['Weeping heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000000
-        Game.Upgrades['Golden heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000000000
-		Game.Upgrades['Eternal heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000000000000
-		Game.Upgrades['Prism heart biscuits'].basePrice=1000000000000000000000000000000000000000000000000000000000000000000000
+        Game.Upgrades['Pure heart biscuits'].basePrice *=    1000
+        Game.Upgrades['Ardent heart biscuits'].basePrice *=  1000000000
+        Game.Upgrades['Sour heart biscuits'].basePrice *=    1000000000000000000000000000
+        Game.Upgrades['Weeping heart biscuits'].basePrice *= 1000000000000000000000000000000000000000
+        Game.Upgrades['Golden heart biscuits'].basePrice *=  1000000000000000000000000000000000000000000000000000
+		Game.Upgrades['Eternal heart biscuits'].basePrice *= 1000000000000000000000000000000000000000000000000000000000000000
+		Game.Upgrades['Prism heart biscuits'].basePrice *=   1000000000000000000000000000000000000000000000000000000000000000000000000000
 
 		Game.Upgrades['Kitten helpers'].basePrice=9000000000
 		Game.Upgrades['Kitten workers'].basePrice=9000000000000
