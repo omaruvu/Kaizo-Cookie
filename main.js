@@ -132,9 +132,9 @@ Game.registerMod("Kaizo Cookies", {
 		decay.bankedPurification = 0; //multiplier to mult and close 
 		decay.timeSinceLastPurify = 0; //unlike decay.momentum, this is very literal and cant really be manipulated like it
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
-		decay.purifyMomentumMult = 2; //multiplied to the amount decrease
-		decay.haltReverseMomentumFactor = 0.975; //each point of halt called when decay.stop multiplies the momentum with this amount
-		decay.haltSubtractMomentum = 50; //halting from momentum is divided by this
+		decay.purifyMomentumMult = 2; //multiplied to the amount decrease; deprecated
+		decay.haltReverseMomentumFactor = 0.99; //each point of halt called when decay.stop multiplies the momentum with this amount
+		decay.haltSubtractMomentum = 1000000; //halting from momentum is divided by this
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
@@ -284,9 +284,6 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in decay.mults) {
 				if (decay.purify(i, mult + decay.bankedPurification, 1 - Math.pow(1 / (1 + decay.bankedPurification), 0.5) * (1 - close), cap * (1 + decay.bankedPurification), u)) { decay.triggerNotif('purityCap'); }
 			}
-			if (id !== 'pledge') {
-				decay.momentum = Math.max(decay.momentum - (mult - 1) * decay.purifyMomentumMult * mult, 1);
-			}
 			decay.bankedPurification *= 0.5;
 			decay.timeSinceLastPurify = 0;
 			if (Game.hasGod) {
@@ -418,7 +415,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			momentum: {
 				title: 'Decay momentum',
-				desc: 'If you don\'t do anything about the decay for a while, the rate of growth will start to slowly increase and your clicks will get less effective at stopping decay; this is momentum. Purifying decay can reverse some momentum, but a far more effective method to reverse momentum is to do the things that stop decay, such as clicking the big cookie or popping wrinklers before they start sucking.',
+				desc: 'If you don\'t do anything about the decay for a while, the rate of growth will start to slowly increase and your clicks will get less effective at stopping decay; this is momentum. Unlike decay itself, purifying decay CANNOT reverse momentum; however, halting decay such as via clicking the big cookie, can halt its growth and even slowly reverse its momentum!',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.momentum'
 			},
