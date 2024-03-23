@@ -683,8 +683,12 @@ Game.registerMod("Kaizo Cookies", {
 				if (l('grimoireInfo') === null) { console.log('grimoire2 failed. grimoireInfo:'+l('grimoireInfo')); return false; } 
 				if (typeof gp.spells === 'undefined') { console.log('grimoire3 failed. gp.spells: '+gp.spells); return false; }
 				var M = gp;
-				decay.addSpells();
-				Game.rebuildGrimoire();
+				try {
+					decay.addSpells();
+					Game.rebuildGrimoire();
+				} catch(err) {
+					Game.notify('adding spells failed!', 'uh oh', 0, 1e21, false, true);
+				}
 				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
 				eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
 				eval("gp.spells['summon crafty pixies'].desc=" + '"' + Game.Objects['Wizard tower'].minigame.spells['summon crafty pixies'].desc.replace('2', '10') + '"');//chaning the desc of the spell
@@ -1089,7 +1093,6 @@ Game.registerMod("Kaizo Cookies", {
 			addLoc('Unending flow');
 			addLoc('Stagnant body');
 			addLoc('Decay propagation rate +%1% for %2!');
-			if (typeof gp.spells !== 'undefined') {
 			gp.spells['liquify politician'] = {
 				name: loc('Liquify politician'),
 				desc: loc('Purifies a lot of decay with a very high purity limit.'),
@@ -1130,10 +1133,6 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 			gp.spellsById.push(gp.spells['manifest spring']);
-			} else {
-				Game.Notify('Unable to add custom spells!', 'To fix, try reloading your game. Please contact the developers if it doesn\'t resolve, and please save a screenshot of your console.', 0, 1e21, false, true);
-				console.log(gp.spells.toString() + ', '+typeof gp.spells);
-			}
 			
 			new Game.buffType('unending flow', function(time, pow) {
 			return {
@@ -1884,6 +1883,8 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Sparkling wonder'].parents=[Game.Upgrades['Glittering edge']];
 			Game.PrestigeUpgrades.push(Game.Upgrades['Sparkling wonder']);
 			Game.last.posY=662; Game.last.posX=-622;
+
+			this.achievements.push(new Game.Upgrades(''))
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
