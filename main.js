@@ -415,7 +415,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			momentum: {
 				title: 'Decay momentum',
-				desc: 'If you don\'t do anything about the decay for a while, the rate of growth will start to slowly increase and your clicks will get less effective at stopping decay; this is momentum. Unlike decay itself, purifying decay CANNOT reverse momentum; however, halting decay such as via clicking the big cookie, can halt its growth and even slowly reverse its momentum!',
+				desc: 'If you don\'t do anything about the decay for a while, the rate of growth will start to slowly increase and your clicks will get less effective at stopping decay; this is momentum. Unlike decay itself, purifying decay CANNOT reverse momentum; however, halting decay such as via clicking the big cookie, can halt its growth and even (very slowly) reverse its momentum!',
 				icon: [0, 0],
 				pref: 'decay.prefs.preventNotifs.momentum'
 			},
