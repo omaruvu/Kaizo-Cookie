@@ -121,7 +121,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
 		decay.haltTickingPow = 0.75; //the more it is, the more that the current decay tickspeed will affect decHalt
 		decay.haltToMomentumMult = 0.5; //momentum gets multiplied by this amount for each point of halt
-		decay.momentumOnHaltBuffer = 0.2; //for its effect on halting, this amount is negated from it when calcualting
+		decay.momentumOnHaltBuffer = 2; //for its effect on halting, this amount is negated from it when calcualting
 		decay.momentumOnHaltLogFactor = 1.5; //the more it is, the less momentum will affect halting power
 		decay.momentumOnHaltPowFactor = 3; //the less it is, the less momentum will affect halting power
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
