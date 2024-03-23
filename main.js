@@ -799,8 +799,8 @@ Game.registerMod("Kaizo Cookies", {
 		replaceDesc('Arcane sugar', 'Cookie production multiplier <b>+5%</b>, and <b>halves</b> the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
 		replaceDesc('Elder Pact', 'Each grandma gains <b>+0.0<span></span>5 base CpS per portal</b>, and makes the Elder Pledge <b>twice as powerful</b>.<q>Questionably unethical.</q>');
 		replaceDesc('Sacrificial rolling pins', 'The Elder Pledge is <b>10 times</b> cheaper.<q>As its name suggests, it suffers so that everyone can live tomorrow.</q>');
-		Game.Upgrades['One mind'].clickFunction = function() { };
-		Game.Upgrades['Elder Pact'].clickFunction = function() { };
+		Game.Upgrades['One mind'].clickFunction = function() { return true; };
+		Game.Upgrades['Elder Pact'].clickFunction = function() { return true; };
 		replaceDesc('Elder Pledge', 'Purifies the decay, at least for a short while. Does not affect decay momentum at all.<br>Price also scales with highest raw CpS this ascend.<q>Although, yes - the cost is now uncapped; the scaling is now much, much weaker.</q>');
 		Game.Upgrades['Elder Pledge'].buyFunction = function() {
 			Game.pledges++;
@@ -1527,7 +1527,9 @@ Game.registerMod("Kaizo Cookies", {
 				pp = temp;
 
 				eval('pp.logic='+replaceAll('M.', 'pp.', pp.logic.toString()));
-				eval('pp.logic='+pp.logic.toString().replace('t=1000*60*60', 't=1000*5*60*16').replace('t=1000*60*60*16', 't=1000*80*60').replace('t=1000*60*60*4', 't=1000*60*20'));
+				eval('pp.logic='+pp.logic.toString().replace('t=1000*60*60', 't=1000*5*60').replace('t=1000*60*60*16', 't=1000*80*60').replace('t=1000*60*60*4', 't=1000*60*20'));
+				eval('pp.draw='+replaceAll('M.', 'pp.', pp.draw.toString()));
+				eval('pp.draw='+pp.draw.toString().replace('t=1000*60*60', 't=1000*5*60').replace('t=1000*60*60*16', 't=1000*80*60').replace('t=1000*60*60*4', 't=1000*60*20'));
 
 				l('templeInfo').innerHTML = '<div '+Game.getDynamicTooltip('Game.ObjectsById['+pp.parent.id+'].minigame.refillTooltip','this')+' id="templeLumpRefill" class="usesIcon shadowFilter lumpRefill" style="left:-6px;top:-10px;background-position:'+(-29*48)+'px '+(-14*48)+'px;"></div><div id="templeSwaps" '+Game.getTooltip('<div style="padding:8px;width:350px;font-size:11px;text-align:center;">'+loc("Each time you slot a spirit, you use up one worship swap.<div class=\"line\"></div>If you have 2 swaps left, the next one will refill after %1.<br>If you have 1 swap left, the next one will refill after %2.<br>If you have 0 swaps left, you will get one after %3.<div class=\"line\"></div>Unslotting a spirit costs no swaps.",[Game.sayTime(60*5*Game.fps),Game.sayTime(60*20*Game.fps),Game.sayTime(60*80*Game.fps)])+'</div>')+'>-</div>'; pp.swapsL = l('templeSwaps');
 				
