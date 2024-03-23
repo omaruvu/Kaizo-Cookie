@@ -133,7 +133,8 @@ Game.registerMod("Kaizo Cookies", {
 		decay.timeSinceLastPurify = 0; //unlike decay.momentum, this is very literal and cant really be manipulated like it
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
 		decay.purifyMomentumMult = 2; //multiplied to the amount decrease
-		decay.haltReverseMomentumFactor = 0.99; //each point of halt called when decay.stop multiplies the momentum with this amount
+		decay.haltReverseMomentumFactor = 0.975; //each point of halt called when decay.stop multiplies the momentum with this amount
+		decay.haltSubtractMomentum = 50; //halting from momentum is divided by this
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
 		decay.gcBuffs = ['frenzy', 'click frenzy', 'dragonflight', 'dragon harvest', 'building buff', 'blood frenzy', 'cookie storm'];
@@ -322,8 +323,8 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.stop = function(val) {
 			decay.halt = val * Game.eff('haltPower');
-			decay.momentum = 1 + (decay.momentum - 1) * Math.pow(decay.haltReverseMomentumFactor, Math.log2(Math.max(val, 1) * Game.eff('haltPower')));
-			decay.momentum -= Math.log2(Math.max(val, 1) * Game.eff('haltPower')) / 20;
+			decay.momentum = 1 + (decay.momentum - 1) * Math.pow(decay.haltReverseMomentumFactor, Math.log2(Math.max(val * 2, 2) * Game.eff('haltPower')));
+			decay.momentum -= Math.log2(Math.max(val * 2, 2) * Game.eff('haltPower')) / decay.haltSubtractMomentum;
 			if (decay.momentum < 1) { decay.momentum = 1; }
 			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltKeep); 
 		}
