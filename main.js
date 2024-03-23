@@ -234,7 +234,7 @@ Game.registerMod("Kaizo Cookies", {
 			return tickSpeed;
 		}
 		decay.getTickspeedMultFromMomentum = function() {
-			return Math.max((Math.max(Math.log2(decay.momentum * 2), 1) / Math.log2(decay.momentumFactor)) * (1 - 1 / Math.pow(decay.momentum, decay.smoothMomentumFactor)), 1);
+			return 1 + (Math.max(Math.log2(decay.momentum * 2), 1) / Math.log2(decay.momentumFactor)) * (1 - 1 / Math.pow(decay.momentum, decay.smoothMomentumFactor));
 		}
 		decay.getMomentumMult = function() {
 			//getTickspeed but for momentum
