@@ -687,7 +687,7 @@ Game.registerMod("Kaizo Cookies", {
 					decay.addSpells();
 					Game.rebuildGrimoire();
 				} catch(err) {
-					Game.notify('adding spells failed!', 'uh oh', 0, 1e21, false, true);
+					Game.Notify('adding spells failed!', 'uh oh', 0, 1e21, false, true);
 				}
 				eval('gp.logic='+gp.logic.toString().replace('M.magicPS=Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.002;', 'M.magicPS = Math.pow(Math.min(2, decay.gen), 0.3) * Math.max(0.002,Math.pow(M.magic/Math.max(M.magicM,100),0.5))*0.006;'));
 				eval('gp.logic='+replaceAll('M.','gp.',gp.logic.toString()));
