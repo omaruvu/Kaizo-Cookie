@@ -238,6 +238,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.getMomentumMult = function() {
 			//getTickspeed but for momentum
 			var tickSpeed = 1;
+			tickSpeed *= (1 - Math.pow(0.9, Math.log10(Math.max(Game.cookiesEarned - 1000000, 1))));
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
