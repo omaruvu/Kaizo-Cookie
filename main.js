@@ -1883,8 +1883,9 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Sparkling wonder'].parents=[Game.Upgrades['Glittering edge']];
 			Game.PrestigeUpgrades.push(Game.Upgrades['Sparkling wonder']);
 			Game.last.posY=662; Game.last.posX=-622;
-
-			this.achievements.push(new Game.Upgrades(''))
+			/*
+			this.achievements.push(new Game.Upgrades('Withering prices', 'Your upgrades are <b>0.1%</b> cheaper for every <b>x0.75</b> CpS multiplier from your decay.', 166, [0, 0])); Game.last.pool = 'prestige';
+   			*/
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
