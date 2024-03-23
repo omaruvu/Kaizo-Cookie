@@ -120,6 +120,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltOTDec = 0.25; //"halt overtime decrease", decHalt also applies to overtime (when decHalt is not in effect) but multiplied by this
 		decay.haltOTEfficiency = 0.75; //overtime is multiplied by this when calculating its effect on decay
 		decay.haltTickingPow = 0.75; //the more it is, the more that the current decay tickspeed will affect decHalt
+		decay.haltToMomentumMult = 0.5; //momentum gets multiplied by this amount for each point of halt
 		decay.momentumOnHaltBuffer = 10; //for its effect on halting, this amount is negated from it when calcualting
 		decay.momentumOnHaltLogFactor = 3; //the more it is, the less momentum will affect halting power
 		decay.momentumOnHaltPowFactor = 2; //the less it is, the less momentum will affect halting power
@@ -213,7 +214,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.updateMomentum = function(m) {
 			var mult = decay.getMomentumMult() * Math.pow(1 + decay.incMult, 5) / (20 * Game.fps);
 			if (Game.pledgeT > 0) { mult *= 2; }
-			m += (Math.log2((m + 1) * Math.max(1 - Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor), 0)) / Math.log2(decay.momentumIncFactor)) * mult;
+			m += (Math.log2((m + 1)) * Math.pow(decay.haltToMomentumMult, Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor)) / Math.log2(decay.momentumIncFactor)) * mult;
 			
 			return Math.max(1, m);
 		}
