@@ -1081,6 +1081,15 @@ Game.registerMod("Kaizo Cookies", {
 			addLoc('Amplifies your decay.');
 			addLoc('Corruption cleared!');
 			addLoc('Backfire! Corruption intensified!');
+			addLoc('Manifest spring');
+			addLoc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)');
+			addLoc('Decay propagation is %1% faster for the next %2 minutes.');
+			addLoc('The water shall flow!');
+			addLoc('Oops! Pipes broken!');
+			addLoc('Unending flow');
+			addLoc('Stagnant body');
+			addLoc('Decay propagation rate +%1% for %2!');
+			if (typeof gp.spells !== 'undefined') {
 			gp.spells['liquify politician'] = {
 				name: loc('Liquify politician'),
 				desc: loc('Purifies a lot of decay with a very high purity limit.'),
@@ -1099,11 +1108,6 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 			gp.spellsById.push(gp.spells['liquify politician']);
-			addLoc('Manifest spring');
-			addLoc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)');
-			addLoc('Decay propagation is %1% faster for the next %2 minutes.');
-			addLoc('The water shall flow!');
-			addLoc('Oops! Pipes broken!');
 			gp.spells['manifest spring'] = {
 				name: loc('Manifest spring'),
 				desc: loc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)', [20, 2]),
@@ -1126,7 +1130,10 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 			gp.spellsById.push(gp.spells['manifest spring']);
-			addLoc('Unending flow');
+			} else {
+				Game.Notify('Unable to add custom spells!', 'To fix, try reloading your game. Please contact the developers if it doesn\'t resolve.', 0, 1e21, false, true);
+			}
+			
 			new Game.buffType('unending flow', function(time, pow) {
 			return {
 					name: loc('Unending flow'),
@@ -1138,8 +1145,7 @@ Game.registerMod("Kaizo Cookies", {
 					aura: 0
 				}
 			});
-			addLoc('Stagnant body');
-			addLoc('Decay propagation rate +%1% for %2!');
+			
 			new Game.buffType('stagnant body', function(time, pow) {
 			return {
 					name: loc('Stagnant body'),
