@@ -1477,6 +1477,7 @@ Game.registerMod("Kaizo Cookies", {
 				var grimoire=Game.Objects['Wizard tower'].minigame;
 				if (l('grimoireInfo') === null) { return false; }
                 grimoire.spells['hand of fate'].failFunc=function(fail){return fail+0.3*Game.shimmerTypes['golden'].n; };
+				Game.Objects['Wizard tower'].minigame.spells['hand of fate'].desc=loc("Summon a random golden cookie. Each existing golden cookie makes this spell +%1% more likely to backfire.",30);
 
 				eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("//if (Math.random()<0.2) choices.push('clot','cursed finger','ruin cookies');","if (Math.random()<0.2) choices.push('clot','cursed finger','ruin cookies');"))//Making this unused code used
 		        eval("Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win="+Game.Objects['Wizard tower'].minigame.spells['hand of fate'].win.toString().replace("if (Game.BuildingsOwned>=10 && Math.random()<0.25) choices.push('building special');","if (Game.BuildingsOwned>=10 && Math.random()<0.10) choices.push('building special');"))//Changing building special to 10%
@@ -1684,8 +1685,8 @@ Game.registerMod("Kaizo Cookies", {
 				'SCIENTIFIC BREAKTHROUGH! Our top scientists just discovered that each grandma ages 1 year per year!'
 			]); }
 			if (Game.Objects['Grandma'].amount>100) { newList = newList.concat([
-				'<i>"No."</i><sig>-grandma</sig>',
-				'<i>"It is not our fault."</i><sig>-grandma</sig>',
+				'<i>"No."</i><sig>grandma</sig>',
+				'<i>"It is not our fault."</i><sig>grandma</sig>',
 			]); }
 
 			if (Game.Objects['Farm'].amount>0) newList = newList.concat([
@@ -1928,6 +1929,7 @@ Game.registerMod("Kaizo Cookies", {
 				list.push('building special');
 				list.push('dragon harvest');
 				list.push('dragonflight');
+				list.push('sugar frenzy', 'sugar blessing');
 				
 				var choice = choose(list);
 				
@@ -2000,7 +2002,10 @@ Game.registerMod("Kaizo Cookies", {
 					buff = Game.gainBuff('click frenzy', Math.ceil(13 * effectDurMod), 777);
 				} else if (choice == 'dragonflight') {
 					buff = Game.gainBuff('dragonflight', Math.ceil(10 * effectDurMod), 1111);
-					if (Math.random() < 0.8) Game.killBuff('Click frenzy');
+				} else if (choice == 'sugar frenzy') {
+					buff=Game.gainBuff('sugar frenzy',10,3);
+				} else if (choice == 'sugar blessing') {
+					Game.gainBuff('sugar blessing',20,1);
 				}
 			}
 		});
