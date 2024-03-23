@@ -771,6 +771,7 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace(`Game.wrinklersPopped++;`, `Game.wrinklersPopped++; if (me.phase == 1) { decay.stop(2 * Math.max((1 - Game.auraMult('Dragon Guts')), 0)); } `));
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.purifyAll(1, 0.8, 3);'));
 		decay.reincarnateBoost = function() {
+			decay.unlocked = false;
 			decay.stop(20);
 			decay.refreshAll(10);
 		}
