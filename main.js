@@ -222,7 +222,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.getTickspeed = function() {
 			var tickSpeed = 1;
-			tickSpeed *= Math.max((Math.max(Math.log(decay.momentum), 0) / Math.log(decay.momentumFactor)) * (1 - 1 / Math.pow(decay.momentum, decay.smoothMomentumFactor)) / 2, 1);
+			tickSpeed *= decay.getTickspeedMultFromMomentum();
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
@@ -237,6 +237,9 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.hasBuff('Stagnant body').arg1) { tickSpeed *= 1 + Game.hasBuff('Stagnant body').arg1; }
 
 			return tickSpeed;
+		}
+		decay.getTickspeedMultFromMomentum = function() {
+			return Math.max((Math.max(Math.log(decay.momentum), 0) / Math.log(decay.momentumFactor)) * (1 - 1 / Math.pow(decay.momentum, decay.smoothMomentumFactor)) / 2, 1);
 		}
 		decay.getMomentumMult = function() {
 			//getTickspeed but for momentum
@@ -543,6 +546,12 @@ Game.registerMod("Kaizo Cookies", {
 			return str;
 		}
 
+		decay.momentumStr = function() {
+			var str = '<b>Decay rate multiplier from your momentum:</b> x';
+			str += Beautify(decay.getTickspeedMultFromMomentum(), 3);
+			return str;
+		}
+
 		decay.effectStrs = function(funcs) {
 			var num = decay.gen;
 			if (Array.isArray(funcs)) { 
@@ -562,7 +571,7 @@ Game.registerMod("Kaizo Cookies", {
 			return str;
 		}
 
-		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div id="decayMultD" class="listing">'+decay.diffStr()+'</div>'+`).replace(`'<div class="listing"><b>'+loc("Cookies per second:")`,`'<div id="CpSD" class="listing"><b>'+loc("Cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Raw cookies per second:")`,`'<div id="RawCpSD" class="listing"><b>'+loc("Raw cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Cookies per click:")`,`'<div id="CpCD" class="listing"><b>'+loc("Cookies per click:")`));
+		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div id="decayMultD" class="listing">'+decay.diffStr()+'</div><div id="decayMomentumMultD" class="listing">'+decay.momentumStr()+'</div>'+`).replace(`'<div class="listing"><b>'+loc("Cookies per second:")`,`'<div id="CpSD" class="listing"><b>'+loc("Cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Raw cookies per second:")`,`'<div id="RawCpSD" class="listing"><b>'+loc("Raw cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Cookies per click:")`,`'<div id="CpCD" class="listing"><b>'+loc("Cookies per click:")`));
 		Game.UpdateMenu();
 		decay.updateStats = function() {
 			if (Game.onMenu=='stats') { 
