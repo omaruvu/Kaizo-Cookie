@@ -2027,7 +2027,7 @@ Game.registerMod("Kaizo Cookies", {
 			str += decay.prefs.preventNotifs[i];
 		}
 		str += '/';
-		str += decay.momentum;
+		str += ',' + decay.momentum;
         return str;
     },
     load: function(str){
@@ -2092,7 +2092,7 @@ Game.registerMod("Kaizo Cookies", {
 				counter++;
 			}
 			strIn = str[7];
-			if (isv(strIn)) { decay.momentum = parseFloat(strIn); }
+			if (isv(strIn[1])) { decay.momentum = parseFloat(strIn[1]); }
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
