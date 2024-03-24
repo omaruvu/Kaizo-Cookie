@@ -15,7 +15,10 @@ function auraDesc(id, str) {
 	Game.dragonAuras[id].desc=loc(str);
 }
 function cookieChange(name, newPow) {
-	
+	if (!Game.Upgrades[name]) { return false; }
+	Game.Upgrades[name].power = newPow;
+	var flavorText = Game.Upgrades[name].desc.slice(Game.Upgrades[name].desc.indexOf('<q>'), Game.Upgrades[name].desc.length);
+	Game.Upgrades[name].desc = loc("Cookie production multiplier <b>+%1% permanently</b>.", newPow)+flavorText;
 }
 function getVer(str) {
 	if (str[0] !== 'v') { return false; }
@@ -149,7 +152,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.infReached = false;
 		decay.unlocked = false;
 		if (Game.cookiesEarned > 1000) { decay.unlocked = true; }
-		decay.DEBUG = true; //disable or enable the debugger statements
+		decay.DEBUG = false; //disable or enable the debugger statements
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
@@ -1397,13 +1400,20 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.goldenClicks>=7) { Game.Unlock('Get lucky'); }
 		});
 
-        Game.Upgrades['Pure heart biscuits'].basePrice *=    1
-        Game.Upgrades['Ardent heart biscuits'].basePrice *=  100000000
-        Game.Upgrades['Sour heart biscuits'].basePrice *=    10000000000000000
-        Game.Upgrades['Weeping heart biscuits'].basePrice *= 1000000000000000000000000
-        Game.Upgrades['Golden heart biscuits'].basePrice *=  100000000000000000000000000000000
-		Game.Upgrades['Eternal heart biscuits'].basePrice *= 10000000000000000000000000000000000000000
-		Game.Upgrades['Prism heart biscuits'].basePrice *=   1000000000000000000000000000000000000000000000000
+        Game.Upgrades['Pure heart biscuits'].basePrice *=    1;
+		cookieChange('Pure heart biscuits', 4);
+        Game.Upgrades['Ardent heart biscuits'].basePrice *=  100000000;
+		cookieChange('Ardent heart biscuits', 5);
+        Game.Upgrades['Sour heart biscuits'].basePrice *=    10000000000000000;
+		cookieChange('Sour heart biscuits', 6);
+        Game.Upgrades['Weeping heart biscuits'].basePrice *= 1000000000000000000000000;
+		cookieChange('Weeping heart biscuits', 7);
+        Game.Upgrades['Golden heart biscuits'].basePrice *=  100000000000000000000000000000000;
+		cookieChange('Golden heart biscuits', 8);
+		Game.Upgrades['Eternal heart biscuits'].basePrice *= 10000000000000000000000000000000000000000;
+		cookieChange('Eternal heart biscuits', 9);
+		Game.Upgrades['Prism heart biscuits'].basePrice *=   1000000000000000000000000000000000000000000000000;
+		cookieChange('Prism heart biscuits', 10);
 
 		Game.Upgrades['Kitten helpers'].basePrice=9000000000
 		Game.Upgrades['Kitten workers'].basePrice=9000000000000
