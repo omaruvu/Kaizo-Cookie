@@ -1909,7 +1909,7 @@ Game.registerMod("Kaizo Cookies", {
 
 			this.achievements.push(new Game.Upgrade('Caramelized luxury', 'Sugar lumps ripen <b>4 hours</b> sooner.<q>The caramelization process causes the sugar molecules to change states, giving it a strong, deep aroma.</q>', 1000000000000000, [28, 27]));
 			this.achievements.push(new Game.Upgrade('Meaty disgust', 'Sugar lumps ripen <b>2 hours</b> sooner.<q>The presence of decay causes the sugar molecules growing within to fold in on itself, creating an entangled conglomeration that breeds agony.</q>', 1000000000000000000000000000, [28, 17]));
-			this.achievements.push(new Game.Upgrade('High-fructose sugar lumps', 'Sugar lumps ripen <b>1 hour</q> sooner.<q>Despite how obviously unhealthy, it is undoubtly, very delicious.</q>', 1000000000000000000000000000000000000000, [28, 14]));
+			this.achievements.push(new Game.Upgrade('High-fructose sugar lumps', 'Sugar lumps ripen <b>1 hour</b> sooner.<q>Despite how obviously unhealthy, it is undoubtly, very delicious.</q>', 1000000000000000000000000000000000000000, [28, 14]));
 			this.achievements.push(new Game.Upgrade('Rainy day lumps', 'Mature sugar lumps are <b>5 times</b> less likely to botch.<q>Just in case of hunger.</q>', 1000000000000000000000000000000000000000000000000000, [29, 15]));
 			
 			eval('Game.clickLump='+Game.clickLump.toString().replace('var amount=choose([0,1]);', 'var amount=randomFloor(0.5 + Game.Has("Rainy day lumps") * 0.4);'));
