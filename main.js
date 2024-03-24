@@ -91,6 +91,7 @@ function allValues(checkpoint) {
 
 let gp = Game.Objects['Wizard tower'].minigame //grimoire proxy
 let pp = Game.Objects['Temple'].minigame //pantheon proxy
+let gap = Game.Objects['Farm'].minigame //garden proxy
 var grimoireUpdated = false;
 var gardenUpdated = false;
 var pantheonUpdated = false;
@@ -1261,6 +1262,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('check', () => {
 			if (Game.Objects['Farm'].minigameLoaded && !gardenUpdated) {
 		        M=Game.Objects['Farm'].minigame//Declaring M.soilsById so computeEffs works (this took hours to figure out)
+				gap = M;
 				if (l('gardenStats') === null) { return false; }
 		        M.soilsById.soilsById = [];
 		        var n = 0;
@@ -1303,6 +1305,21 @@ Game.registerMod("Kaizo Cookies", {
 				eval("M.getMuts="+M.getMuts.toString().replace("if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['cronerice',0.01]);","if (neighsM['bakerWheat']>=1 && neighsM['wrinklegill']>=1) muts.push(['cronerice',0.01]);"));
 				eval("M.getMuts="+M.getMuts.toString().replace("if (neighsM['cronerice']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);","if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);"));
 
+				var chanceChanges=[[0.07, 0.12], [0.06, 0.11], [0.05, 0.1], [0.04, 0.08], [0.03, 0.06], [0.02, 0.04], [0.01, 0.03], [0.005, 0.2], [0.002, 0.01], [0.001, 0.008], [0.0007, 0.007], [0.0001, 0.002]];
+				var changeStr = M.getMuts.toString();
+				for (let i in chanceChanges) {
+					changeStr = replaceAll(chanceChanges[i][0], chanceChanges[i][1], chanceStr);
+				}
+				eval('M.getMuts='+changeStr);
+
+				var ageChange = function(name, newTick, newTickR) {
+					gap.plants[name].ageTick = newTick;
+					gap.plants[name].ageTickR = newTickR;
+				}
+
+				ageChange('elderwort', 1.5, 1.5); ageChange('drowsyfern', 0.5, 1); ageChange('queenbeet', 2, 0.8); ageChange('bakeberry', 1.5, 1); ageChange('queenbeetLump', 0.2, 0.2);
+				ageChange('duketater', 0.05, 2); ageChange('doughshroom', 2, 2); ageChange('tidygrass', 0.5, 1); ageChange('everdaisy', 0.75); ageChange('nursetulip', 1, 2.5); ageChange('cronerice', 0.6, 2); ageChange('clover', 2, 2.5); ageChange('whiskerbloom', 3, 3); ageChange('wrinklegill', 2, 4);
+				
 				//Nerfing some plants effects
 				eval("M.computeEffs="+M.computeEffs.toString().replace("effs.cursorCps+=0.01*mult","effs.cursorCps+=0.005*mult"));
 				eval("M.computeEffs="+M.computeEffs.toString().replace("else if (name=='whiskerbloom') effs.milk+=0.002*mult;","else if (name=='whiskerbloom') effs.milk+=0.001*mult;"));
@@ -1916,8 +1933,8 @@ Game.registerMod("Kaizo Cookies", {
 
 			this.achievements.push(new Game.Upgrade('Caramelized luxury', 'Sugar lumps ripen <b>4 hours</b> sooner.<q>The caramelization process causes the sugar molecules to change states, giving it a strong, deep aroma.</q>', 1000000000000000, [28, 27]));
 			this.achievements.push(new Game.Upgrade('Meaty disgust', 'Sugar lumps ripen <b>2 hours</b> sooner.<q>The presence of decay causes the sugar molecules growing within to fold in on itself, creating an entangled conglomeration that breeds agony.</q>', 1000000000000000000000000000, [28, 17]));
-			this.achievements.push(new Game.Upgrade('High-fructose sugar lumps', 'Sugar lumps ripen <b>1 hour</b> sooner.<q>Despite how obviously unhealthy, it is undoubtly, very delicious.</q>', 1000000000000000000000000000000000000000, [28, 14]));
-			this.achievements.push(new Game.Upgrade('Rainy day lumps', 'Mature sugar lumps are <b>5 times</b> less likely to botch.<q>Just in case of hunger.</q>', 1000000000000000000000000000000000000000000000000000, [29, 15]));
+			this.achievements.push(new Game.Upgrade('High-fructose sugar lumps', 'Sugar lumps ripen <b>1 hour</b> sooner.<q>Despite how obviously unhealthy, it is undoubtly, very delicious.</q>', 1000000000000000000000000000000000000000000000, [28, 14]));
+			this.achievements.push(new Game.Upgrade('Rainy day lumps', 'Mature sugar lumps are <b>5 times</b> less likely to botch.<q>Just in case of hunger.</q>', 1000000000000000000000000000000000000000000000000000000000000000, [29, 15]));
 			
 			eval('Game.clickLump='+Game.clickLump.toString().replace('var amount=choose([0,1]);', 'var amount=randomFloor(0.5 + Game.Has("Rainy day lumps") * 0.4);'));
 			addLoc("This sugar lump is mature and will be ripe in <b>%1</b>.<br>You may <b>click it to harvest it now</b>, but there is a <b>%2% chance you won't get anything</b>.");
