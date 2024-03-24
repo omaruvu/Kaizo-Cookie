@@ -1300,30 +1300,37 @@ Game.registerMod("Kaizo Cookies", {
 		        }
 
 				//Changing some plants mutations
-				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['cronerice',0.01]);","if (neighsM['bakerWheat']>=1 && neighsM['wrinklegill']>=1) muts.push(['cronerice',0.01]);"));
-				eval("Game.Objects['Farm'].minigame.getMuts="+Game.Objects['Farm'].minigame.getMuts.toString().replace("if (neighsM['cronerice']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);","if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);"));
+				eval("M.getMuts="+M.getMuts.toString().replace("if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['cronerice',0.01]);","if (neighsM['bakerWheat']>=1 && neighsM['wrinklegill']>=1) muts.push(['cronerice',0.01]);"));
+				eval("M.getMuts="+M.getMuts.toString().replace("if (neighsM['cronerice']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);","if (neighsM['bakerWheat']>=1 && neighsM['thumbcorn']>=1) muts.push(['gildmillet',0.03]);"));
 
 				//Nerfing some plants effects
-				eval("Game.Objects['Farm'].minigame.computeEffs="+Game.Objects['Farm'].minigame.computeEffs.toString().replace("effs.cursorCps+=0.01*mult","effs.cursorCps+=0.005*mult"));
-				eval("Game.Objects['Farm'].minigame.computeEffs="+Game.Objects['Farm'].minigame.computeEffs.toString().replace("else if (name=='whiskerbloom') effs.milk+=0.002*mult;","else if (name=='whiskerbloom') effs.milk+=0.001*mult;"));
-				eval("Game.Objects['Farm'].minigame.computeEffs="+Game.Objects['Farm'].minigame.computeEffs.toString().replace("goldenClover') effs.goldenCookieFreq+=0.03*mult;","goldenClover') { effs.goldenCookieFreq+=0.03*mult; effs.goldenCookieEffDur*=1-0.015; effs.goldenCookieGain+=1.5; }"));
+				eval("M.computeEffs="+M.computeEffs.toString().replace("effs.cursorCps+=0.01*mult","effs.cursorCps+=0.005*mult"));
+				eval("M.computeEffs="+M.computeEffs.toString().replace("else if (name=='whiskerbloom') effs.milk+=0.002*mult;","else if (name=='whiskerbloom') effs.milk+=0.001*mult;"));
+				eval("M.computeEffs="+M.computeEffs.toString().replace("goldenClover') effs.goldenCookieFreq+=0.03*mult;","goldenClover') { effs.goldenCookieFreq+=0.03*mult; effs.goldenCookieEffDur*=1-0.015; effs.goldenCookieGain+=1.5; }"));
 				
-				eval("Game.Objects['Farm'].minigame.convert="+Game.Objects['Farm'].minigame.convert.toString().replace("Game.gainLumps(10);","Game.gainLumps(15);"));//Changing how much saccing gives
+				eval("M.convert="+M.convert.toString().replace("Game.gainLumps(10);","Game.gainLumps(15);"));//Changing how much saccing gives
 
 			    //Desc   	 
-				Game.Objects['Farm'].minigame.plants['bakerWheat'].children=['bakerWheat','thumbcorn','cronerice','gildmillet','bakeberry','clover','goldenClover','chocoroot','tidygrass'];
-				Game.Objects['Farm'].minigame.plants['thumbcorn'].children=['bakerWheat','thumbcorn','gildmillet','glovemorel'];
-				Game.Objects['Farm'].minigame.plants['wrinklegill'].children=['cronerice','elderwort','shriekbulb'];
+				M.plants['bakerWheat'].children=['bakerWheat','thumbcorn','cronerice','gildmillet','bakeberry','clover','goldenClover','chocoroot','tidygrass'];
+				M.plants['thumbcorn'].children=['bakerWheat','thumbcorn','gildmillet','glovemorel'];
+				M.plants['wrinklegill'].children=['cronerice','elderwort','shriekbulb'];
 
 		        //Effect desc
-				Game.Objects['Farm'].minigame.plants['whiskerbloom'].effsStr='<div class="green">&bull;'+loc("milk effects")+'+0.05%</div>';
-				Game.Objects['Farm'].minigame.plants['glovemorel'].effsStr='<div class="green">&bull;'+loc("cookies/click")+'+4%</div><div class="green">&bull; '+loc("%1 CpS",Game.Objects['Cursor'].single)+' +0.5%</div><div class="red">&bull; '+loc("CpS")+' -1%</div>';
-				Game.Objects['Farm'].minigame.plants['goldenClover'].effsStr='<div class="green">&bull; '+loc("golden cookie frequency")+' +3%</div><div class="green">&bull; '+loc("golden cookie gains")+' +150%</div><div class="red">&bull; '+loc('golden cookie effect duration')+' -1.5%</div>';
+				M.plants['whiskerbloom'].effsStr='<div class="green">&bull;'+loc("milk effects")+'+0.05%</div>';
+				M.plants['glovemorel'].effsStr='<div class="green">&bull;'+loc("cookies/click")+'+4%</div><div class="green">&bull; '+loc("%1 CpS",Game.Objects['Cursor'].single)+' +0.5%</div><div class="red">&bull; '+loc("CpS")+' -1%</div>';
+				M.plants['goldenClover'].effsStr='<div class="green">&bull; '+loc("golden cookie frequency")+' +3%</div><div class="green">&bull; '+loc("golden cookie gains")+' +150%</div><div class="red">&bull; '+loc('golden cookie effect duration')+' -1.5%</div>';
+
+				M.soils.dirt.tick = 2; M.soils.fertilizer.tick = 1; M.soils.clay.tick = 5; M.soils.pebbles.tick = 2; M.soils.woodchips.tick = 2;
+				M.soils.dirt.effsStr = '<div class="gray">&bull; '+loc("tick every %1",'<b>'+Game.sayTime(2*60*Game.fps)+'</b>')+'</div>';
+				M.soils.fertilizer.effsStr = '<div class="gray">&bull; '+loc("tick every %1",'<b>'+Game.sayTime(1*60*Game.fps)+'</b>')+'</div><div class="red">&bull; '+loc("passive plant effects")+' <b>-25%</b></div><div class="red">&bull; '+loc("weed growth")+' <b>+20%</b></div>';
+				M.soils.clay.effsStr = '<div class="gray">&bull; '+loc("tick every %1",'<b>'+Game.sayTime(5*60*Game.fps)+'</b>')+'</div><div class="green">&bull; '+loc("passive plant effects")+' <b>+25%</b></div>';
+				M.soils.pebbles.effsStr = '<div class="gray">&bull; '+loc("tick every %1",'<b>'+Game.sayTime(2*60*Game.fps)+'</b>')+'</div><div class="red">&bull; '+loc("passive plant effects")+' <b>-75%</b></div><div class="green">&bull; '+loc("<b>%1% chance</b> of collecting seeds automatically when plants expire",35)+'</div><div class="green">&bull; '+loc("weed growth")+' <b>-90%</b></div>';
+				M.soils.woodchips.effsStr = '<div class="gray">&bull; '+loc("tick every %1",'<b>'+Game.sayTime(5*60*Game.fps)+'</b>')+'</div><div class="red">&bull; '+loc("passive plant effects")+' <b>-75%</b></div><div class="green">&bull; '+loc("plants spread and mutate <b>%1 times more</b>",3)+'</div><div class="green">&bull; '+loc("weed growth")+' <b>-90%</b></div>';
 
                 //Sac desc
-				Game.Objects['Farm'].minigame.tools['convert'].desc=loc("A swarm of sugar hornets comes down on your garden, <span class=\"red\">destroying every plant as well as every seed you've unlocked</span> - leaving only a %1 seed.<br>In exchange, they will grant you <span class=\"green\">%2</span>.<br>This action is only available with a complete seed log.",[loc("Baker's wheat"),loc("%1 sugar lump",LBeautify(15))]);
-				eval("Game.Objects['Farm'].minigame.askConvert="+Game.Objects['Farm'].minigame.askConvert.toString().replace("10","15"));
-				eval("Game.Objects['Farm'].minigame.convert="+Game.Objects['Farm'].minigame.convert.toString().replace("10","15"));
+				M.tools['convert'].desc=loc("A swarm of sugar hornets comes down on your garden, <span class=\"red\">destroying every plant as well as every seed you've unlocked</span> - leaving only a %1 seed.<br>In exchange, they will grant you <span class=\"green\">%2</span>.<br>This action is only available with a complete seed log.",[loc("Baker's wheat"),loc("%1 sugar lump",LBeautify(15))]);
+				eval("M.askConvert="+M.askConvert.toString().replace("10","15"));
+				eval("M.convert="+M.convert.toString().replace("10","15"));
 
 				eval('M.computeEffs='+M.computeEffs.toString().replace('buildingCost:1,', 'buildingCost:1, wrinklerApproach:1, wrathReplace:1, haltPower:1').replace(`else if (name=='wardlichen') {effs.wrinklerSpawn*=1-0.15*mult;effs.wrathCookieFreq*=1-0.02*mult;}`, `else if (name=='wardlichen') {effs.haltPower+=0.02*mult; effs.wrathReplace*=1-0.02*mult;}`).replace(`else if (name=='wrinklegill') {effs.wrinklerSpawn+=0.02*mult;effs.wrinklerEat+=0.01*mult;}`,`else if (name=='wrinklegill') {effs.wrinklerApproach*=1-0.05*mult;}`).replace(`effs.wrathCookieGain+=0.01*mult;effs.wrathCookieFreq+=0.01*mult;`,`eff.wrinklerApproach*=1-0.02*mult; eff.haltPower+=0.01*mult;`));
 				addLoc('all decay-halting sources\' effect');
