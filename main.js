@@ -177,7 +177,8 @@ Game.registerMod("Kaizo Cookies", {
 				buildVariance: 0,
 				momentum: 0,
 				boost: 0,
-				autoclicker: 0
+				autoclicker: 0,
+				garden: 0
 			}
 		}
 
@@ -443,6 +444,12 @@ Game.registerMod("Kaizo Cookies", {
 				desc: 'Please note: this mod is not balanced around autoclickers, and those will severely impact the intended experience. <br>If you are using an autoclicker and want to get the full experience, you should stop using them ASAP.',
 				icon: [12, 0],
 				pref: 'decay.prefs.preventNotifs.autoclicker'
+			},
+			garden: {
+				title: 'The garden',
+				desc: 'The garden has been sped up and most mutations are significantly more common; the rarer it is in vanilla, the more boost it got. In addition, many of the slower-to-grow plants have been sped up dramatically. Lastly, all soils now tick faster.',
+				icon: [3, 18],
+				pref: 'decay.prefs.preventNotifs.garden'
 			}
 		}
 		decay.triggerNotif = function(key, bypass) {
@@ -1348,6 +1355,8 @@ Game.registerMod("Kaizo Cookies", {
 				M.tools['convert'].desc=loc("A swarm of sugar hornets comes down on your garden, <span class=\"red\">destroying every plant as well as every seed you've unlocked</span> - leaving only a %1 seed.<br>In exchange, they will grant you <span class=\"green\">%2</span>.<br>This action is only available with a complete seed log.",[loc("Baker's wheat"),loc("%1 sugar lump",LBeautify(15))]);
 				eval("M.askConvert="+M.askConvert.toString().replace("10","15"));
 				eval("M.convert="+M.convert.toString().replace("10","15"));
+
+				eval('M.unlockSeed='+M.unlockSeed.toString().replace('me.unlocked=1;', 'me.unlocked=1; decay.triggerNotif("garden"); '));
 
 				eval('M.computeEffs='+M.computeEffs.toString().replace('buildingCost:1,', 'buildingCost:1, wrinklerApproach:1, wrathReplace:1, haltPower:1').replace(`else if (name=='wardlichen') {effs.wrinklerSpawn*=1-0.15*mult;effs.wrathCookieFreq*=1-0.02*mult;}`, `else if (name=='wardlichen') {effs.haltPower+=0.02*mult; effs.wrathReplace*=1-0.02*mult;}`).replace(`else if (name=='wrinklegill') {effs.wrinklerSpawn+=0.02*mult;effs.wrinklerEat+=0.01*mult;}`,`else if (name=='wrinklegill') {effs.wrinklerApproach*=1-0.05*mult;}`).replace(`effs.wrathCookieGain+=0.01*mult;effs.wrathCookieFreq+=0.01*mult;`,`eff.wrinklerApproach*=1-0.02*mult; eff.haltPower+=0.01*mult;`));
 				addLoc('all decay-halting sources\' effect');
