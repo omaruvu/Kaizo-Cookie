@@ -1899,9 +1899,13 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Sparkling wonder'].parents=[Game.Upgrades['Glittering edge']];
 			Game.PrestigeUpgrades.push(Game.Upgrades['Sparkling wonder']);
 			Game.last.posY=662; Game.last.posX=-622;
-			/*
-			this.achievements.push(new Game.Upgrades('Withering prices', 'Your upgrades are <b>0.1%</b> cheaper for every <b>x0.75</b> CpS multiplier from your decay.', 166, [0, 0])); Game.last.pool = 'prestige';
-   			*/
+			
+			this.achievements.push(new Game.Upgrades('Withering prices', 'Your upgrades are <b>0.1%</b> cheaper for every <b>x0.5</b> CpS multiplier from your decay.', 666, [0, 0])); Game.last.pool = 'prestige';
+   			Game.Upgrades['Withering prices'].parents = [Game.Upgrades['Starter kits']];
+	  		Game.PrestigeUpgrades.push(Game.Upgrades['Withering prices']);
+	 		Game.last.posY = -300; Game.last.posX = -390;
+
+			eval('Game.Upgrade.prototype.getPrice='+Game.Upgrade.prototype.getPrice.toString().replace('price*=0.95', '{ price*=0.95; } if (Game.Has("Withering prices")) { price *= Math.pow(0.999, Math.log2(Math.max(1 / decay.gen, 1))); }'));
 			
 			Game.Upgrades['Golden sugar'].order=350045
 			Game.Upgrades['Cursedor'].order=253.004200000
@@ -1913,6 +1917,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Unshackled Elder Pledge'].order=771;
 			Game.Upgrades['Uranium rolling pins'].order=275;
 			Game.Upgrades['Sparkling wonder'].order = 283;
+			Game.Upgrades['Withering prices'].order = 287;
 			LocalizeUpgradesAndAchievs();
 	
 		}
