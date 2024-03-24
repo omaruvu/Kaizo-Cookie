@@ -219,7 +219,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.timeSinceLastPurify > 30) { decay.bankedPurification += Game.auraMult('Fierce Hoarder') / (4 * Game.fps * Math.pow(1 + decay.bankedPurification, 0.5)); }
 			decay.gen = decay.mults[20];
 			Game.updateVeil();
-			if (decay.infReached) { decay.onInf(); infReached = false; }
+			if (decay.infReached) { decay.onInf(); decay.infReached = false; }
 		}
 		decay.updateMomentum = function(m) {
 			if (Game.Has('Purity vaccines')) { return m; }
