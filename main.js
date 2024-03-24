@@ -782,7 +782,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.reincarnateBoost = function() {
 			decay.unlocked = false;
 			decay.stop(20);
-			decay.refreshAll(10);
+			decay.refreshAll(1);
 		}
 		Game.registerHook('reincarnate', decay.reincarnateBoost);
 		addLoc('Decay propagation rate -%1% for %2!');
@@ -2063,7 +2063,7 @@ Game.registerMod("Kaizo Cookies", {
 			str += decay.prefs.preventNotifs[i];
 		}
 		str += '/';
-		str += ',' + decay.momentum;
+		str += 'h,' + decay.momentum;
         return str;
     },
     load: function(str){
@@ -2127,7 +2127,7 @@ Game.registerMod("Kaizo Cookies", {
 				if (isv(strIn[counter])) { decay.prefs.preventNotifs[i] = parseInt(strIn[counter]); }
 				counter++;
 			}
-			strIn = str[7];
+			strIn = str[7].split(',');
 			if (isv(strIn[1])) { decay.momentum = parseFloat(strIn[1]); }
 		} else {
 			str = str[0];
