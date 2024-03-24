@@ -1866,7 +1866,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
-			this.achievements.push(new Game.Upgrade('Golden sugar',("Sugar lumps ripe <b>8 hours sooner</b> and.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
+			this.achievements.push(new Game.Upgrade('Golden sugar',("Sugar lumps ripen <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
 			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 50% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,1,custImg])); Game.last.pool='prestige';
 			Game.Upgrades['Cursedor'].parents=[Game.Upgrades['Luminous gloves']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Cursedor'])
@@ -1907,6 +1907,11 @@ Game.registerMod("Kaizo Cookies", {
 	  		Game.PrestigeUpgrades.push(Game.Upgrades['Withering prices']);
 	 		Game.last.posY = -300; Game.last.posX = -390;
 
+			this.achievements.push(new Game.Upgrade('Caramelized luxury', 'Sugar lumps ripen <b>4 hours</b> sooner.<q>The caramelization process causes the sugar molecules to change states, giving it a strong, deep aroma.</q>', 1000000000000000, [28, 27]));
+			this.achievements.push(new Game.Upgrade('Meaty disgust', 'Sugar lumps ripen <b>2 hours</b> sooner.<q>The presence of decay causes the sugar molecules growing within to fold in on itself, creating an entangled conglomeration that breeds agony.</q>', 1000000000000000000000000000, [28, 17]));
+			this.achievements.push(new Game.Upgrade('High-fructose sugar lumps', 'Sugar lumps ripen <b>1 hour</q> sooner.<q>Despite how obviously unhealthy, it is undoubtly, very delicious.</q>'), 1000000000000000000000000000000000000000, [28, 14]);
+			this.achievements.psuh(new Game.Upgrade('Rainy day lumps', 'Mature sugar lumps are <b>10 times</b> less likely to botch.<q>Just in case of hunger.</q>', 1000000000000000000000000000000000000000000000000000, [29, 15]));
+
 			eval('Game.Upgrade.prototype.getPrice='+Game.Upgrade.prototype.getPrice.toString().replace('price*=0.95', '{ price*=0.95; } if (Game.Has("Withering prices")) { price *= Math.pow(0.999, Math.log2(Math.max(1 / decay.gen, 1))); }'));
 			
 			Game.Upgrades['Golden sugar'].order=350045
@@ -1920,21 +1925,37 @@ Game.registerMod("Kaizo Cookies", {
 			Game.Upgrades['Uranium rolling pins'].order=275;
 			Game.Upgrades['Sparkling wonder'].order = 283;
 			Game.Upgrades['Withering prices'].order = 287;
+			Game.Upgrades['Caramelized luxury'].order=350045;
+			Game.Upgrades['Meaty disgust'].order=350045;
+			Game.Upgrades['High-fructose sugar lumps'].order=350045;
+			Game.Upgrades['Rainy day lumps'].order=350045;
 			LocalizeUpgradesAndAchievs();
 	
 		}
 		this.checkAchievements=function(){//Adding the unlock condition
-			if (Game.cookiesEarned>=1000000000) Game.Unlock('Golden sugar')
+			if (Game.cookiesEarned>=1000000000) Game.Unlock('Golden sugar');
+			if (Game.cookiesEarned>=1000000000000000) Game.Unlock('Caramelized luxury');
+			if (Game.AchievementsOwned>=400) Game.Unlock('Meaty disgust');
+			if (Game.AchievementsOwned>=500) Game.Unlock('High-fructose sugar lumps');
+			if (Game.hasAchiev('Sugar sugar')) Game.Unlock('Rainy day lumps');
 
 			if (Game.Has('Cursedor')) Game.Unlock('Cursedor [inactive]');
 
-			if ((Game.AchievementsOwned==622)) Game.Unlock('The ultimate cookie')
+			if ((Game.AchievementsOwned>=622)) Game.Unlock('The ultimate cookie');
 		}
 		if(Game.ready) this.createAchievements()
 		else Game.registerHook("create", this.createAchievements)
 		Game.registerHook("check", this.checkAchievements)
 
-		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} if (Game.Has("Golden sugar")) { Game.lumpMatureAge-=(hour*8); Game.lumpRipeAge-=(hour*8); Game.lumpOverripeAge-=(hour*8); }'));//Adding the effect of the upgrade
+		Game.parseNewLumpUpgrades = function() {
+			var hour = 1000*60*60;
+			if (Game.Has('Golden sugar')) { Game.lumpMatureAge-=(hour*8); Game.lumpRipeAge-=(hour*8); Game.lumpOverripeAge-=(hour*8); }
+			if (Game.Has('Caramelized luxury')) { Game.lumpMatureAge-=(hour*4); Game.lumpRipeAge-=(hour*4); Game.lumpOverripeAge-=(hour*4); }
+			if (Game.Has('Meaty disgust')) { Game.lumpMatureAge-=(hour*2); Game.lumpRipeAge-=(hour*2); Game.lumpOverripeAge-=(hour*2); }
+			if (Game.Has('High-fructose sugar lumps')) { Game.lumpMatureAge-=(hour*1); Game.lumpRipeAge-=(hour*1); Game.lumpOverripeAge-=(hour*1); }
+		}
+
+		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} Game.parseNewLumpUpgrades();'));//Adding the effect of the upgrade
 
 		Game.registerHook('click',function() {
 			if (Game.Has("Cursedor [inactive]")) {
