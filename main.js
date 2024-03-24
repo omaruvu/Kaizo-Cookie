@@ -1356,8 +1356,8 @@ Game.registerMod("Kaizo Cookies", {
 
                 //Sac desc
 				M.tools['convert'].desc=loc("A swarm of sugar hornets comes down on your garden, <span class=\"red\">destroying every plant as well as every seed you've unlocked</span> - leaving only a %1 seed.<br>In exchange, they will grant you <span class=\"green\">%2</span>.<br>This action is only available with a complete seed log.",[loc("Baker's wheat"),loc("%1 sugar lump",LBeautify(15))]);
-				eval("M.askConvert="+M.askConvert.toString().replace("10","20"));
-				eval("M.convert="+M.convert.toString().replace("10","20"));
+				eval("M.askConvert="+M.askConvert.toString().replace("10","50"));
+				eval("M.convert="+M.convert.toString().replace("10","50"));
 
 				eval('M.unlockSeed='+M.unlockSeed.toString().replace('me.unlocked=1;', 'me.unlocked=1; decay.triggerNotif("garden"); '));
 
