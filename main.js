@@ -1351,7 +1351,7 @@ Game.registerMod("Kaizo Cookies", {
 				M.soils.pebbles.effsStr = '<div class="gray">&bull; '+loc("tick every %1",'<b>'+Game.sayTime(2*60*Game.fps)+'</b>')+'</div><div class="red">&bull; '+loc("passive plant effects")+' <b>-75%</b></div><div class="green">&bull; '+loc("<b>%1% chance</b> of collecting seeds automatically when plants expire",35)+'</div><div class="green">&bull; '+loc("weed growth")+' <b>-90%</b></div>';
 				M.soils.woodchips.effsStr = '<div class="gray">&bull; '+loc("tick every %1",'<b>'+Game.sayTime(5*60*Game.fps)+'</b>')+'</div><div class="red">&bull; '+loc("passive plant effects")+' <b>-75%</b></div><div class="green">&bull; '+loc("plants spread and mutate <b>%1 times more</b>",3)+'</div><div class="green">&bull; '+loc("weed growth")+' <b>-90%</b></div>';
 
-				eval('M.buildPanel='+M.buildPanel.toString().replace('1000*60*10', '1000*60'));
+				eval('M.buildPanel='+M.buildPanel.toString().replace('1000*60*10', '1000*60*3'));
 				M.buildPanel();
 
                 //Sac desc
