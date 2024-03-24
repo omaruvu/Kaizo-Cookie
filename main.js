@@ -1941,7 +1941,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.cookiesEarned>=1000000000000000) Game.Unlock('Caramelized luxury');
 			if (Game.AchievementsOwned>=400) Game.Unlock('Meaty disgust');
 			if (Game.AchievementsOwned>=500) Game.Unlock('High-fructose sugar lumps');
-			if (Game.hasAchiev('Sugar sugar')) Game.Unlock('Rainy day lumps');
+			if (Game.HasAchiev('Sugar sugar')) Game.Unlock('Rainy day lumps');
 
 			if (Game.Has('Cursedor')) Game.Unlock('Cursedor [inactive]');
 
