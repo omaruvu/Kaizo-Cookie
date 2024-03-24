@@ -1315,7 +1315,7 @@ Game.registerMod("Kaizo Cookies", {
 				var chanceChanges=[[0.07, 0.12], [0.06, 0.11], [0.05, 0.1], [0.04, 0.08], [0.03, 0.06], [0.02, 0.04], [0.01, 0.03], [0.005, 0.2], [0.002, 0.01], [0.001, 0.008], [0.0007, 0.007], [0.0001, 0.002]];
 				var changeStr = M.getMuts.toString();
 				for (let i in chanceChanges) {
-					changeStr = replaceAll(chanceChanges[i][0], chanceChanges[i][1], chanceStr);
+					changeStr = replaceAll(chanceChanges[i][0], chanceChanges[i][1], changeStr);
 				}
 				eval('M.getMuts='+changeStr);
 
