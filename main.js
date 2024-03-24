@@ -1901,7 +1901,7 @@ Game.registerMod("Kaizo Cookies", {
 			Game.last.posY=662; Game.last.posX=-622;
 			
 			this.achievements.push(new Game.Upgrade('Withering prices', 'Your upgrades are <b>0.1%</b> cheaper for every <b>x0.5</b> CpS multiplier from your decay.', 666, [3, 3, custImg])); Game.last.pool = 'prestige';
-   			Game.Upgrades['Withering prices'].parents = [Game.Upgrades['Starter kits']];
+   			Game.Upgrades['Withering prices'].parents = [Game.Upgrades['Starter kit']];
 	  		Game.PrestigeUpgrades.push(Game.Upgrades['Withering prices']);
 	 		Game.last.posY = -300; Game.last.posX = -390;
 
