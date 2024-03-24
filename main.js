@@ -407,7 +407,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			fthof: {
 				title: 'Force the Hand of Fate',
-				desc: 'Notice: Force the Hand of Fate has had its effect pool adjusted and two effects have been removed from the pools (namely, building special and elder frenzy). Planners may not be accurate.<br>(Also, Golden cookies spawned by it does not purify decay.)',
+				desc: 'Notice: Force the Hand of Fate has had two effects removed from its pool (namely, building special and elder frenzy). Successful casts also have a chance to yield clot, ruin, and cursed finger. Planners may not be accurate.<br>(Also, Golden cookies spawned by it does not purify decay.)',
 				icon: [22, 11],
 				pref: 'decay.prefs.preventNotifs.fthof'
 			},
