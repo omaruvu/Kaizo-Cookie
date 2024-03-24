@@ -19,6 +19,8 @@ function cookieChange(name, newPow) {
 	Game.Upgrades[name].power = newPow;
 	var flavorText = Game.Upgrades[name].desc.slice(Game.Upgrades[name].desc.indexOf('<q>'), Game.Upgrades[name].desc.length);
 	Game.Upgrades[name].desc = loc("Cookie production multiplier <b>+%1% permanently</b>.", newPow)+flavorText;
+	Game.Upgrades[name].ddesc = loc("Cookie production multiplier <b>+%1% permanently</b>.", newPow)+flavorText;
+	Game.Upgrades[name].baseDesc = loc("Cookie production multiplier <b>+%1% permanently</b>.", newPow)+flavorText;
 }
 function getVer(str) {
 	if (str[0] !== 'v') { return false; }
@@ -118,8 +120,8 @@ Game.registerMod("Kaizo Cookies", {
 		decay.incMult = 0.04; //decay mult is decreased by this multiplicative every second
 		decay.min = 0.15; //the minimum power that the update function uses; the lower it is, the slower the decay will pick up
 		decay.momentum = 1; //increases with each game tick, but decreased on certain actions (hardcoded to be at least 1)
-		decay.smoothMomentumFactor = 0.3; //some momentum is negated so it isnt very obvious with the log scaling; the less it is, the smoother it will be (not necessarily a good thing as it also delays momentum)
-		decay.momentumFactor = 1.8; //the more this is, the less powerful momentum is (very strongly affects momentum)
+		decay.smoothMomentumFactor = 0.2; //some momentum is negated so it isnt very obvious with the log scaling; the less it is, the smoother it will be (not necessarily a good thing as it also delays momentum)
+		decay.momentumFactor = 2; //the more this is, the less powerful momentum is (very strongly affects momentum)
 		decay.momentumIncFactor = 2.5; //the closer this is to 1, the more that momentum will increase as momentum increases (slightly)
 		decay.halt = 1; //simulates decay stopping from clicking
 		decay.haltOvertime = 0; //each stop, a fraction of the halt time is added to this; overtime will be expended when the main halt time runs out, but overtime is less effective at stopping decay
