@@ -16,11 +16,13 @@ function auraDesc(id, str) {
 }
 function cookieChange(name, newPow) {
 	if (!Game.Upgrades[name]) { return false; }
-	Game.Upgrades[name].power = newPow;
+	if (!(typeof Game.Upgrades[name].power == 'function')) { Game.Upgrades[name].power = newPow; } else {
+		eval('Game.Upgrades["'+name+'"].power='+Game.Upgrades[name].power.toString().replace('var pow=2;', 'var pow='+newPow+';'));
+	}
 	var flavorText = Game.Upgrades[name].desc.slice(Game.Upgrades[name].desc.indexOf('<q>'), Game.Upgrades[name].desc.length);
-	Game.Upgrades[name].desc = loc("Cookie production multiplier <b>+%1% permanently</b>.", newPow)+flavorText;
-	Game.Upgrades[name].ddesc = loc("Cookie production multiplier <b>+%1% permanently</b>.", newPow)+flavorText;
-	Game.Upgrades[name].baseDesc = loc("Cookie production multiplier <b>+%1% permanently</b>.", newPow)+flavorText;
+	Game.Upgrades[name].desc = loc("Cookie production multiplier <b>+%1%</b>.", newPow)+flavorText;
+	Game.Upgrades[name].ddesc = loc("Cookie production multiplier <b>+%1%</b>.", newPow)+flavorText;
+	Game.Upgrades[name].baseDesc = loc("Cookie production multiplier <b>+%1%</b>.", newPow)+flavorText;
 }
 function getVer(str) {
 	if (str[0] !== 'v') { return false; }
