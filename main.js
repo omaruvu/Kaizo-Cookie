@@ -448,7 +448,7 @@ Game.registerMod("Kaizo Cookies", {
 			garden: {
 				title: 'The garden',
 				desc: 'The garden has been sped up and most mutations are significantly more common; the rarer it is in vanilla, the more boost it got. In addition, many of the slower-to-grow plants have been sped up dramatically. Lastly, all soils now tick faster.',
-				icon: [3, 18],
+				icon: [2, 18],
 				pref: 'decay.prefs.preventNotifs.garden'
 			}
 		}
