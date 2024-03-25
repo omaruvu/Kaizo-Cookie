@@ -1779,6 +1779,16 @@ Game.registerMod("Kaizo Cookies", {
 				'News: new legislation suggests that all cookie-producing Factories be repurposed to '+(Game.Objects['Factory'].amount>250?'planet':'warehouse')+'-producing factories.'
 			]); }
 
+			if (Game.Objects['Bank'].amount>25) { newList = newList.concat([
+				'News: Economists predict an imminent worldwide economic collapse. Conclusion is that there is too much cookies and too little goods.'
+			]); }
+			if (Game.Objects['Bank'].amount>50) { newList = newList.concat([
+				'News: Money. Money. Money. Money. M-'
+			]); }
+			if (Game.Objects['Bank'].amount>100) { newList = newList.concat([
+				'News: <span style="font-size: 25px">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>'
+			]); }
+
 			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
 				'News: As it turns out, there is 1e200,405,192,204 times more antimatter than matter. Expert found cause to be "dimensions", whatever that means.',
 				'News: Experts advise against turning antimatter to cookies, reason being "there is already way too much cookies, and antimatter can help clear out some cookies"'
