@@ -2030,7 +2030,7 @@ Game.registerMod("Kaizo Cookies", {
 			'dragonflight': [111111, 11],
 			'frenzy': [7500, 7.5],
 			'multiply cookies': [7500, 7.5],
-			'failure': [10, 10]
+			'failure': [10, 100]
 		}
 		decay.getCursedorEffAdd = function(eff, clicks) {
 			if (clicks < decay.cursedorThresholdMap[eff][0]) { return 0; }
