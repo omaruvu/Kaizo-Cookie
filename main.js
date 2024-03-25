@@ -780,7 +780,7 @@ Game.registerMod("Kaizo Cookies", {
 		allValues('decay effects');
 		
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "" && !this.noCount) { decay.purifyAll(2.5, 0.5, 5); decay.stop(1); }'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "") { decay.purifyAll(2.5, 0.5, 5); decay.stop(1); }'));
 		decay.clickBCStop = function() {
 			decay.stop(0.5);
 		}
@@ -1689,11 +1689,11 @@ Game.registerMod("Kaizo Cookies", {
                 newList.push('News : ascend at 365.');
 				newList.push('News : Gone too far, or not enough? Protests rising against "intense competition for seemingly boring stuff."');
 				newList.push('News : it was discovered that the '+name+' is actually a-');
-				newList.push('News : Cookie Hermits think of new recipes, locals are shocked: "Taste like grass.".');
+				newList.push('News : Cookie Hermits think of new recipes, locals are shocked: "Taste like grass."');
 				newList.push('News : crazed citizen quits job and leaves family to "grind ascends"');
 				if (Game.Has('Cookie egg')) newList.push('<q>'+"Give me food master."+'</q><sig>'+"krumblor"+'</sig>');
 				newList.push('News : ancient hieroglyphs deciphered to resemble 365 cookies of a heavenly origin. "We\'re not sure what that means," ponder scientists.');
-				newList.push('News : local news stations overrun by suggestions: "Didnt know modding was this annoying.".');
+				newList.push('News : local news stations overrun by suggestions: "Didnt know modding was this annoying."');
                 newList.push('News : you should grail.');
 				newList.push('News : encyclopaedia\'s head editor denies allegations that he is a “daddy”, says to the public “stop calling me that”.');
 				newList.push('News : hybrid human still keeps to the tradition of calling the head editor "daddy", refuses to take bribes.');
@@ -1779,70 +1779,6 @@ Game.registerMod("Kaizo Cookies", {
 				'News: new legislation suggests that all cookie-producing Factories be repurposed to '+(Game.Objects['Factory'].amount>250?'planet':'warehouse')+'-producing factories.'
 			]); }
 
-			if (Game.Objects['Bank'].amount>25) { newList = newList.concat([
-				'News: economists predict an imminent worldwide economic collapse. Conclusion is that there is too much cookies and too little goods.'
-			]); }
-			if (Game.Objects['Bank'].amount>50) { newList = newList.concat([
-				'News: Money. Money. Money. Money. M-'
-			]); }
-			if (Game.Objects['Bank'].amount>100) { newList = newList.concat([
-				'News: <span style="font-size: 25px">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>'
-			]); }
-
-			if (Game.Objects['Temple'].amount>25) { newList = newList.concat([
-				'News: new religion prominent: doughism. It advocates for the eradication of all cookies in the universe.'
-			]); }
-			if (Game.Objects['Temple'].amount>50) { newList = newList.concat([
-				'News: doughism is growing! Survey suggests that there is currently about '+Beautify(1231498 + Math.pow(Game.Objects['Temple'].amount, 10), 0)+' doughists on Earth.'
-			]); }
-			if (Game.Objects['Temple'].amount>100) { newList = newList.concat([
-				'News: doughists are uprising! Massive mountains of cookies are currently being slowly incinerated by big flamethrowers and acid sprayers.'
-			]); }
-
-			if (Game.Objects['Wizard tower'].amount>25) { newList = newList.concat([
-				'News: something bad happened in FREAK MAGIC CATASTROPHE!!!!! '
-			]); }
-			if (Game.Objects['Wizard tower'].amount>50) { newList = newList.concat([
-				'News: war rages on between cookie magic and wrinkly magic. We hope that the wrinklers win.',
-				'News: experts around the world unanimously agree that 57 is the best number. Wait, what is a "FtHoF"?'
-			]); }
-			if (Game.Objects['Wizard tower'].amount>100) { newList = newList.concat([
-				'News: the conflict between spell-casting and incantation-casting continues. Sounds like nonsense.'
-			]); }
-
-			var alphabet = ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m'];
-			var alphabetUpper = ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M'];
-			var numbers = ['1','2','3','4','5','6','7','8','9','0'];
-			var allRand = alphabet.concat(alphabetUpper.concat(numbers));
-			var r = function(num) {
-				var toReturn = '';
-				for (let i = 0; i < num; i++) {
-					toReturn += choose(allRand);
-				}
-				return toReturn;
-			}
-			if (Game.Objects['Shipment'].amount>25) { newList = newList.concat([
-				'News: new "cookie cannons" found to be the cause of cookie storms on planet '+r(6)+'!'
-			]); }
-			if (Game.Objects['Shipment'].amount>50) { newList = newList.concat([
-				'News: hobbyists question the naming of "Shipment", claiming that they should be renamed to "Submarine".'
-			]); }
-			if (Game.Objects['Shipment'].amount>100) { newList = newList.concat([
-				'News: the failure and explosion of several rockets found to be possibly caused by at least 42 tons of cookies in the engines. "Nonsense", responds cookie magnate.',
-				'News: your Shipments are working hard to return the cookies to where they came from. We just can\'t bare them any longer.'
-			]); }
-
-			if (Game.Objects['Alchemy lab'].amount>25) { newList = newList.concat([
-				'News: iridyum successfully synthesized in lab, causes planetary meltdown.',
-				'News: cookies synthesized from "rare earths" found to be the cause of rampant cookie sentience!'
-			]); }
-			if (Game.Objects['Alchemy lab'].amount>50) { newList = newList.concat([
-				'News: is it really an alchemy lab if everyone is dead?'
-			]); }
-			if (Game.Objects['Alchemy lab'].amount>100) { newList = newList.concat([
-				'News: white chocolate cookies found to be especially efficient at transmutatation to nonexistence. Unfortunately, white chocolate cookies only make up less than 0.1% of all cookies.'
-			]); }
-
 			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
 				'News: As it turns out, there is 1e200,405,192,204 times more antimatter than matter. Expert found cause to be "dimensions", whatever that means.',
 				'News: Experts advise against turning antimatter to cookies, reason being "there is already way too much cookies, and antimatter can help clear out some cookies"'
@@ -1893,8 +1829,7 @@ Game.registerMod("Kaizo Cookies", {
 			]); }
 			if (Game.Objects['Javascript console'].amount>50) { newList = newList.concat([
 				'News: this code is too unsightreadable.',
-				'undefined',
-				'News: '+r(Math.floor(Math.random() * 75) + 1)
+				'undefined'
 			]); }
 			if (Game.Objects['Javascript console'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList = newList.concat([
 				'News: price of LED skyrockets with the introduction of 1e18 x 1.8e18 wide screens.',
@@ -1915,7 +1850,7 @@ Game.registerMod("Kaizo Cookies", {
 			]); }
 
 		    if (Game.Objects['Cortex baker'].amount>0) { newList = newList.concat([
-				'News: Cortex baker implodes, unknown plant puzzles blamed',
+				'News: Cortex baker implodes, unknown plant puzzles blamed.',
 				'News: it was discovered that thoughts can have thoughts "that is a tought thing to think"'
 			]); }
 			if (Game.Objects['Cortex baker'].amount>25) { newList = newList.concat([
@@ -2055,7 +1990,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		Game.parseNewLumpUpgrades = function() {
 			var hour = 1000*60*60;
-			if (Game.Has('Golden sugar')) { Game.lumpMatureAge-=(hour*8); Game.lumpRipeAge-=(hour*8); }
+			if (Game.Has('Golden sugar')) { Game.lumpMatureAge-=(hour*8); Game.lumpRipeAge-=(hour*8); Game.lumpOverripeAge-=(hour*8);}
 			if (Game.Has('Caramelized luxury')) { Game.lumpMatureAge-=(hour*4); Game.lumpRipeAge-=(hour*4); }
 			if (Game.Has('Meaty disgust')) { Game.lumpMatureAge-=(hour*2); Game.lumpRipeAge-=(hour*2); }
 			if (Game.Has('High-fructose sugar lumps')) { Game.lumpMatureAge-=(hour*1); Game.lumpRipeAge-=(hour*1); }
@@ -2065,97 +2000,26 @@ Game.registerMod("Kaizo Cookies", {
 
 		Game.registerHook('click',function() {
 			if (Game.Has("Cursedor [inactive]")) {
+                decay.CursedorUses++
 				if (Math.random()<1/2) { 
 					Game.Ascend(1)
-				}    
-				//select an effect
-				var list = [];
-				list.push('clot', 'frenzy');
-				list.push('blood frenzy');
-				list.push('everything must go');
-				list.push('click frenzy');
-				list.push('cursed finger');
-				list.push('building special');
-				list.push('dragon harvest');
-				list.push('dragonflight');
-				list.push('sugar frenzy', 'sugar blessing');
-				
-				var choice = choose(list);
-				
-				this.last = choice;
-				
-				//create buff for effect
-				//buff duration multiplier
-				var effectDurMod = 1;
-				if (Game.Has('Get lucky')) effectDurMod *= 2;
-				if (Game.Has('Lasting fortune')) effectDurMod *= 1.1;
-				if (Game.Has('Lucky digit')) effectDurMod *= 1.01;
-				if (Game.Has('Lucky number')) effectDurMod *= 1.01;
-				if (Game.Has('Green yeast digestives')) effectDurMod *= 1.01;
-				if (Game.Has('Lucky payout')) effectDurMod *= 1.01;
-				//if (Game.hasAura('Epoch Manipulator')) effectDurMod *= 1.05;
-				effectDurMod *= 1 + Game.auraMult('Epoch Manipulator') * 0.05;
-				
-				if (Game.hasGod) {
-					var godLvl = Game.hasGod('decadence');
-					if (godLvl == 1) effectDurMod *= 1.07;
-					else if (godLvl == 2) effectDurMod *= 1.05;
-					else if (godLvl == 3) effectDurMod *= 1.02;
-				}
-				
-				//effect multiplier (from lucky etc)
-				var mult = 1;
-				//if (me.wrath>0 && Game.hasAura('Unholy Dominion')) mult*=1.1;
-				//else if (me.wrath==0 && Game.hasAura('Ancestral Metamorphosis')) mult*=1.1;
-			
-				if (Game.Has('Green yeast digestives')) mult *= 1.01;
-				if (Game.Has('Dragon fang')) mult *= 1.03;
-				
-				
-				var popup = '';
-				var buff = 0;
-				
-				if (choice == 'building special') {
-					var time = Math.ceil(30 * effectDurMod);
-					var list = [];
-					for (var i in Game.Objects) {
-						if (Game.Objects[i].amount >= 10) list.push(Game.Objects[i].id);
-					}
-					if (list.length == 0) {
-						choice = 'frenzy';
-					} //default to frenzy if no proper building
-					else {
-						var obj = choose(list);
-						var pow = Game.ObjectsById[obj].amount / 10 + 1;
-						if (Math.random() < 0.3) {
-							buff = Game.gainBuff('building debuff', time, pow, obj);
-						} else {
-							buff = Game.gainBuff('building buff', time, pow, obj);
-						}
-					}
-				}
-				
-				if (choice == 'frenzy') {
-					buff = Game.gainBuff('frenzy', Math.ceil(77 * effectDurMod), 7);
-				} else if (choice == 'dragon harvest') {
-					buff = Game.gainBuff('dragon harvest', Math.ceil(60 * effectDurMod), 15);
-				} else if (choice == 'everything must go') {
-					buff = Game.gainBuff('everything must go', Math.ceil(8 * effectDurMod), 5);
-				} else if (choice == 'blood frenzy') {
-					buff = Game.gainBuff('blood frenzy', Math.ceil(6 * effectDurMod), 666);
-				} else if (choice == 'clot') {
-					buff = Game.gainBuff('clot', Math.ceil(66 * effectDurMod), 0.5);
-				} else if (choice == 'cursed finger') {
-					buff = Game.gainBuff('cursed finger', Math.ceil(10 * effectDurMod), Game.cookiesPs * Math.ceil(10 * effectDurMod));
-				} else if (choice == 'click frenzy') {
-					buff = Game.gainBuff('click frenzy', Math.ceil(13 * effectDurMod), 777);
-				} else if (choice == 'dragonflight') {
-					buff = Game.gainBuff('dragonflight', Math.ceil(10 * effectDurMod), 1111);
-				} else if (choice == 'sugar frenzy') {
-					buff=Game.gainBuff('sugar frenzy',10,3);
-				} else if (choice == 'sugar blessing') {
-					Game.gainBuff('sugar blessing',20,1);
-				}
+				}  
+				var newShimmer=new Game.shimmer('golden');
+				var choices=[];
+				Math.seedrandom(Game.seed+'/'+decay.CursedorUses);
+				choices.push('frenzy','multiply cookies');
+				if (Math.random()<0.1 && Game.cookieClicks>=100000) choices.push('click frenzy');
+				if (Math.random()<0.1 && Game.cookieClicks>=1000) choices.push('cursed finger','clot');
+				if (Math.random()<0.1 && Game.cookieClicks>=10000) choices.push('blood frenzy','ruin cookies');
+				if (Math.random()<0.001 && Game.cookieClicks>=10000) choices.push('sugar frenzy','sugar blessing');
+				if (Math.random()<0.001 && Game.cookieClicks>=500000) choices.push('Haggler\'s luck','Crafty pixies');
+				if (Math.random()<0.01 && Game.cookieClicks>=25000) choices.push('Nasty goblins','Haggler\'s misery');
+				if (Game.BuildingsOwned>=10 && Game.cookieClicks>=1000000 && Math.random()<0.25) choices.push('building special');
+				if (Math.random()<0.15 && Game.cookieClicks>=50) choices=['cookie storm drop'];
+				if (Math.random()<0.0001 && Game.cookieClicks>=1000) choices.push('free sugar lump');
+				newShimmer.force=choose(choices);
+				if (newShimmer.force=='cookie storm drop')
+				Game.cookieClicks=0;
 			}
 		});
 		allValues('init completion');
@@ -2191,6 +2055,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		str += '/';
 		str += 'h,' + decay.momentum;
+        str += '/' + decay.CursedorUses;
         return str;
     },
     load: function(str){
@@ -2253,6 +2118,8 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			strIn = str[7].split(',');
 			if (isv(strIn[1])) { decay.momentum = parseFloat(strIn[1]); }
+
+            if (isv(str[8])) { decay.CursedorUses = parseInt(str[8]); }
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
