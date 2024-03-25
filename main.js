@@ -1909,7 +1909,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
-			this.achievements.push(new Game.Upgrade('Golden sugar',("Sugar lumps ripen <b>8 hours sooner</b>.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
+			this.achievements.push(new Game.Upgrade('Golden sugar',("Sugar lumps ripen <b>8 hours</b> sooner.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
 			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 50% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,1,custImg])); Game.last.pool='prestige';
 			Game.Upgrades['Cursedor'].parents=[Game.Upgrades['Luminous gloves']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Cursedor'])
