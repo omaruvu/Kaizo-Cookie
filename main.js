@@ -2009,12 +2009,12 @@ Game.registerMod("Kaizo Cookies", {
 
 		//first number: absolute minimum clicks for that effect to spawn; seoncd number: the mult to click amount needed to gain another entry in the pool
 		decay.cursedorThresholdMap = {
-			'click frenzy': [600000, 2.5],
+			'click frenzy': [60000, 2.5],
 			'cursed finger': [5000, 3],
 			'blood frenzy': [66666, 6],
-			'sugar frenzy': [50000, 10],
+			'sugar frenzy': [10000, 10],
 			'sugar blessing': [10000, 3],
-			'building special': [200000, 5],
+			'building special': [100000, 5],
 			'cookie storm drop': [50, 15],
 			'blab': [2500000, 1.25],
 			'cookie storm': [10000, 8],
@@ -2030,7 +2030,7 @@ Game.registerMod("Kaizo Cookies", {
 			'dragonflight': [111111, 11],
 			'frenzy': [7500, 7.5],
 			'multiply cookies': [7500, 7.5],
-			'failure': [10, 100]
+			'failure': [100, 100]
 		}
 		decay.getCursedorEffAdd = function(eff, clicks) {
 			if (clicks < decay.cursedorThresholdMap[eff][0]) { return 0; }
