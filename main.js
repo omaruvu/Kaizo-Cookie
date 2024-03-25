@@ -1810,6 +1810,29 @@ Game.registerMod("Kaizo Cookies", {
 				'News: the conflict between spell-casting and incantation-casting continues. Sounds like nonsense.'
 			]); }
 
+			var alphabet = ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m'];
+			var alphabetUpper = ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M'];
+			var numbers = ['1','2','3','4','5','6','7','8','9','0'];
+			var allRand = alphabet.concat(alphabetUpper.concat(numbers));
+			var r = function(num) {
+				var toReturn = '';
+				for (let i = 0; i < num; i++) {
+					toReturn += choose(allRand);
+				}
+				return toReturn;
+			}
+			if (Game.Objects['Shipment'].amount>25) { newList = newList.concat([
+				'News: new "cookie cannons" found to be the cause of cookie storms on planet '+r(6)+'!'
+			]); }
+			if (Game.Objects['Shipment'].amount>50) { newList = newList.concat([
+				'News: hobbyists question the naming of "Shipment", claiming that they should be renamed to "Submarine".'
+			]); }
+			if (Game.Objects['Shipment'].amount>100) { newList = newList.concat([
+				'News: the failure and explosion of several rockets found to be possibly caused by at least 42 tons of cookies in the engines. "Nonsense", responds cookie magnate.'
+			]); }
+
+			
+
 			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
 				'News: As it turns out, there is 1e200,405,192,204 times more antimatter than matter. Expert found cause to be "dimensions", whatever that means.',
 				'News: Experts advise against turning antimatter to cookies, reason being "there is already way too much cookies, and antimatter can help clear out some cookies"'
@@ -1860,7 +1883,8 @@ Game.registerMod("Kaizo Cookies", {
 			]); }
 			if (Game.Objects['Javascript console'].amount>50) { newList = newList.concat([
 				'News: this code is too unsightreadable.',
-				'undefined'
+				'undefined',
+				'News: '+r(Math.floor(Math.random() * 75) + 1);
 			]); }
 			if (Game.Objects['Javascript console'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList = newList.concat([
 				'News: price of LED skyrockets with the introduction of 1e18 x 1.8e18 wide screens.',
