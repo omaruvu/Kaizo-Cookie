@@ -788,7 +788,7 @@ Game.registerMod("Kaizo Cookies", {
 		allValues('decay effects');
 		
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "") { decay.purifyAll(2.5, 0.5, 5); decay.stop(1); }'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "" && (!this.noCount)) { decay.purifyAll(2.5, 0.5, 5); decay.stop(1); }'));
 		decay.clickBCStop = function() {
 			decay.stop(0.5);
 		}
