@@ -2005,6 +2005,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} Game.parseNewLumpUpgrades();'));//Adding the effect of the upgrade
 
+		decay.CursedorUses = 0;
 		Game.registerHook('click',function() {
 			if (Game.Has("Cursedor [inactive]")) {
                 decay.CursedorUses++
