@@ -2042,7 +2042,7 @@ Game.registerMod("Kaizo Cookies", {
 				Math.seedrandom(Game.seed+'/'+decay.CursedorUses);
 				var pool=[];
 
-				for (let i in Object.keys(decay.cursedorThresholdMap)) {
+				for (let i in decay.cursedorThresholdMap) {
 					for (let ii = 0; ii < decay.getCursedorEffAdd(i, Game.cookieClicks); ii++) {
 						pool.push(i);
 					}
