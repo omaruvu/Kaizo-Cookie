@@ -7,6 +7,11 @@ function replaceDesc(name, toReplaceWith) {
 	Game.Upgrades[name].desc = toReplaceWith;
 	Game.Upgrades[name].ddesc = toReplaceWith;
 }
+function replaceAchievDesc(name, toReplaceWith) {
+	Game.Achievements[name].baseDesc = toReplaceWith;
+	Game.Achievements[name].desc = toReplaceWith;
+	Game.Achievements[name].ddesc = toReplaceWith;
+}
 function addLoc(str) {
 	locStrings[str] = str;
 }
@@ -1044,6 +1049,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('Sparkling wonder') && Math.random() < 0.1) {
 				Game.veilHP = Game.veilMaxHP;
 				Game.Notify('Veil revived', 'Your Sparkling wonder saved your veil from collapse and healed it back to full health!', [23, 34]);
+				Game.Win('Thick-skinned');
 			} else {
 				Game.Lock('Shimmering veil [on]');
 				Game.Lock('Shimmering veil [off]');
@@ -1056,6 +1062,7 @@ Game.registerMod("Kaizo Cookies", {
 				PlaySound('snd/spellFail.mp3',1);
 			}
 		}
+		replaceAchievDesc('Thick-skinned', 'Have your <b>Sparkling wonder</b> save your <b>Shimmering veil</b> from collapsing.');
 		Game.loseShimmeringVeil = function(c) { } //prevent veil from being lost from traditional methods
 		//veil graphics down below
 		var veilDrawOrigin = selectStatement(Game.DrawBackground.toString(), Game.DrawBackground.toString().indexOf("if (Game.veilOn())"));
