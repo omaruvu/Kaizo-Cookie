@@ -1828,10 +1828,20 @@ Game.registerMod("Kaizo Cookies", {
 				'News: hobbyists question the naming of "Shipment", claiming that they should be renamed to "Submarine".'
 			]); }
 			if (Game.Objects['Shipment'].amount>100) { newList = newList.concat([
-				'News: the failure and explosion of several rockets found to be possibly caused by at least 42 tons of cookies in the engines. "Nonsense", responds cookie magnate.'
+				'News: the failure and explosion of several rockets found to be possibly caused by at least 42 tons of cookies in the engines. "Nonsense", responds cookie magnate.',
+				'News: your Shipments are working hard to return the cookies to where they came from. We just can\'t bare them any longer.'
 			]); }
 
-			
+			if (Game.Objects['Alchemy lab'].amount>25) { newList = newList.concat([
+				'News: iridyum successfully synthesized in lab, causes planetary meltdown.',
+				'News: cookies synthesized from "rare earths" found to be the cause of rampant cookie sentience!'
+			]); }
+			if (Game.Objects['Alchemy lab'].amount>50) { newList = newList.concat([
+				'News: is it really an alchemy lab if everyone is dead?'
+			]); }
+			if (Game.Objects['Alchemy lab'].amount>100) { newList = newList.concat([
+				'News: white chocolate cookies found to be especially efficient at transmutatation to nonexistence. Unfortunately, white chocolate cookies only make up less than 0.1% of all cookies.'
+			]); }
 
 			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
 				'News: As it turns out, there is 1e200,405,192,204 times more antimatter than matter. Expert found cause to be "dimensions", whatever that means.',
