@@ -639,7 +639,7 @@ Game.registerMod("Kaizo Cookies", {
 				else if (godLvl == 3) { decay.wrinklerSpawnThreshold = 1 - Math.pow(w * 3, 0.5); decay.wcPow = 0.25 * 1.2; }
 				else { decay.wrinklerSpawnThreshold = 1 - w * 3; decay.wcPow = 0.25; }
 			} else {
-				decay.wrinklerSpawnThreshold = 1 - w * 3; decay.wcPow = 0.25;
+				decay.wrinklerSpawnThreshold = Math.pow(w, 0.25); decay.wcPow = 0.25;
 			}
 
 			decay.min = Math.min(1, 0.15 + (1 - d) * 3.5);
@@ -1910,16 +1910,16 @@ Game.registerMod("Kaizo Cookies", {
 		this.createAchievements=function(){//Adding the custom upgrade
 			this.achievements = []
 			this.achievements.push(new Game.Upgrade('Golden sugar',("Sugar lumps ripen <b>8 hours</b> sooner.")+'<q>Made from the highest quality sugar!</q>',1000000000,[28,16]))
-			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, each time you click the big cookie you will get a random effect.<div class=\"warning\">But there is a 50% chance of you ascending.</div>")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,1,custImg])); Game.last.pool='prestige';
+			this.achievements.push(new Game.Upgrade('Cursedor',("Unlocks <b>cursedor</b>, which concentrates and converts your cookies clicked amount this ascension into a golden cookie; the more you clicked, the better effects the golden cookie will yield.")+'<q>Like Russian roulette, but for cookies.</q>',111111111111111111,[0,1,custImg])); Game.last.pool='prestige';
 			Game.Upgrades['Cursedor'].parents=[Game.Upgrades['Luminous gloves']]
 			Game.PrestigeUpgrades.push(Game.Upgrades['Cursedor'])
 			Game.last.posY=-810,Game.last.posX=-144
 
 			
-		    this.achievements.push(new Game.Upgrade('Cursedor [inactive]',("Activating this will give you a <b>random Effect</b> if you click the big cookie.<div class=\"warning\">But there is a 50% chance of you ascending every time you click the big cookie.</div>"),0,[0,1,custImg]));
+		    this.achievements.push(new Game.Upgrade('Cursedor [inactive]',("Activating this will spawn a golden cookie based on the amount of times you clicked the big cookie this ascension when you click the big cookie. Upon use, your cookies clicked stat will be reset and the golden cookie spawned yields effects based on the amount it consumed."),0,[0,1,custImg]));
 			Game.last.pool='toggle';Game.last.toggleInto='Cursedor [active]';
 
-			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, if you click the big cookie it will give you a random effect; it will also has a chance of you ascending.<br>Turning it off will revert those effects.</b>"),0,[0,1,custImg]));
+			this.achievements.push(new Game.Upgrade('Cursedor [active]',("The Cursor is currently active, and clicking the big cookie will reset your big cookies clicked amount and spawn a golden cookie. <br>Turning it off will revert those effects.</b>"),0,[0,1,custImg]));
 		    Game.last.pool='toggle';Game.last.toggleInto='Cursedor [inactive]';Game.last.timerDisplay=function(){if (!Game.Upgrades['Cursedor [inactive]'].bought) return -1; else return 1-Game.fps*60*60*60*60*60*60;};
 
 			this.achievements.push(Game.NewUpgradeCookie({name:'The ultimate cookie',desc:'These were made with the purest and highest quality ingredients, legend says: "whom has the cookie they shall become the most powerful baker.". No, this isn\'t just a normal cookie.',icon:[10,0],power:			20,	price:	999999999999999999999999999999999999999999999999999999999999999999999999999}));
@@ -2006,28 +2006,59 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.computeLumpTimes='+Game.computeLumpTimes.toString().replace('ipeAge/=2000;}','ipeAge/=2000;} Game.parseNewLumpUpgrades();'));//Adding the effect of the upgrade
 
 		decay.CursedorUses = 0;
+
+		//first number: absolute minimum clicks for that effect to spawn; seoncd number: the mult to click amount needed to gain another entry in the pool
+		decay.cursedorThresholdMap = {
+			'click frenzy': [600000, 2.5],
+			'cursed finger': [5000, 3],
+			'blood frenzy': [66666, 6],
+			'sugar frenzy': [50000, 10],
+			'sugar blessing': [10000, 3],
+			'building special': [200000, 5],
+			'cookie storm drop': [50, 15],
+			'blab': [2500000, 1.25],
+			'cookie storm': [10000, 8],
+			'clot': [6666, 6],
+			'ruin': [6666, 6],
+			'everything must go': [200, 25],
+			'Nasty goblins': [1000, 1000],
+			'Haggler\'s misery': [1000, 1000],
+			'Crafty pixies': [2500, 250],
+			'Haggler\'s luck': [2500, 250],
+			'free sugar lump': [2500000, 1.5],
+			'dragon harvest': [300000, 2.5],
+			'dragonflight': [111111, 11],
+			'frenzy': [7500, 7.5],
+			'multiply cookies': [7500, 7.5],
+			'failure': [10, 10]
+		}
+		decay.getCursedorEffAdd = function(eff, clicks) {
+			if (clicks < decay.cursedorThresholdMap[eff][0]) { return 0; }
+			return randomFloor(Math.log(clicks / decay.cursedorThresholdMap[eff][0]) / Math.log(decay.cursedorThresholdMap[eff][1]));
+		}
 		Game.registerHook('click',function() {
 			if (Game.Has("Cursedor [inactive]")) {
-                decay.CursedorUses++
-				if (Math.random()<1/2) { 
-					Game.Ascend(1)
-				}  
-				var newShimmer=new Game.shimmer('golden');
-				var choices=[];
+                decay.CursedorUses++;
 				Math.seedrandom(Game.seed+'/'+decay.CursedorUses);
-				choices.push('frenzy','multiply cookies');
-				if (Math.random()<0.1 && Game.cookieClicks>=100000) choices.push('click frenzy');
-				if (Math.random()<0.1 && Game.cookieClicks>=1000) choices.push('cursed finger','clot');
-				if (Math.random()<0.1 && Game.cookieClicks>=10000) choices.push('blood frenzy','ruin cookies');
-				if (Math.random()<0.001 && Game.cookieClicks>=10000) choices.push('sugar frenzy','sugar blessing');
-				if (Math.random()<0.001 && Game.cookieClicks>=500000) choices.push('Haggler\'s luck','Crafty pixies');
-				if (Math.random()<0.01 && Game.cookieClicks>=25000) choices.push('Nasty goblins','Haggler\'s misery');
-				if (Game.BuildingsOwned>=10 && Game.cookieClicks>=1000000 && Math.random()<0.25) choices.push('building special');
-				if (Math.random()<0.15 && Game.cookieClicks>=50) choices=['cookie storm drop'];
-				if (Math.random()<0.0001 && Game.cookieClicks>=1000) choices.push('free sugar lump');
-				newShimmer.force=choose(choices);
-				if (newShimmer.force=='cookie storm drop')
+				var pool=[];
+
+				for (let i in Object.keys(decay.cursedorThresholdMap) {
+					for (let ii = 0; ii < decay.getCursedorEffAdd(i, Game.cookieClicks); ii++) {
+						pool.push(i);
+					}
+				}
+				if (pool.length > 0) { 
+					var toforce = choose(pool);
+				} else {
+					var toforce = 'failure';
+				}
+				if (toforce == 'building special' && Game.BuildingsOwned<10) { toforce = 'failure'; }
+				if (toforce == 'click frenzy' && Game.hasBuff('Dragonflight')) { toforce = 'failure'; }
+				if (toforce != 'failure') { var newShimmer = new Game.shimmer('golden'); newShimmer.force = toforce; Game.Popup('<div style="font-size:80%;">'+loc("Successful click! Click count reset.")+'</div>',Game.mouseX,Game.mouseY); } else {
+					Game.Popup('<div style="font-size:80%;">'+loc("Failed due to not enough clicks! Click count reset.")+'</div>',Game.mouseX,Game.mouseY);
+				}
 				Game.cookieClicks=0;
+				Math.seedrandom();
 			}
 		});
 		allValues('init completion');
