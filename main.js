@@ -308,11 +308,11 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('creation');
 				if (godLvl == 1) {
-					Game.gainBuff('creation storm', 4, 0.32);
+					Game.gainBuff('creation storm', 4, 0.48);
 				} else if (godLvl == 2) {
-					Game.gainBuff('creation storm', 16, 0.16);
+					Game.gainBuff('creation storm', 16, 0.24);
 				} else if (godLvl == 3) {
-					Game.gainBuff('creation storm', 64, 0.08);
+					Game.gainBuff('creation storm', 64, 0.12);
 				}
 			}
 		}
@@ -1655,9 +1655,9 @@ Game.registerMod("Kaizo Cookies", {
 				addLoc('-%1% decay for %2 seconds.');
 				addLoc('Purifying decay grants a buff that weakens decay propagation.');
 				temp.gods['creation'].descBefore='<span class="green">'+loc('Purifying decay grants a buff that weakens decay propagation.')+'</span>';
-				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [32, 4])+'</span>';
-				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [16, 16])+'</span>';
-				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [8, 64])+'</span>';
+				temp.gods['creation'].desc1='<span class="green">'+loc('-%1% decay for %2 seconds.', [48, 4])+'</span>';
+				temp.gods['creation'].desc2='<span class="green">'+loc('-%1% decay for %2 seconds.', [24, 16])+'</span>';
+				temp.gods['creation'].desc3='<span class="green">'+loc('-%1% decay for %2 seconds.', [12, 64])+'</span>';
 
 				addLoc('Decay propagation rate -%1%.');
 				temp.gods['asceticism'].desc1='<span class="green">'+loc("+%1% base CpS.",15)+' '+loc('Decay propagation rate -%1%.', 30)+'</span>';
