@@ -1720,7 +1720,8 @@ Game.registerMod("Kaizo Cookies", {
 				newList.push('News : "check the pins" crowned the phrase of the year!');
 				newList.push('nEWS: aLL CAPITAL LETTERS REVERSED IN FREAK MAGIC ACCIDENT!');
 				newList.push('News: Modders make "custom news tickers", public baffled at thought of corruption in the news.');
-				newList.push('News: News: Words Words doubled doubled after after player player purchases purchases a a tiered tiered upgrade upgrade')
+				newList.push('News: News: Words Words doubled doubled after after player player purchases purchases a a tiered tiered upgrade upgrade');
+				newList.push('News: 8 disappearances reported in the past minute, officials blame mysterious "white vans" besides "empty fields with weird plants".')
             }
 			
 			if (Game.elderWrath==1) { newList.push(choose([
@@ -1797,6 +1798,17 @@ Game.registerMod("Kaizo Cookies", {
 				'News: new legislation suggests that all cookie-producing Factories be repurposed to '+(Game.Objects['Factory'].amount>250?'planet':'warehouse')+'-producing factories.'
 			]); }
 
+			if (Game.Objects['Bank'].amount>25) { newList = newList.concat([
+				'News: economists worldwide predict imminent economic collapse, saying that "if cookie prices ever drop below 1e-'+Math.floor(Math.max(Math.log10(Game.cookiesEarned) - 2, 0))+'..."'
+			]); }
+			if (Game.Objects['Bank'].amount>50) { newList = newList.concat([
+				'News: it currently costs 10 cookies to store 3 cookies. Because of this, your banks are closing up.'
+			]); }
+			if (Game.Objects['Bank'].amount>100) { newList = newList.concat([
+				'News: IN THIS ECONOMY??',
+				'News: stock prices reach record highs after the destruction of the Great Space Cookie Patch! Traders hail in delight!'
+			]); }
+
 			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
 				'News: As it turns out, there is 1e200,405,192,204 times more antimatter than matter. Expert found cause to be "dimensions", whatever that means.',
 				'News: Experts advise against turning antimatter to cookies, reason being "there is already way too much cookies, and antimatter can help clear out some cookies"'
@@ -1805,7 +1817,8 @@ Game.registerMod("Kaizo Cookies", {
 				'News: if there is so much cookies, why is there so little anticookies?'
 			]); }
 			if (Game.Objects['Antimatter condenser'].amount>100) { newList = newList.concat([
-				'[news destroyed by antimatter]'
+				'[news destroyed by antimatter]',
+				'?secnetnesitna eht era erehw ,secnetnes hcum os si ereht fi :sewN'
 			]); }
 
 			if (Game.Objects['Prism'].amount>25) { newList = newList.concat([
@@ -1841,13 +1854,23 @@ Game.registerMod("Kaizo Cookies", {
 				'News: No, Fractal engines can\'t replicate into a larger copy of itself, either.'
 			]); }
 
+			var characters = ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m','1','2','3','4','5','6','7','8','9','0','Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M']			var r = function() {
+			var r = function(num) {
+				var str = '';
+				for (let i = 0; i < num; i++) {
+					str += choose(characters);
+				}
+				return str;
+			}
+
 			if (Game.Objects['Javascript console'].amount>25) { newList = newList.concat([
 				'News: if (me.when == "change code") { console.log(NaN); }',
 				'News: programmers complain that they "can\'t see a thing" after using the new "all-natural sunlight" displays.'
 			]); }
 			if (Game.Objects['Javascript console'].amount>50) { newList = newList.concat([
 				'News: this code is too unsightreadable.',
-				'undefined'
+				'undefined',
+				'News: '+characters(Math.floor(Math.random() * 70) + 1)
 			]); }
 			if (Game.Objects['Javascript console'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList = newList.concat([
 				'News: price of LED skyrockets with the introduction of 1e18 x 1.8e18 wide screens.',
