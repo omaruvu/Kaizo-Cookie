@@ -230,7 +230,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.updateMomentum = function(m) {
 			if (Game.Has('Purity vaccines')) { return m; }
-			var mult = decay.getMomentumMult() * Math.pow(1 + decay.incMult, 5) / (20 * Game.fps);
+			var mult = decay.getMomentumMult() * Math.pow(1 + decay.incMult, 5) * Math.pow(Math.max(decay.gen, 1), Game.Has('Unshackled Purity')?0.3:0.4) / (20 * Game.fps);
 			if (Game.pledgeT > 0) { mult *= 2; }
 			m += (Math.log2((m + 1)) * Math.pow(decay.haltToMomentumMult, Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor)) / Math.log2(decay.momentumIncFactor)) * mult;
 			
