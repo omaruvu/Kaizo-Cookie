@@ -1780,13 +1780,34 @@ Game.registerMod("Kaizo Cookies", {
 			]); }
 
 			if (Game.Objects['Bank'].amount>25) { newList = newList.concat([
-				'News: Economists predict an imminent worldwide economic collapse. Conclusion is that there is too much cookies and too little goods.'
+				'News: economists predict an imminent worldwide economic collapse. Conclusion is that there is too much cookies and too little goods.'
 			]); }
 			if (Game.Objects['Bank'].amount>50) { newList = newList.concat([
 				'News: Money. Money. Money. Money. M-'
 			]); }
 			if (Game.Objects['Bank'].amount>100) { newList = newList.concat([
 				'News: <span style="font-size: 25px">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>'
+			]); }
+
+			if (Game.Objects['Temple'].amount>25) { newList = newList.concat([
+				'News: new religion prominent: doughism. It advocates for the eradication of all cookies in the universe.'
+			]); }
+			if (Game.Objects['Temple'].amount>50) { newList = newList.concat([
+				'News: doughism is growing! Survey suggests that there is currently about '+Beautify(1231498 + Math.pow(Game.Objects['Temple'].amount, 10), 0)+' doughists on Earth.'
+			]); }
+			if (Game.Objects['Temple'].amount>100) { newList = newList.concat([
+				'News: doughists are uprising! Massive mountains of cookies are currently being slowly incinerated by big flamethrowers and acid sprayers.'
+			]); }
+
+			if (Game.Objects['Wizard tower'].amount>25) { newList = newList.concat([
+				'News: something bad happened in FREAK MAGIC CATASTROPHE!!!!! '
+			]); }
+			if (Game.Objects['Wizard tower'].amount>50) { newList = newList.concat([
+				'News: war rages on between cookie magic and wrinkly magic. We hope that the wrinklers win.',
+				'News: experts around the world unanimously agree that 57 is the best number. Wait, what is a "FtHoF"?'
+			]); }
+			if (Game.Objects['Wizard tower'].amount>100) { newList = newList.concat([
+				'News: the conflict between spell-casting and incantation-casting continues. Sounds like nonsense.'
 			]); }
 
 			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
