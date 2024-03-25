@@ -1366,8 +1366,8 @@ Game.registerMod("Kaizo Cookies", {
 				var gardenMutsStr = selectStatement(M.logic.toString(), M.logic.toString().indexOf('for (var loop=0;loop<loops;loop++)'), 0); 
 				var gardenMutsStrNew = gardenMutsStr.replace('var muts=M.getMuts(neighs,neighsM);', 'var muts=M.getMuts(neighs,neighsM); if (M.forceMuts && muts.length > 0) { loop--; } else if (M.forceMuts) { break; }').replace('if (list.length>0) M.plot[y][x]=[M.plants[choose(list)].id+1,0];', 'if (list.length>0) { M.plot[y][x]=[M.plants[choose(list)].id+1,0]; break; }');
 				eval('M.logic='+M.logic.toString().replace(gardenMutsStr, gardenMutsStrNew).replace('M.toCompute=true;', 'M.toCompute=true; M.forceMuts = false;'));
-				addLoc('Click to refill your soil timer and trigger <b>1</b> plant growth tick with a <b>guaranteed mutation</b> on any tile that can have a mutation, for the price of %1.');
-				eval('M.refillTooltip='+M.refillTooltip.toString().replace(`with <b>x%1</b> spread and mutation rate for %2.",[3,'<span class="price lump">'+loc("%1 sugar lump",LBeautify(1))+'</span>']`, `with a <b>guaranteed mutation</b> on any tile that can have a mutation, for the price of %1.",['<span class="price lump">'+loc("%1 sugar lump",LBeautify(1))+'</span>']`));
+				addLoc('Click to refill your soil timer and trigger <b>1</b> plant growth tick with a <b>guaranteed mutation</b> on <b>every</b> tile that can have a mutation, for the price of %1.');
+				eval('M.refillTooltip='+M.refillTooltip.toString().replace(`with <b>x%1</b> spread and mutation rate for %2.",[3,'<span class="price lump">'+loc("%1 sugar lump",LBeautify(1))+'</span>']`, `with a <b>guaranteed mutation</b> on <b>every</b> tile that can have a mutation, for the price of %1.",['<span class="price lump">'+loc("%1 sugar lump",LBeautify(1))+'</span>']`));
 
 				eval('M.buildPanel='+M.buildPanel.toString().replace('1000*60*10', '1000*60*3'));
 				M.buildPanel();
