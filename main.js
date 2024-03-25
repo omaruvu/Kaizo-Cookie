@@ -1138,7 +1138,7 @@ Game.registerMod("Kaizo Cookies", {
 			gp.spellsById.push(gp.spells['liquify politician']);
 			gp.spells['manifest spring'] = {
 				name: loc('Manifest spring'),
-				desc: loc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)', [20, 2]),
+				desc: loc('Decay propagation is %1% slower for the next %2 minutes.<br>(this stacks with itself multiplicatively)', [25, 2]),
 				failDesc: loc('Decay propagation is %1% faster for the next %2 minutes.', [50, 2]),
 				icon: [6, 0, custImg],
 				costMin: 10,
@@ -1146,9 +1146,9 @@ Game.registerMod("Kaizo Cookies", {
 				id: 10,
 				win: function() {
 					if (!Game.hasBuff('Unending flow')) {
-						Game.gainBuff('unending flow', 120, 0.2);
+						Game.gainBuff('unending flow', 120, 0.25);
 					} else {
-						Game.hasBuff('Unending flow').arg1 = Game.hasBuff('Unending flow').arg1 + (0.2 * (1 - Game.hasBuff('Unending flow').arg1));
+						Game.hasBuff('Unending flow').arg1 = Game.hasBuff('Unending flow').arg1 + (0.25 * (1 - Game.hasBuff('Unending flow').arg1));
 					}
 					Game.Popup('<div style="font-size:80%;">'+loc("The water shall flow!")+'</div>',Game.mouseX,Game.mouseY);
 				},
