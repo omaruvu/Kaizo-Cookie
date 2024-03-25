@@ -239,6 +239,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.getTickspeed = function() {
 			var tickSpeed = 1;
 			tickSpeed *= decay.getTickspeedMultFromMomentum();
+			tickSpeed *= Game.eff('decayRate');
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
@@ -261,6 +262,7 @@ Game.registerMod("Kaizo Cookies", {
 			//getTickspeed but for momentum
 			var tickSpeed = 1;
 			tickSpeed *= (1 - Math.pow(0.9, Math.log10(Math.max(Game.cookiesEarned - 1000000, 1))));
+			tickSpeed *= Game.eff('decayMomentum');
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('asceticism');
@@ -619,6 +621,7 @@ Game.registerMod("Kaizo Cookies", {
 			d *= Math.pow(0.9985, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
 			d *= Math.pow(0.99825, Math.max(Math.pow(decay.getBuildingContribution(), 0.33) - 10, 0));
 			d *= Math.pow(0.9975, Math.log2(Math.max(Game.lumpsTotal, 1)));
+			d *= Math.pow(0.99825, Math.log10(Game.cookieClicks));
 			d *= Math.pow(0.999, Math.pow(Game.dragonLevel, 0.6));
 			d *= Math.pow(0.9999, Math.log2(Math.max(Date.now() - Game.startDate - 100000, 1))); //hopefully not too bruh
 			if (Game.Has('Lucky day')) { d *= 0.995; }
