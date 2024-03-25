@@ -780,7 +780,7 @@ Game.registerMod("Kaizo Cookies", {
 		allValues('decay effects');
 		
 		//ways to purify/refresh/stop decay
-		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "") { decay.purifyAll(2.5, 0.5, 5); decay.stop(1); }'));
+		eval('Game.shimmer.prototype.pop='+Game.shimmer.prototype.pop.toString().replace('popFunc(this);', 'popFunc(this); if (this.force == "" && !this.noCount) { decay.purifyAll(2.5, 0.5, 5); decay.stop(1); }'));
 		decay.clickBCStop = function() {
 			decay.stop(0.5);
 		}
@@ -1894,7 +1894,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Objects['Javascript console'].amount>50) { newList = newList.concat([
 				'News: this code is too unsightreadable.',
 				'undefined',
-				'News: '+r(Math.floor(Math.random() * 75) + 1);
+				'News: '+r(Math.floor(Math.random() * 75) + 1)
 			]); }
 			if (Game.Objects['Javascript console'].amount>100 && Game.Objects['Time machine'].amount > 0) { newList = newList.concat([
 				'News: price of LED skyrockets with the introduction of 1e18 x 1.8e18 wide screens.',
