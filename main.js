@@ -783,7 +783,8 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		eval('Game.updateBuffs='+Game.updateBuffs.toString().replace('buff.time--;','if (!decay.exemptBuffs.includes(buff.type.name)) { buff.time -= decay.getBuffLoss(); } else { buff.time--; }'));
 
-		Game.registerHook('cps', function(m) { return m * (2 + 14 * Math.pow(1 - decay.incMult, 12)); }); //octuples cps to make up for the decay
+		Game.registerHook('cps', function(m) { var mult = m * (2 + 14 * Math.pow(1 - decay.incMult, 12)); Game.globalCpsMult *= mult; return mult; }); //octuples cps to make up for the decay
+		eval('Game.CalculateGains='+Game.CalculateGains.toString().replace('Game.globalCpsMult=mult;', 'Game.globalCpsMult*=mult;').replace(`if (Game.Has('Occult obstruction')) mult*=0;`, `if (Game.Has('Occult obstruction')) { mult*=0; } Game.globalCpsMult = 1;`))
 
 		allValues('decay effects');
 		
