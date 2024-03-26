@@ -770,7 +770,7 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 			if (colors.length > 0) {
-				console.log(colors);
+				console.log(result);
 				return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
 			} else {
 				return '';
