@@ -724,7 +724,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			return '';
 		}
-		eval('Game.Draw='+Game.Draw.toString().replace(`class="wrinkled"':'')+'>'`, `class="wrinkled"':'')+' style="'+decay.cookiePsAnim()+'">'`));
+		eval('Game.Draw='+Game.Draw.toString().replace(`class="wrinkled"':'')+'>'`, `class="wrinkled"':'')+' style="'+decay.cookiesPsAnim()+'">'`));
 		
 		//decay's effects
 		Game.registerHook('logic', decay.updateAll);
