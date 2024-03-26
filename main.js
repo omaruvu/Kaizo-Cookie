@@ -761,7 +761,7 @@ Game.registerMod("Kaizo Cookies", {
 				var frac = Math.pow(decay.times.sincePledgeEnd / (2 * Game.fps), 1.5);
 				colors.push(colorCycleFrame([51, 255, 68], [51, 255, 68, 0], frac));
 			}
-			var result = avgColors(colors, false);
+			var result = avgColors(colors, true);
 			if (result[3] < 1) {
 				if (Game.cpsSucked == 0) {
 					result = avgColors([result, [255, 255, 255, 1 - result[3]]], false);
