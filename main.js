@@ -85,9 +85,9 @@ function avgColors(arr) {
 	if (arr.length == 0) { return [0, 0, 0]; }
 	var toReturn = [0, 0, 0];
 	for (let i in arr) {
-		toReturn[0] += arr[0];
-		toReturn[1] += arr[1];
-		toReturn[2] += arr[2];
+		toReturn[0] += arr[i][0];
+		toReturn[1] += arr[i][1];
+		toReturn[2] += arr[i][2];
 	}
 	return [toReturn[0] / arr.length, toReturn[1] / arr.length, toReturn[2] / arr.length];
 }
