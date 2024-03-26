@@ -232,7 +232,8 @@ Game.registerMod("Kaizo Cookies", {
 				boost: 0,
 				autoclicker: 0,
 				garden: 0
-			}
+			},
+			widget: 1
 		}
 
 		//decay core
@@ -2262,12 +2263,17 @@ Game.registerMod("Kaizo Cookies", {
 			str += decay.times[i];
 			str += ',';
 		}
+		str = str.slice(0, str.length - 1) + '/';
+		for (let i in decay.prefs) {
+			if (i != 'preventNotifs') { str += decay.prefs[i]; str += ','; }
+		}
+		str = str.slice(0, str.length - 1);
         return str;
     },
     load: function(str){
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
-		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime + banked purification, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, momentum (this got added too late), cursedorUses, times]
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime + banked purification, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs, momentum (this got added too late), cursedorUses, times, prefs (without preventNotifs)]
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
@@ -2280,14 +2286,17 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			allValues('load; upgrades and decay basic');
 			if (isv(strIn[20])) { decay.gen = parseFloat(strIn[20]); }
+			
 			strIn = str[3].split(',');
 			if (isv(strIn[0])) { decay.halt = parseFloat(strIn[0]); }
 			if (isv(strIn[1])) { decay.haltOvertime = parseFloat(strIn[1]); }
 			if (isv(strIn[2])) { decay.bankedPurification = parseFloat(strIn[2]); }
+			
 			strIn = str[4].split(',');
 			if (isv(strIn[0])) { Game.pledgeT = parseFloat(strIn[0]); } else { Game.pledgeT = 0; }
 			if (isv(strIn[1])) { Game.pledgeC = parseFloat(strIn[1]); }
 			if (Game.pledgeT > 0 || Game.pledgeC > 0) { Game.Upgrades['Elder Pledge'].bought = 1; } else { Game.Upgrades['Elder Pledge'].bought = 0; }
+			
 			strIn = str[5].split(',');
 			allValues('load; pledge and halt');
 			if (isv(strIn[0])) { Game.veilHP = parseFloat(strIn[0]); }
@@ -2332,6 +2341,13 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in decay.times) {
 				if (isv(strIn[counter])) { decay.times[i] = parseInt(strIn[counter]); }
 				counter++;
+			}
+
+			strIn = str[10].split(',');
+			counter = 0;
+			for (let i in decay.prefs) {
+				if (isv(strIn[counter]) && i != 'preventNotifs') { decay.prefs[i] = parseInt(strIn[counter]); }
+				if (i != 'preventNotifs') { counter++; }
 			}
 		} else {
 			str = str[0];
