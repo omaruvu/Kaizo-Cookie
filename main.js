@@ -81,6 +81,16 @@ function geometricMean(arr) {
 	sum /= Math.max(1, amountValid);
 	return Math.exp(sum) //wtf is an antilog
 }
+function avgColors(arr) {
+	if (arr.length == 0) { return [0, 0, 0]; }
+	var toReturn = [0, 0, 0];
+	for (let i in arr) {
+		toReturn[0] += arr[0];
+		toReturn[1] += arr[1];
+		toReturn[2] += arr[2];
+	}
+	return [toReturn[0] / arr.length, toReturn[1] / arr.length, toReturn[2] / arr.length];
+}
 function colorCycleFrame(prev, post, fraction) {
 	//"prev" and "post" must be arrays with 3 numbers for rgb
 	return [prev[0] * (1 - fraction) + post[0] * fraction, prev[1] * (1 - fraction) + post[1] * fraction, prev[2] * (1 - fraction) + post[2] * fraction];
@@ -166,7 +176,10 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.pastCapPow = 0.25; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.bankedPurification = 0; //multiplier to mult and close 
-		decay.timeSinceLastPurify = 0; //unlike decay.momentum, this is very literal and cant really be manipulated like it
+		decay.times = {
+			sinceLastPurify: 0, //unlike decay.momentum, this is very literal and cant really be manipulated like it
+			sincePledgeEnd: 0,
+		};
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
 		decay.purifyMomentumMult = 2; //multiplied to the amount decrease; deprecated
 		decay.haltReverseMomentumFactor = 0.99; //each point of halt called when decay.stop multiplies the momentum with this amount
@@ -238,8 +251,10 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Unlock('Elder Pledge');
 				}
 			}
-			decay.timeSinceLastPurify++;
-			if (decay.timeSinceLastPurify > 30) { decay.bankedPurification += Game.auraMult('Fierce Hoarder') / (4 * Game.fps * Math.pow(1 + decay.bankedPurification, 0.5)); }
+			for (let i in decay.times) {
+				decay.times[i]++;
+			}
+			if (decay.times.sinceLastPurify > 30) { decay.bankedPurification += Game.auraMult('Fierce Hoarder') / (4 * Game.fps * Math.pow(1 + decay.bankedPurification, 0.5)); }
 			decay.gen = decay.mults[20];
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); decay.infReached = false; }
@@ -322,7 +337,7 @@ Game.registerMod("Kaizo Cookies", {
 				if (decay.purify(i, mult + decay.bankedPurification, 1 - Math.pow(1 / (1 + decay.bankedPurification), 0.5) * (1 - close), cap * (1 + decay.bankedPurification), u)) { decay.triggerNotif('purityCap'); }
 			}
 			decay.bankedPurification *= 0.5;
-			decay.timeSinceLastPurify = 0;
+			if (id !== 'pledge') { decay.times.sinceLastPurify = 0; }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('creation');
 				if (godLvl == 1) {
@@ -342,7 +357,7 @@ Game.registerMod("Kaizo Cookies", {
 				decay.refresh(i, to);
 			}
 			decay.momentum = 1;
-			decay.timeSinceLastPurify = 0;
+			decay.times.sinceLastPurify = 0;
 			Game.recalculateGains = 1;
 		}
 		//stands for "regain acceleration"
@@ -712,17 +727,36 @@ Game.registerMod("Kaizo Cookies", {
 
 		//decay visuals
 		decay.cookiesPsAnim = function() {
-			if (decay.timeSinceLastPurify < 40) {
-				var frac = Math.pow(decay.timeSinceLastPurify / 40, 0.75);
+			var colors = [];
+			if (decay.times.sinceLastPurify < 2 * Game.fps) {
+				var frac = Math.pow(decay.times.sinceLastPurify / (2 * Game.fps), 0.7);
 				if (Game.cpsSucked > 0) {
-					var result = colorCycleFrame([51, 255, 68], [255, 0, 0], frac);
-					return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
+					colors.push(colorCycleFrame([51, 255, 68], [255, 0, 0], frac));
 				} else {
-					var result = colorCycleFrame([51, 255, 68], [255, 255, 255], frac);
-					return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
+					colors.push(colorCycleFrame([51, 255, 68], [255, 255, 255], frac));
 				}
 			}
-			return '';
+			if (Game.pledgeT > 0) {
+				var frame = Math.floor(Game.pledgeT / (2 * Game.fps)) + Math.pow((Game.pledgeT / (2 * Game.fps)) - Math.floor(Game.pledgeT / (2 * Game.fps)), 0.5);
+				if (Math.floor(frame) % 2) { 
+					colors.push(colorCycleFrame([51, 255, 68], [42, 255, 225], (frame - Math.floor(frame)))); 
+				} else {
+					colors.push(colorCycleFrame([42, 255, 225], [51, 255, 68], (frame - Math.floor(frame)))); 
+				}
+			} else if (decay.times.sincePledgeEnd < 2 * Game.fps) {
+				var frac = Math.pow(decay.times.sinceLastPurify / (2 * Game.fps), 0.7);
+				if (Game.cpsSucked > 0) {
+					colors.push(colorCycleFrame([51, 255, 68], [255, 0, 0], frac));
+				} else {
+					colors.push(colorCycleFrame([51, 255, 68], [255, 255, 255], frac));
+				}
+			}
+			var result = avgColors(colors);
+			if (colors.length > 0) {
+				return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
+			} else {
+				return '';
+			}
 		}
 		eval('Game.Draw='+Game.Draw.toString().replace(`class="wrinkled"':'')+'>'`, `class="wrinkled"':'')+' style="'+decay.cookiesPsAnim()+'">'`));
 		
@@ -935,7 +969,7 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.UpdateGrandmapocalypse='+Game.UpdateGrandmapocalypse.toString()
 			 .replace('Game.elderWrath=1;', 'if (decay.gen > 1) { Game.Notify("Purification complete!", "You also gained some extra cps to act as buffer for the decay."); } else { Game.Notify("Purification complete!", ""); }')
 			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
-			 .replace(`Game.Unlock('Elder Pledge');`, '')
+			 .replace(`Game.Unlock('Elder Pledge');`, 'decay.times.sincePledgeEnd = 0;')
 			 .replace(`(Game.Has('Elder Pact') && Game.Upgrades['Elder Pledge'].unlocked==0)`, `(Game.Has('One mind') && Game.Upgrades['Elder Pledge'].unlocked==0)`)
 		);
 
@@ -2179,13 +2213,17 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		str += '/';
 		str += 'h,' + decay.momentum;
-        str += '/' + decay.CursedorUses;
+        str += '/' + decay.CursedorUses + '/';
+		for (let i in decay.times) {
+			str += decay.times[i];
+			str += ',';
+		}
         return str;
     },
     load: function(str){
 		//resetting stuff
 		console.log('Kaizo Cookies loaded. Save string: '+str);
-		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime + banked purification, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, momentum (this got added too late)]
+		str = str.split('/'); //results (current ver): [version, upgrades, decay mults, decay halt + overtime + banked purification, pledgeT + pledgeC, veilHP + veil status (on, off, or broken) + veilRestoreC + veilPreviouslyCollapsed, preventNotifs + firstNotif, momentum (this got added too late), cursedorUses, times]
 		if (str[0][0] == 'v') {
 			var version = getVer(str[0]);
 			for(let i=0;i<str[1].length;i += 2) { 
@@ -2244,6 +2282,13 @@ Game.registerMod("Kaizo Cookies", {
 			if (isv(strIn[1])) { decay.momentum = parseFloat(strIn[1]); }
 
             if (isv(str[8])) { decay.CursedorUses = parseInt(str[8]); }
+
+			strIn = str[9].split(',');
+			counter = 0;
+			for (let i in decay.times) {
+				if (isv(strIn[counter])) { decay.times[i] = parseInt(strIn[counter]); }
+				counter++;
+			}
 		} else {
 			str = str[0];
 			for(let i=0;i<this.achievements.length;i++) { //not using in because doesnt let you use i if it is greater than the array length
