@@ -319,6 +319,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			decay.bankedPurification *= 0.5;
 			decay.timeSinceLastPurify = 0;
+			if (id !== 'pledge') { decay.triggerCookiesPsAnim('purify'); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('creation');
 				if (godLvl == 1) {
@@ -713,6 +714,33 @@ Game.registerMod("Kaizo Cookies", {
 			100% { color: #fff; }
 		}
 		`);
+		injectCSS(`
+  		@keyframes flashGreenWrinkled { 
+	 		0% { color: #3f4; }
+			100% { color: #f00; }
+		}
+  		`);
+		injectCSS(`
+  		#cookiesPerSecond.purifying { 
+			animation: flashGreen 1.2s ease-in 0.25s 1;
+  		}
+  		`);
+		injectCSS(`
+  		#cookiesPerSecond.purifyingWithered { 
+			animation: flashGreenWrinkled 1.2s ease-in 0.25s 1;
+  		}
+  		`);
+		decay.triggerCookiesPsAnim(what) {
+			if (what == 'purify') {
+				l('cookiesPerSecond').classList.remove('purifying');
+				l('cookiesPerSecond').classList.remove('purifyingWithered');
+				if (Game.cpsSucked > 0) {
+					l('cookiesPerSecond').classList.add('purifyingWithered');
+				} else {
+					l('cookiesPerSecond').classList.add('purifying');
+				}
+			}
+		}
 		
 		//decay's effects
 		Game.registerHook('logic', decay.updateAll);
