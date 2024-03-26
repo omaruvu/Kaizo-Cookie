@@ -780,9 +780,9 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.veilOn() && Game.cpsSucked == 0) {
 				var frame = Math.pow(Game.T / (10 * sec), 0.4);
 				if (Math.floor(frame) % 2) { 
-					colors.push(colorCycleFrame([255, 236, 69, 0], [255, 236, 69, 0.25], (frame - Math.floor(frame)))); 
+					colors.push(colorCycleFrame([255, 236, 69, 0], [255, 236, 69, 0.5], (frame - Math.floor(frame)))); 
 				} else {
-					colors.push(colorCycleFrame([255, 236, 69, 0.25], [255, 236, 69, 0], (frame - Math.floor(frame)))); 
+					colors.push(colorCycleFrame([255, 236, 69, 0.5], [255, 236, 69, 0], (frame - Math.floor(frame)))); 
 				}
 			}
 			var result = avgColors(colors, true);
