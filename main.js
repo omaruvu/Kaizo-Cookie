@@ -81,6 +81,10 @@ function geometricMean(arr) {
 	sum /= Math.max(1, amountValid);
 	return Math.exp(sum) //wtf is an antilog
 }
+function colorCycleFrame(prev, post, fraction) {
+	//"prev" and "post" must be arrays with 3 numbers for rgb
+	return [prev[0] * (1 - fraction) + post[0] * fraction, prev[1] * (1 - fraction) + post[1] * fraction, prev[2] * (1 - fraction) + post[2] * fraction];
+}
 
 function allValues(checkpoint) {
 	if (!decay.DEBUG) { return false; }
@@ -319,7 +323,6 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			decay.bankedPurification *= 0.5;
 			decay.timeSinceLastPurify = 0;
-			if (id !== 'pledge') { decay.triggerCookiesPsAnim('purify'); }
 			if (Game.hasGod) {
 				var godLvl = Game.hasGod('creation');
 				if (godLvl == 1) {
@@ -708,39 +711,20 @@ Game.registerMod("Kaizo Cookies", {
 		allValues('decay ui and scaling');
 
 		//decay visuals
-		injectCSS(`
-  		@keyframes flashGreen { 
-	 		0% { color: #3f4; }
-			100% { color: #fff; }
-		}
-		`);
-		injectCSS(`
-  		@keyframes flashGreenWrinkled { 
-	 		0% { color: #3f4; }
-			100% { color: #f00; }
-		}
-  		`);
-		injectCSS(`
-  		#cookiesPerSecond.purifying { 
-			animation: flashGreen 1.2s ease-in 0.25s 1;
-  		}
-  		`);
-		injectCSS(`
-  		#cookiesPerSecond.purifyingWithered { 
-			animation: flashGreenWrinkled 1.2s ease-in 0.25s 1;
-  		}
-  		`);
-		decay.triggerCookiesPsAnim = function(what) {
-			if (what == 'purify') {
-				l('cookiesPerSecond').classList.remove('purifying');
-				l('cookiesPerSecond').classList.remove('purifyingWithered');
+		decay.cookiesPsAnim = function() {
+			if (decay.timeSinceLastPurify < 40) {
+				var frac = Math.pow(decay.timeSinceLastPurify / 40, 0.75);
 				if (Game.cpsSucked > 0) {
-					l('cookiesPerSecond').classList.add('purifyingWithered');
+					var result = colorCycleFrame([51, 255, 68], [255, 0, 0], frac);
+					return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
 				} else {
-					l('cookiesPerSecond').classList.add('purifying');
+					var result = colorCycleFrame([51, 255, 68], [255, 255, 255], frac);
+					return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
 				}
 			}
+			return '';
 		}
+		eval('Game.Draw='+Game.Draw.toString().replace(`class="wrinkled"':'')+'>'`, `class="wrinkled"':'')+' style="'+decay.cookiePsAnim()+'">'`));
 		
 		//decay's effects
 		Game.registerHook('logic', decay.updateAll);
