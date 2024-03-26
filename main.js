@@ -777,6 +777,14 @@ Game.registerMod("Kaizo Cookies", {
 				var frac = Math.pow(decay.times.sinceLastAmplify / (3 * sec), 1.5);
 				colors.push(colorCycleFrame([119, 30, 143], [119, 30, 143, 0], frac));
 			}
+			if (Game.veilOn() && Game.cpsSucked == 0) {
+				var frame = Math.pow(Game.T / (10 * sec), 0.4);
+				if (Math.floor(frame) % 2) { 
+					colors.push(colorCycleFrame([255, 236, 69, 0], [255, 236, 69, 0.25], (frame - Math.floor(frame)))); 
+				} else {
+					colors.push(colorCycleFrame([255, 236, 69, 0.25], [255, 236, 69, 0], (frame - Math.floor(frame)))); 
+				}
+			}
 			var result = avgColors(colors, true);
 			if (result[3] < 1) {
 				if (Game.cpsSucked == 0) {
@@ -1192,6 +1200,7 @@ Game.registerMod("Kaizo Cookies", {
 		Game.veilParticleSpawnBound = function(set) {
 			return 155 - 30 * (1 - Math.pow(Game.veilHP / Game.veilMaxHP, 0.75));
 		}
+		/*btw, did you know that all the code related is made by "c u r s e d s  l i v e r"? Plus more!*/
 		veilDraw = veilDraw.replace('ctx.globalAlpha=1;', 'ctx.globalAlpha=Game.veilOpacity();');
 		veilDraw = veilDraw.replace("ctx.globalCompositeOperation='source-over';", "ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';");
 		var veilParticlesOrigin = selectStatement(veilDraw, veilDraw.indexOf('for (i=0;i<6;i++)'));
@@ -1200,8 +1209,7 @@ Game.registerMod("Kaizo Cookies", {
 		veilParticles = veilParticles.replace('var t=Game.T+i*15;', 'var t=Game.T+i*Math.round((90 / Game.veilParticleQuantity(set)));');
 		veilParticles = veilParticles.replace('var a=(Math.floor(t/30)*30*6-i*30)*0.01;', 'var a=(Math.floor(t/30)*30*6-i*30)*Game.veilRevolveFactor(set);');
 		veilParticles = veilParticles.replace('var size=32*(1-Math.pow(r*2-1,2));', 'var size=Game.veilParticleSizeMax(set)*(1-Math.pow(r*2-1,2));');
-		veilParticles = veilParticles.
-		replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(Game.veilParticleSpawnBound(set) - Game.veilParticleSpeed(set) * Math.cos(r));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(Game.veilParticleSpawnBound(set) - Game.veilParticleSpeed(set) * Math.sin(r));');
+		veilParticles = veilParticles.replace('var xx=x+Math.sin(a)*(110+r*16);', 'var xx=x+Math.sin(a)*(Game.veilParticleSpawnBound(set) - Game.veilParticleSpeed(set) * Math.cos(r));').replace('var yy=y+Math.cos(a)*(110+r*16);', 'var yy=y+Math.cos(a)*(Game.veilParticleSpawnBound(set) - Game.veilParticleSpeed(set) * Math.sin(r));');
 		veilDraw = veilDraw.replace(veilParticlesOrigin, 'var set = 0; '+veilParticles+'; set = 1; '+veilParticles+'; set = 2; '+veilParticles+'; set = 3; '+veilParticles);
 		eval('Game.DrawBackground='+Game.DrawBackground.toString().replace(veilDrawOrigin, veilDraw));
 
