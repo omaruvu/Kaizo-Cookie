@@ -196,7 +196,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.times = {
 			sinceLastPurify: 100, //unlike decay.momentum, this is very literal and cant really be manipulated like it
 			sincePledgeEnd: 100,
-			sinceLastAmplify: 200,
+			sinceLastAmplify: 200
 		};
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
 		decay.purifyMomentumMult = 2; //multiplied to the amount decrease; deprecated
@@ -403,6 +403,7 @@ Game.registerMod("Kaizo Cookies", {
 			for (let i in decay.mults) {
 				decay.amplify(i, mult, anticlose);
 			}
+			decay.times.sinceLastAmplify = 0;
 		}
  		decay.get = function(buildId) {
 			return decay.mults[buildId];
@@ -755,21 +756,26 @@ Game.registerMod("Kaizo Cookies", {
 		//decay visuals
 		decay.cookiesPsAnim = function() {
 			var colors = [];
-			if (decay.times.sinceLastPurify < 2 * Game.fps) {
-				var frac = Math.pow(decay.times.sinceLastPurify / (2 * Game.fps), 0.7);
+			var sec = Game.fps;
+			if (decay.times.sinceLastPurify < 3 * sec) {
+				var frac = Math.pow(decay.times.sinceLastPurify / (3 * sec), 0.7);
 				colors.push(colorCycleFrame([51, 255, 68], [51, 255, 68, 0], frac));
 			}
 			if (Game.pledgeT > 0) {
-				var frame = Math.floor(Game.pledgeT / (2 * Game.fps)) + Math.pow((Game.pledgeT / (2 * Game.fps)) - Math.floor(Game.pledgeT / (2 * Game.fps)), 0.5);
+				var frame = Math.floor(Game.pledgeT / (2 * sec)) + Math.pow((Game.pledgeT / (2 * sec)) - Math.floor(Game.pledgeT / (2 * sec)), 0.5);
 				if (Math.floor(frame) % 2) { 
 					colors.push(colorCycleFrame([51, 255, 68], [42, 255, 225], (frame - Math.floor(frame)))); 
 				} else {
 					colors.push(colorCycleFrame([42, 255, 225], [51, 255, 68], (frame - Math.floor(frame)))); 
 				}
 			}
-			if (decay.times.sincePledgeEnd < 2 * Game.fps) {
-				var frac = Math.pow(decay.times.sincePledgeEnd / (2 * Game.fps), 1.5);
+			if (decay.times.sincePledgeEnd < 3 * sec) {
+				var frac = Math.pow(decay.times.sincePledgeEnd / (3 * sec), 1.5);
 				colors.push(colorCycleFrame([51, 255, 68], [51, 255, 68, 0], frac));
+			}
+			if (decay.times.sinceLastAmplify < 5 * sec) {
+				var frac = Math.pow(decay.times.sinceLastAmplify / (3 * sec), 1.5);
+				colors.push(colorCycleFrame([119, 30, 143], [119, 30, 143, 0], frac));
 			}
 			var result = avgColors(colors, true);
 			if (result[3] < 1) {
@@ -780,7 +786,6 @@ Game.registerMod("Kaizo Cookies", {
 				}
 			}
 			if (colors.length > 0) {
-				console.log(result);
 				return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
 			} else {
 				return '';
@@ -1155,7 +1160,7 @@ Game.registerMod("Kaizo Cookies", {
 				Game.veilRestoreC = Game.getVeilCooldown();
 				Game.veilPreviouslyCollapsed = true;
 				//need to fix this at some point to make it actually reflect the amount of decay it absorbed
-				decay.purifyAll(Math.pow(Game.veilHP / Game.veilMaxHP, Game.veilAbsorbFactor * Game.getVeilReturn()), 0, 1);
+				decay.amplifyAll(Math.pow(Game.veilMaxHP / Game.veilHP, Game.veilAbsorbFactor * Game.getVeilReturn()), 0, 1);
 				Game.Notify('Veil collapse!', 'Your Shimmering Veil collapsed.', [30, 5]);
 				PlaySound('snd/spellFail.mp3',1);
 			}
@@ -1229,7 +1234,7 @@ Game.registerMod("Kaizo Cookies", {
 					Game.Popup('<div style="font-size:80%;">'+loc("Corruption cleared!")+'</div>',Game.mouseX,Game.mouseY);
 				},
 				fail: function() {
-					decay.purifyAll(0.1, -0.5, 1);
+					decay.amplifyAll(10, 0.5);
 					Game.Popup('<div style="font-size:80%;">'+loc("Backfire! Corruption intensified!")+'</div>',Game.mouseX,Game.mouseY);
 				}
 			}
