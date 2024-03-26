@@ -1705,35 +1705,6 @@ Game.registerMod("Kaizo Cookies", {
 			var newList = [];
 			var name = Game.bakeryName;
 			//add your new messages here
-            if (Math.random()<0.001)
-            {
-                newList.push('<q>'+"JS is the best coding language."+'</q><sig>'+"no one"+'</sig>');
-				newList.push('News : aleph reference REAL!');
-				newList.push('News : "Say NO to ecm!" said protester.');
-				newList.push('News : person called "rice" fails to execute a "combo", whatever that is.');
-				newList.push('News : ticker broken, please insert another click.');
-            }
-            if (Math.random()<0.01)
-            {  
-                newList.push('News : ascend at 365.');
-				newList.push('News : Gone too far, or not enough? Protests rising against "intense competition for seemingly boring stuff."');
-				newList.push('News : it was discovered that the '+name+' is actually a-');
-				newList.push('News : Cookie Hermits think of new recipes, locals are shocked: "Taste like grass."');
-				newList.push('News : crazed citizen quits job and leaves family to "grind ascends"');
-				if (Game.Has('Cookie egg')) newList.push('<q>'+"Give me food master."+'</q><sig>'+"krumblor"+'</sig>');
-				newList.push('News : ancient hieroglyphs deciphered to resemble 365 cookies of a heavenly origin. "We\'re not sure what that means," ponder scientists.');
-				newList.push('News : local news stations overrun by suggestions: "Didnt know modding was this annoying."');
-                newList.push('News : you should grail.');
-				newList.push('News : encyclopaedia\'s head editor denies allegations that he is a “daddy”, says to the public “stop calling me that”.');
-				newList.push('News : hybrid human still keeps to the tradition of calling the head editor "daddy", refuses to take bribes.');
-				newList.push('News : time manipulation growing old for the fiercely competitive baker industry, researchers pursue ways of the future by predicting ahead. "Everything is pre-determined, if you think about it."');
-				if ((Game.AchievementsOwned==622)) newList.push('News : you did it, you can go outside now.');
-				newList.push('News : "check the pins" crowned the phrase of the year!');
-				newList.push('nEWS: aLL CAPITAL LETTERS REVERSED IN FREAK MAGIC ACCIDENT!');
-				newList.push('News: Modders make "custom news tickers", public baffled at thought of corruption in the news.');
-				newList.push('News: News: Words Words doubled doubled after after player player purchases purchases a a tiered tiered upgrade upgrade');
-				newList.push('News: 8 disappearances reported in the past minute, officials blame mysterious "white vans" besides "empty fields with weird plants".')
-            }
 			
 			if (Game.elderWrath==1) { newList.push(choose([
 				'News : the elders are rioting, they are destroying a nearby factory!'
@@ -1936,6 +1907,43 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Objects['Factory'].amount>0) newList.push(choose([
 				'News : competitor involved in destroying equipment scandal.'
 			]));
+
+			var buildNewList = [];
+
+			for (let i in newList) {
+				if (Math.random() < 0.2) { buildNewList.push(newList[i]); }
+			}
+			newList = buildNewList;
+
+			if (Math.random()<0.001)
+            {
+                newList.push('<q>'+"JS is the best coding language."+'</q><sig>'+"no one"+'</sig>');
+				newList.push('News : aleph reference REAL!');
+				newList.push('News : "Say NO to ecm!" said protester.');
+				newList.push('News : person called "rice" fails to execute a "combo", whatever that is.');
+				newList.push('News : ticker broken, please insert another click.');
+            }
+            if (Math.random()<0.01)
+            {  
+                newList.push('News : ascend at 365.');
+				newList.push('News : Gone too far, or not enough? Protests rising against "intense competition for seemingly boring stuff."');
+				newList.push('News : it was discovered that the '+name+' is actually a-');
+				newList.push('News : Cookie Hermits think of new recipes, locals are shocked: "Taste like grass."');
+				newList.push('News : crazed citizen quits job and leaves family to "grind ascends"');
+				if (Game.Has('Cookie egg')) newList.push('<q>'+"Give me food master."+'</q><sig>'+"krumblor"+'</sig>');
+				newList.push('News : ancient hieroglyphs deciphered to resemble 365 cookies of a heavenly origin. "We\'re not sure what that means," ponder scientists.');
+				newList.push('News : local news stations overrun by suggestions: "Didnt know modding was this annoying."');
+                newList.push('News : you should grail.');
+				newList.push('News : encyclopaedia\'s head editor denies allegations that he is a “daddy”, says to the public “stop calling me that”.');
+				newList.push('News : hybrid human still keeps to the tradition of calling the head editor "daddy", refuses to take bribes.');
+				newList.push('News : time manipulation growing old for the fiercely competitive baker industry, researchers pursue ways of the future by predicting ahead. "Everything is pre-determined, if you think about it."');
+				if ((Game.AchievementsOwned==622)) newList.push('News : you did it, you can go outside now.');
+				newList.push('News : "check the pins" crowned the phrase of the year!');
+				newList.push('nEWS: aLL CAPITAL LETTERS REVERSED IN FREAK MAGIC ACCIDENT!');
+				newList.push('News: Modders make "custom news tickers", public baffled at thought of corruption in the news.');
+				newList.push('News: News: Words Words doubled doubled after after player player purchases purchases a a tiered tiered upgrade upgrade');
+				newList.push('News: 8 disappearances reported in the past minute, officials blame mysterious "white vans" besides "empty fields with weird plants".')
+            }
 			return newList;
 		}
 		Game.registerHook('ticker', decay.getNews);
