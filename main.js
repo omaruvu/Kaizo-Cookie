@@ -778,7 +778,7 @@ Game.registerMod("Kaizo Cookies", {
 				colors.push(colorCycleFrame([119, 30, 143], [119, 30, 143, 0], frac));
 			}
 			if (Game.veilOn() && Game.cpsSucked == 0) {
-				var frame = Math.floor(Game.T / (2 * sec)) + Math.pow((Game.T / (2 * sec)) - Math.floor(Game.pledgeT / (2 * sec)), 0.33);
+				var frame = Math.floor(Game.T / (2 * sec)) + Math.pow((Game.T / (2 * sec)) - Math.floor(Game.T / (2 * sec)), 0.33);
 				if (Math.floor(frame) % 2) { 
 					colors.push(colorCycleFrame([255, 236, 69, 0], [255, 236, 69, 0.5], (frame - Math.floor(frame)))); 
 				} else {
