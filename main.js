@@ -1621,9 +1621,9 @@ Game.registerMod("Kaizo Cookies", {
 				pp = temp;
 
 				eval('pp.logic='+replaceAll('M.', 'pp.', pp.logic.toString()));
-				eval('pp.logic='+pp.logic.toString().replace('t=1000*60*60', 't=1000*5*60').replace('t=1000*60*60*16', 't=1000*80*60').replace('t=1000*60*60*4', 't=1000*60*20'));
+				eval('pp.logic='+pp.logic.toString().replace('t=1000*60*60', 't=1000*5*60').replace('t=1000*60*60*16', 't=1000*60*60').replace('t=1000*60*60*4', 't=1000*60*20'));
 				eval('pp.draw='+replaceAll('M.', 'pp.', pp.draw.toString()));
-				eval('pp.draw='+pp.draw.toString().replace('t=1000*60*60', 't=1000*5*60').replace('t=1000*60*60*16', 't=1000*80*60').replace('t=1000*60*60*4', 't=1000*60*20'));
+				eval('pp.draw='+pp.draw.toString().replace('t=1000*60*60', 't=1000*5*60').replace('t=1000*60*60*16', 't=1000*60*60').replace('t=1000*60*60*4', 't=1000*60*20'));
 
 				l('templeInfo').innerHTML = '<div '+Game.getDynamicTooltip('Game.ObjectsById['+pp.parent.id+'].minigame.refillTooltip','this')+' id="templeLumpRefill" class="usesIcon shadowFilter lumpRefill" style="left:-6px;top:-10px;background-position:'+(-29*48)+'px '+(-14*48)+'px;"></div><div id="templeSwaps" '+Game.getTooltip('<div style="padding:8px;width:350px;font-size:11px;text-align:center;">'+loc("Each time you slot a spirit, you use up one worship swap.<div class=\"line\"></div>If you have 2 swaps left, the next one will refill after %1.<br>If you have 1 swap left, the next one will refill after %2.<br>If you have 0 swaps left, you will get one after %3.<div class=\"line\"></div>Unslotting a spirit costs no swaps.",[Game.sayTime(60*5*Game.fps),Game.sayTime(60*20*Game.fps),Game.sayTime(60*80*Game.fps)])+'</div>')+'>-</div>'; pp.swapsL = l('templeSwaps');
 				
