@@ -83,7 +83,13 @@ function geometricMean(arr) {
 }
 function avgColors(arr, returnOpacity) {
 	//rgba format, a is in terms of 0-1
-	if (arr.length == 0) { return [0, 0, 0, 1]; }
+	var length = 0;
+	for (let i in arr) {
+		length += arr[3];
+	}
+	if (length == 0) {
+		return (returnOpacity?[0, 0, 0, 0]:[0, 0, 0, 1]);
+	}
 	var toReturn = [0, 0, 0, 0];
 	for (let i in arr) {
 		if (typeof arr[i][3] !== 'undefined') {
@@ -98,7 +104,7 @@ function avgColors(arr, returnOpacity) {
 			toReturn[3] += 1;
 		}
 	}
-	return [toReturn[0] / arr.length, toReturn[1] / arr.length, toReturn[2] / arr.length, (returnOpacity?(toReturn[3] / arr.length):1)];
+	return [toReturn[0] / length, toReturn[1] / length, toReturn[2] / length, (returnOpacity?(toReturn[3] / length):1)];
 }
 function colorCycleFrame(prev, post, fraction) {
 	//"prev" and "post" must be arrays with 3 numbers for rgb
