@@ -85,7 +85,7 @@ function avgColors(arr, returnOpacity) {
 	//rgba format, a is in terms of 0-1
 	var length = 0;
 	for (let i in arr) {
-		length += arr[3];
+		if (typeof arr[i][3] !== 'undefined') { length += arr[i][3]; } else { length += 1; }
 	}
 	if (length == 0) {
 		return (returnOpacity?[0, 0, 0, 0]:[0, 0, 0, 1]);
@@ -104,6 +104,7 @@ function avgColors(arr, returnOpacity) {
 			toReturn[3] += 1;
 		}
 	}
+	console.log()
 	return [toReturn[0] / length, toReturn[1] / length, toReturn[2] / length, (returnOpacity?(toReturn[3] / length):1)];
 }
 function colorCycleFrame(prev, post, fraction) {
