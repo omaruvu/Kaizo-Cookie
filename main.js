@@ -781,7 +781,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerApproach = function() {
 			var base = 15 / Game.eff('wrinklerApproach');
 			base *= 1 + Game.auraMult("Dragon God") * 2;
-			return base / (Math.log(1 / decay.gen) / Math.log(decay.wrinklerApproachFactor));
+			return Math.max(0, base / (Math.log(1 / decay.gen) / Math.log(decay.wrinklerApproachFactor)));
 		}
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 * Math.log(1 / decay.gen) / Math.log(decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold || !decay.unlocked) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(decay.wrinklerApproach());'))//Changing Wrinkler movement speed
