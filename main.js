@@ -1,4 +1,3 @@
-
 var decay = {};
 var kaizoCookiesVer = 'v1.1.2'
 
@@ -192,12 +191,13 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerSpawnFactor = 2.5; //the more it is, the slower wrinklers spawn with increased decay
 		decay.wrinklerApproachFactor = 2.5; //the more it is, the slower wrinklers approach the big cookie with increased decay
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
-		decay.pastCapPow = 0.25; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
+		decay.pastCapPow = 0.1; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
 		decay.bankedPurification = 0; //multiplier to mult and close 
 		decay.times = {
 			sinceLastPurify: 100, //unlike decay.momentum, this is very literal and cant really be manipulated like it
 			sincePledgeEnd: 100,
-			sinceLastAmplify: 200
+			sinceLastAmplify: 200,
+			sinceLastHalt: 100
 		};
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
 		decay.purifyMomentumMult = 2; //multiplied to the amount decrease; deprecated
@@ -395,6 +395,7 @@ Game.registerMod("Kaizo Cookies", {
 			decay.momentum -= Math.log2(Math.max(val * 2, 2) * Game.eff('haltPower')) / decay.haltSubtractMomentum;
 			if (decay.momentum < 1) { decay.momentum = 1; }
 			decay.haltOvertime = Math.min(decay.halt * decay.haltOTLimit, decay.haltOvertime + decay.halt * decay.haltKeep); 
+			decay.times.sinceLastHalt = 0;
 		}
 		decay.amplify = function(buildId, mult, anticlose) {
 			decay.mults[buildId] *= Math.pow(10, -Math.abs(Math.log10(decay.mults[buildId]) * anticlose));
