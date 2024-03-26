@@ -941,11 +941,15 @@ Game.registerMod("Kaizo Cookies", {
 		Game.registerHook('check', function() {
 			if (Game.Objects['Grandma'].amount>=25) { Game.Unlock('Bingo center/Research facility'); }
 		});
+		Game.elderWrath = 0;
 		replaceDesc('One mind', 'Each grandma gains <b>+0.0<span></span>2 base CpS per grandma</b>.<br>Also unlocks the <b>Elder Pledge</b>, which slowly purifies the decay for some cookies.<q>Repels the ancient evil with industrial magic.</q>');
+		Game.Upgrades['One mind'].buyFunction = function() { Game.SetResearch('Exotic nuts'); Game.storeToRefresh=1; }
 		replaceDesc('Exotic nuts', 'Cookie production multiplier <b>+4%</b>, and <b>halves</b> the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
 		replaceDesc('Communal brainsweep', 'Each grandma gains another <b>+0.0<span></span>2 base CpS per grandma</b>, and makes the Elder Pledge purify for <b>twice as much time</b>.<q>Burns the corruption with the worker\'s might.</q>');
+		Game.Upgrades['Communal brainsweep'].buyFunction = function() { Game.SetResearch('Arcane sugar');Game.storeToRefresh=1; }
 		replaceDesc('Arcane sugar', 'Cookie production multiplier <b>+5%</b>, and <b>halves</b> the Elder Pledge cooldown.<q>You\'ll go crazy over these!</q>');
 		replaceDesc('Elder Pact', 'Each grandma gains <b>+0.0<span></span>5 base CpS per portal</b>, and makes the Elder Pledge <b>twice as powerful</b>.<q>Questionably unethical.</q>');
+		Game.Upgrades['Elder Pact'].buyFunction = function() { Game.storeToRefresh=1; }
 		replaceDesc('Sacrificial rolling pins', 'The Elder Pledge is <b>10 times</b> cheaper.<q>As its name suggests, it suffers so that everyone can live tomorrow.</q>');
 		Game.Upgrades['One mind'].clickFunction = function() { return true; };
 		Game.Upgrades['Elder Pact'].clickFunction = function() { return true; };
