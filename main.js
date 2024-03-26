@@ -22,7 +22,7 @@ function auraDesc(id, str) {
 function cookieChange(name, newPow) {
 	if (!Game.Upgrades[name]) { return false; }
 	if (!(typeof Game.Upgrades[name].power == 'function')) { Game.Upgrades[name].power = newPow; } else {
-		eval('Game.Upgrades["'+name+'"].power='+Game.Upgrades[name].power.toString().replace('var pow=2;', 'var pow='+newPow+';'),replace(') pow=3;', ') pow=1.5*'+newPow+';'));
+		eval('Game.Upgrades["'+name+'"].power='+Game.Upgrades[name].power.toString().replace('var pow=2;', 'var pow='+newPow+';').replace(') pow=3;', ') pow=1.5*'+newPow+';'));
 	}
 	var flavorText = Game.Upgrades[name].desc.slice(Game.Upgrades[name].desc.indexOf('<q>'), Game.Upgrades[name].desc.length);
 	Game.Upgrades[name].desc = loc("Cookie production multiplier <b>+%1%</b>.", newPow)+flavorText;
