@@ -81,19 +81,30 @@ function geometricMean(arr) {
 	sum /= Math.max(1, amountValid);
 	return Math.exp(sum) //wtf is an antilog
 }
-function avgColors(arr) {
-	if (arr.length == 0) { return [0, 0, 0]; }
-	var toReturn = [0, 0, 0];
+function avgColors(arr, returnOpacity) {
+	//rgba format, a is in terms of 0-1
+	if (arr.length == 0) { return [0, 0, 0, 1]; }
+	var toReturn = [0, 0, 0, 0];
 	for (let i in arr) {
-		toReturn[0] += arr[i][0];
-		toReturn[1] += arr[i][1];
-		toReturn[2] += arr[i][2];
+		if (typeof arr[i][3] !== 'undefined') {
+			toReturn[0] += arr[i][0] * arr[i][3];
+			toReturn[1] += arr[i][1] * arr[i][3];
+			toReturn[2] += arr[i][2] * arr[i][3];
+			toReturn[3] += arr[i][3];
+		} else {
+			toReturn[0] += arr[i][0];
+			toReturn[1] += arr[i][1];
+			toReturn[2] += arr[i][2];
+			toReturn[3] += 1;
+		}
 	}
-	return [toReturn[0] / arr.length, toReturn[1] / arr.length, toReturn[2] / arr.length];
+	return [toReturn[0] / arr.length, toReturn[1] / arr.length, toReturn[2] / arr.length, (returnOpacity?(toReturn[3] / arr.length):1)];
 }
 function colorCycleFrame(prev, post, fraction) {
 	//"prev" and "post" must be arrays with 3 numbers for rgb
-	return [prev[0] * (1 - fraction) + post[0] * fraction, prev[1] * (1 - fraction) + post[1] * fraction, prev[2] * (1 - fraction) + post[2] * fraction];
+	if (typeof prev[3] === 'undefined') { prev[3] = 1; }
+	if (typeof post[3] === 'undefined') { post[3] = 1; }
+	return [prev[0] * (1 - fraction) + post[0] * fraction, prev[1] * (1 - fraction) + post[1] * fraction, prev[2] * (1 - fraction) + post[2] * fraction, prev[3] * (1 - fraction) + post[3] * fraction];
 }
 
 function allValues(checkpoint) {
@@ -730,11 +741,7 @@ Game.registerMod("Kaizo Cookies", {
 			var colors = [];
 			if (decay.times.sinceLastPurify < 2 * Game.fps) {
 				var frac = Math.pow(decay.times.sinceLastPurify / (2 * Game.fps), 0.7);
-				if (Game.cpsSucked > 0) {
-					colors.push(colorCycleFrame([51, 255, 68], [255, 0, 0], frac));
-				} else {
-					colors.push(colorCycleFrame([51, 255, 68], [255, 255, 255], frac));
-				}
+				colors.push(colorCycleFrame([51, 255, 68], [0, 0, 0, 0], frac));
 			}
 			if (Game.pledgeT > 0) {
 				var frame = Math.floor(Game.pledgeT / (2 * Game.fps)) + Math.pow((Game.pledgeT / (2 * Game.fps)) - Math.floor(Game.pledgeT / (2 * Game.fps)), 0.5);
@@ -744,14 +751,17 @@ Game.registerMod("Kaizo Cookies", {
 					colors.push(colorCycleFrame([42, 255, 225], [51, 255, 68], (frame - Math.floor(frame)))); 
 				}
 			} else if (decay.times.sincePledgeEnd < 2 * Game.fps) {
-				var frac = Math.pow(decay.times.sinceLastPurify / (2 * Game.fps), 0.7);
-				if (Game.cpsSucked > 0) {
-					colors.push(colorCycleFrame([51, 255, 68], [255, 0, 0], frac));
+				var frac = Math.pow(decay.times.sinceLastPurify / (2 * Game.fps), 1.5);
+				colors.push(colorCycleFrame([51, 255, 68], [0, 0, 0, 0], frac));
+			}
+			var result = avgColors(colors, false);
+			if (result[3] < 1) {
+				if (Game.cpsSucked == 0) {
+					result = avgColors([result, [255, 255, 255, 1 - result[3]]]);
 				} else {
-					colors.push(colorCycleFrame([51, 255, 68], [255, 255, 255], frac));
+					result = avgColors([result, [255, 0, 0, 1 - result[3]]]);
 				}
 			}
-			var result = avgColors(colors);
 			if (colors.length > 0) {
 				return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
 			} else {
