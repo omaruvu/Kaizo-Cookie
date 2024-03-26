@@ -104,7 +104,6 @@ function avgColors(arr, returnOpacity) {
 			toReturn[3] += 1;
 		}
 	}
-	console.log()
 	return [toReturn[0] / length, toReturn[1] / length, toReturn[2] / length, (returnOpacity?(toReturn[3] / length):1)];
 }
 function colorCycleFrame(prev, post, fraction) {
@@ -765,12 +764,13 @@ Game.registerMod("Kaizo Cookies", {
 			var result = avgColors(colors, false);
 			if (result[3] < 1) {
 				if (Game.cpsSucked == 0) {
-					result = avgColors([result, [255, 255, 255, 1 - result[3]]]);
+					result = avgColors([result, [255, 255, 255, 1 - result[3]]], false);
 				} else {
-					result = avgColors([result, [255, 0, 0, 1 - result[3]]]);
+					result = avgColors([result, [255, 0, 0, 1 - result[3]]], false);
 				}
 			}
 			if (colors.length > 0) {
+				console.log(colors);
 				return 'color: rgb('+result[0]+','+result[1]+','+result[2]+');';
 			} else {
 				return '';
