@@ -161,7 +161,7 @@ Game.registerMod("Kaizo Cookies", {
 		eval('Game.Notify='+Game.Notify.toString().replace('quick,noLog', 'quick,noLog,forceStay').replace('if (Game.prefs.notifs)', 'if (Game.prefs.notifs && (!forceStay))'));
 
 		/*=====================================================================================
-        Decay & GPOC
+        Decay
         =======================================================================================*/
 		//the decay object is declared outside of the mod object for conveience purposes
 		//decay: a decreasing multiplier to buildings, and theres a different mult for each building. The mult decreases the same way for each building tho
@@ -848,9 +848,10 @@ Game.registerMod("Kaizo Cookies", {
 		decay.wrinklerApproach = function() {
 			var base = 15 / Game.eff('wrinklerApproach');
 			base *= 1 + Game.auraMult("Dragon God") * 2;
-			return Math.max(0, base / (Math.log(1 / decay.gen) / Math.log(decay.wrinklerApproachFactor)));
+			return Math.max(0, base / ((Math.log(1 / Math.min(1, decay.gen)) / Math.log(decay.wrinklerApproachFactor))));
 		}
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 * Math.log(1 / decay.gen) / Math.log(decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold || !decay.unlocked) { chance = 0; }'))//Making it so wrinklers spawn outside of gpoc
+		replaceDesc('Wrinkler doormat', 'Wrinklers no longer spawn.<q>Quite possibly the cleanest doormat one will ever see.</q>');
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 * Math.log(1 / Math.min(1, decay.gen)) / Math.log(decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold || !decay.unlocked || Game.Has("Wrinkler doormat")) { chance = 0; }').replace(`if (Game.Has('Wrinkler doormat')) chance=0.1;`, ''))
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(decay.wrinklerApproach());'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Math.max(Game.cookiesPsRawHighest, Game.cookiesPs))/Game.fps; }'));
