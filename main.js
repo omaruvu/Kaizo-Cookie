@@ -94,6 +94,18 @@ function allValues(checkpoint) {
 	console.log(str);
 }
 
+Game.styleSheets = null; 
+for (let i in document.styleSheets) { 
+	try { if (document.styleSheets[i].cssRules.length > 500) { Game.styleSheets = document.styleSheets[i]; break; } } 
+	catch(error) { } 
+} 
+if (Game.styleSheets === null) { Game.Notify('Unable to inject CSS!', 'Something went wrong. Please contact the mod developers. '); }
+function injectCSS(str, index) {
+	if (Game.styleSheets === null) { return false; }
+	if (typeof index === 'undefined') { index = Game.styleSheets.length; }
+	Game.styleSheets.insertRule(str, index);
+}
+
 let gp = Game.Objects['Wizard tower'].minigame //grimoire proxy
 let pp = Game.Objects['Temple'].minigame //pantheon proxy
 let gap = Game.Objects['Farm'].minigame //garden proxy
