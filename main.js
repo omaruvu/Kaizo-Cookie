@@ -102,7 +102,7 @@ for (let i in document.styleSheets) {
 if (Game.styleSheets === null) { Game.Notify('Unable to inject CSS!', 'Something went wrong. Please contact the mod developers. '); }
 function injectCSS(str, index) {
 	if (Game.styleSheets === null) { return false; }
-	if (typeof index === 'undefined') { index = Game.styleSheets.length; }
+	if (typeof index === 'undefined') { index = Game.styleSheets.cssRules.length; }
 	Game.styleSheets.insertRule(str, index);
 }
 
