@@ -104,7 +104,7 @@ function avgColors(arr, returnOpacity) {
 			toReturn[3] += 1;
 		}
 	}
-	return [toReturn[0] / length, toReturn[1] / length, toReturn[2] / length, (returnOpacity?(toReturn[3] / arr.length):1)];
+	return [toReturn[0] / length, toReturn[1] / length, toReturn[2] / length, (returnOpacity?Math.min(toReturn[3], 1):1)];
 }
 function colorCycleFrame(prev, post, fraction) {
 	//"prev" and "post" must be arrays with 3 numbers for rgb
