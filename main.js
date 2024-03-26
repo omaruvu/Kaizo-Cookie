@@ -705,6 +705,14 @@ Game.registerMod("Kaizo Cookies", {
 		//the other actions are in their respective minigame sections
 
 		allValues('decay ui and scaling');
+
+		//decay visuals
+		injectCSS(`
+  		@keyframes flashGreen { 
+	 		0% { color: #3f4; }
+			100% { color: #fff; }
+		}
+		`);
 		
 		//decay's effects
 		Game.registerHook('logic', decay.updateAll);
