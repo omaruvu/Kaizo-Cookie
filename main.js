@@ -730,7 +730,7 @@ Game.registerMod("Kaizo Cookies", {
 			animation: flashGreenWrinkled 1.2s ease-in 0.25s 1;
   		}
   		`);
-		decay.triggerCookiesPsAnim(what) {
+		decay.triggerCookiesPsAnim = function(what) {
 			if (what == 'purify') {
 				l('cookiesPerSecond').classList.remove('purifying');
 				l('cookiesPerSecond').classList.remove('purifyingWithered');
