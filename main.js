@@ -676,7 +676,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		var newDiv = document.createElement('div'); 
 		newDiv.id = 'decayWidget'; 
-		injectCSS('.leftSectionWidget { font-size: 18px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 5px; display: inline-block; z-index: 6; left: 50%; transform: translate(-50%); background: rgba(0, 0, 0, 0.4); line-height: 1.25; border-radius: 10px; }');
+		injectCSS('.leftSectionWidget { font-size: 18px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 5px; display: inline-block; z-index: 6; left: 50%; transform: translate(-50%, -100%); background: rgba(0, 0, 0, 0.4); line-height: 1.25; border-radius: 10px; }');
 		newDiv.classList.add('leftSectionWidget');
 		newDiv.style = 'top: 500px;'; 
 		l('sectionLeft').appendChild(newDiv);
@@ -684,9 +684,10 @@ Game.registerMod("Kaizo Cookies", {
 			if (!decay.prefs.widget) { l('decayWidget').style = 'display:none;'; }
 			var str = '';
 			str += decay.effectStrs() + '<br>';
-			str += 'x'+decay.getTickspeedMultFromMomentum()
+			str += 'x'+Beautify(decay.getTickspeedMultFromMomentum(), 3);
 			l('decayWidget').innerHTML = str;
-			var verticalPlacement = 800;
+			var verticalPlacement = 0.8; 
+			verticalPlacement = Math.max(verticalPlacement * l('sectionLeft').offsetHeight, 250);
 			l('decayWidget').style = 'top:'+verticalPlacement+'px';
 		}
 		
