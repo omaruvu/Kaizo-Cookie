@@ -600,7 +600,7 @@ Game.registerMod("Kaizo Cookies", {
 			var str = '';
 			str += decay.writePrefButton('ascendOnInf', 'AscOnInfDecayButton', loc('Ascend on infinite decay')+' ON', loc('Ascend on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, ascend without gaining any prestige or heavenly chips")+')</label><br>';
 			str += decay.writePrefButton('wipeOnInf', 'WipeOnInfDecayButton', loc('Wipe save on infinite decay')+' ON', loc('Wipe save on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, wipe save")+')</label><br>';
-			str += decay.writePrefButton('widget', 'widgetButton', loc('Informational widget')+' ON', loc('Informational widget')+' OFF')+'<label>('+loc('Widget below the big cookie that displays information without having to look into the stats menu.')+')</label><br>';
+			str += decay.writePrefButton('widget', 'widgetButton', loc('Informational widget')+' ON', loc('Informational widget')+' OFF')+'<label>('+loc('Widget below the big cookie that displays information without having to look into the stats menu. (only works when decay is unlocked)')+')</label><br>';
 			str += 'Replay information snippets:<br>'
 			var str2 = '';
 			for (let i in decay.notifs) {
@@ -712,7 +712,7 @@ Game.registerMod("Kaizo Cookies", {
 		newDiv.style = 'top: 500px;'; 
 		l('sectionLeft').appendChild(newDiv);
 		decay.setWidget = function() {
-			if (!decay.prefs.widget) { l('decayWidget').style = 'display:none;'; return false; }
+			if (!decay.prefs.widget || !decay.unlocked) { l('decayWidget').style = 'display:none;'; return false; }
 			var str = '';
 			str = decay.effectStrs();
 			l('decayCpsData').innerHTML = str;
