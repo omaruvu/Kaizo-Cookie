@@ -565,12 +565,26 @@ Game.registerMod("Kaizo Cookies", {
 			if (mult > 1) { return 'purity'; }
 			return 'decay';
 		}
+		decay.toggle = function(prefName,button,on,off,invert)
+		{
+			if (decay.prefs[prefName])
+			{
+				l(button).innerHTML=off;
+				decay.prefs[prefName]=0;
+			}
+			else
+			{
+				l(button).innerHTML=on;
+				decay.prefs[prefName]=1;
+			}
+			l(button).className='smallFancyButton prefButton option'+((decay.prefs[prefName]^invert)?'':' off');
+		}
 		decay.writePrefButton = function(prefName,button,on,off,callback,invert) {
 			//I love stealing code from orteil
 			var invert=invert?1:0;
 			if (!callback) callback='';
 			callback+='PlaySound(\'snd/tick.mp3\');';
-			return '<a class="smallFancyButton prefButton option'+((decay.prefs[prefName]^invert)?'':' off')+'" id="'+button+'" '+Game.clickStr+'="Game.Toggle(\''+prefName+'\',\''+button+'\',\''+on+'\',\''+off+'\',\''+invert+'\');'+callback+'">'+(decay.prefs[prefName]?on:off)+'</a>';
+			return '<a class="smallFancyButton prefButton option'+((decay.prefs[prefName]^invert)?'':' off')+'" id="'+button+'" '+Game.clickStr+'="decay.toggle(\''+prefName+'\',\''+button+'\',\''+on+'\',\''+off+'\',\''+invert+'\');'+callback+'">'+(decay.prefs[prefName]?on:off)+'</a>';
 		}
 		decay.writeInfoSnippetButton = function(prefName, button) {
 			if (!eval(decay.notifs[prefName].pref)) { return ''; }
