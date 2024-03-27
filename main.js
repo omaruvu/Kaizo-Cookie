@@ -683,7 +683,9 @@ Game.registerMod("Kaizo Cookies", {
 
 		var newDiv = document.createElement('div'); 
 		newDiv.id = 'decayWidget'; 
-		injectCSS('.leftSectionWidget { font-size: 26px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 3px; display: inline-block; z-index: 6; left: 50%; transform: scale(0.75) translate(-66%, -133%); background: rgba(0, 0, 0, 0.4); line-height: 1.25; border-radius: 10px; }'); //wtf is this black magic
+		injectCSS('.leftSectionWidget { font-size: 26px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 3px; display: inline-block; z-index: 6; left: 50%; transform: scale(0.75) translate(-66.7%, -133.3%); background: rgba(0, 0, 0, 0.4); line-height: 1.25; border-radius: 10px; }'); //wtf is this black magic
+		injectCSS('.widgetDisplay { position: relative; display:inline-flex; justify-content: center; align-items: center; width: 100%; margin: 4px 0px 4px 0px; }');
+		injectCSS('.widgetText { display: inline; margin: 4px 58px 4px 58px; }');
 		newDiv.classList.add('leftSectionWidget');
 		newDiv.style = 'top: 500px;'; 
 		l('sectionLeft').appendChild(newDiv);
@@ -694,11 +696,11 @@ Game.registerMod("Kaizo Cookies", {
 			l('decayCpsData').innerHTML = str;
 			str = 'x'+Beautify(decay.getTickspeedMultFromMomentum(), 3);
 			l('decayMomentumData').innerHTML = str;
-			var verticalPlacement = 0.9; 
+			var verticalPlacement = 0.95; 
 			verticalPlacement = Math.max(verticalPlacement * l('sectionLeft').offsetHeight, 250);
 			l('decayWidget').style = 'top:'+verticalPlacement+'px';
 		}
-		l('decayWidget').innerHTML = `<div id="decayCpsMult" style="position: relative; display:inline-flex; justify-content: center; align-items: center; width: 100%; margin: 4px;"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" style="display: inline; margin: 4px 52px 4px 52px;">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([3, 1, custImg])+`"></div></div><br><div id="decayMomentum" style="position: relative; display:inline-flex; justify-content: center; align-items: center; width: 100%; margin: 4px;"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" style="display: inline; margin: 4px 52px 4px 52px;">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([5, 3, custImg])+`"></div></div>`;
+		l('decayWidget').innerHTML = `<div id="decayCpsMult" class="widgetDisplay"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" class="widgetText">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([3, 1, custImg])+`"></div></div><br><div id="decayMomentum" class="widgetDisplay"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" class="widgetText">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([5, 3, custImg])+`"></div></div>`;
 		
 		//decay scaling
 		decay.setRates = function() {
