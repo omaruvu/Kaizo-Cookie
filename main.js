@@ -686,6 +686,9 @@ Game.registerMod("Kaizo Cookies", {
 		injectCSS('.leftSectionWidget { font-size: 26px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 3px; display: inline-block; z-index: 6; left: 50%; transform: scale(0.75) translate(-66.7%, -133.3%); background: rgba(0, 0, 0, 0.4); line-height: 1.25; border-radius: 10px; }'); //wtf is this black magic
 		injectCSS('.widgetDisplay { position: relative; display:inline-flex; justify-content: center; align-items: center; width: 100%; margin: 4px 0px 4px 0px; }');
 		injectCSS('.widgetText { display: inline; margin: 4px 58px 4px 58px; }');
+		injectCSS('.widgetIcon { position: absolute; }');
+		injectCSS('.widgetIcon.toLeft { left: 0; }');
+		injectCSS('.widgetIcon.toRight { right: 0; }');
 		newDiv.classList.add('leftSectionWidget');
 		newDiv.style = 'top: 500px;'; 
 		l('sectionLeft').appendChild(newDiv);
@@ -701,7 +704,7 @@ Game.registerMod("Kaizo Cookies", {
 			verticalPlacement = Math.max(verticalPlacement * l('sectionLeft').offsetHeight, 250);
 			l('decayWidget').style = 'top:'+verticalPlacement+'px';
 		}
-		l('decayWidget').innerHTML = `<div id="decayCpsMult" class="widgetDisplay"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" class="widgetText">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([3, 1, custImg])+`"></div></div><br><div id="decayMomentum" class="widgetDisplay"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" class="widgetText">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([5, 3, custImg])+`"></div></div>`;
+		l('decayWidget').innerHTML = `<div id="decayCpsMult" `+Game.getTooltip('CpS multiplier from your decay', 'middle', true)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([3, 1, custImg])+`"></div></div><br><div id="decayMomentum" `+Game.getTooltip('Decay rate multiplier from your momentum', 'middle', true)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([5, 3, custImg])+`"></div></div>`;
 		
 		//decay scaling
 		decay.setRates = function() {
