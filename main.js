@@ -675,7 +675,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		var newDiv = document.createElement('div'); 
 		newDiv.id = 'decayWidget'; 
-		newDiv.style = 'font-size: 18px; text-shadow: 0px 1px 4px #000; position: relative; text-align: center; padding: 5px; display: inline-block; z-index: 6;'; 
+		newDiv.style = 'font-size: 18px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 5px; display: inline-block; z-index:6; left: 50%; top: 500px; transform: translate(-50%, 0); background: rgba(255,255,255,0.25);'; 
 		newDiv.innerText = 'unspeakable';
 		l('sectionLeft').appendChild(newDiv);
 		
