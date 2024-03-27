@@ -189,15 +189,16 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltToMomentumMult = 0.5; //momentum gets multiplied by this amount for each point of halt
 		decay.momentumOnHaltBuffer = 2; //for its effect on halting, this amount is negated from it when calcualting
 		decay.momentumOnHaltLogFactor = 2; //the more it is, the less momentum will affect halting power
-		decay.momentumOnHaltPowFactor = 2; //the less it is, the less momentum will affect halting power
+		decay.momentumOnHaltPowFactor = 1.25; //the less it is, the less momentum will affect halting power
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 2.5; //the more it is, the slower wrinklers spawn with increased decay
-		decay.wrinklerApproachFactor = 2.5; //the more it is, the slower wrinklers approach the big cookie with increased decay
+		decay.wrinklerApproachFactor = 2; //the more it is, the slower wrinklers approach the big cookie with increased decay
+		decay.wrinklerApproachPow = 0.5; //the more it is, the faster wrinklers approach the big cookie with increased decay
 		decay.wcPow = 0.25; //the more it is, the more likely golden cookies are gonna turn to wrath cokies with less decay
 		decay.pastCapPow = 0.1; //the power applied to the number to divide the mult if going past purity cap with unshackled purity
-		decay.bankedPurification = 0; //multiplier to mult and close 
+		decay.bankedPurification = 0; //adds to mult and multiplies close 
 		decay.times = {
-			sinceLastPurify: 100, //unlike decay.momentum, this is very literal and cant really be manipulated like it
+			sinceLastPurify: 100, 
 			sincePledgeEnd: 100,
 			sinceLastAmplify: 200,
 			sinceLastHalt: 100
@@ -234,7 +235,8 @@ Game.registerMod("Kaizo Cookies", {
 				momentum: 0,
 				boost: 0,
 				autoclicker: 0,
-				garden: 0
+				garden: 0,
+				momentumPlus: 0
 			},
 			widget: 0
 		}
@@ -526,6 +528,12 @@ Game.registerMod("Kaizo Cookies", {
 				desc: 'The garden has been sped up and most mutations are significantly more common; the rarer it is in vanilla, the more boost it got. In addition, many of the slower-to-grow plants have been sped up dramatically. Lastly, all soils now tick faster and the refill works differently.',
 				icon: [2, 18],
 				pref: 'decay.prefs.preventNotifs.garden'
+			},
+			momentumPlus: {
+				title: 'Too much momentum',
+				desc: 'Momentum not only increases your rate of decay, but also makes methods that normally stop it less effective! There\'s really no way around it - if you got this much momentum, the only way to recover control is to keep clicking the cookie or popping wrinklers until it dies down.',
+				icon: [5, 3, custImg],
+				pref: 'decay.prefs.preventNotifs.momentumPlus'
 			}
 		}
 		decay.triggerNotif = function(key, bypass) {
@@ -554,7 +562,8 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
 			if (Game.gcBuffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
 			if (Game.Objects['Idleverse'].amount > 0 && Game.Objects['Cortex baker'].amount > 0) { decay.triggerNotif('buildVariance'); }
-			if (decay.momentum > 5) { decay.triggerNotif('momentum'); }
+			if (decay.momentum > 1.25) { decay.triggerNotif('momentum'); }
+			if (decay.momentum > 7.5) { decay.triggerNotif('momentumPlus'); }
 		}
 		Game.registerHook('logic', decay.checkTriggerNotifs);
 		Game.registerHook('draw', decay.draw);
@@ -741,12 +750,12 @@ Game.registerMod("Kaizo Cookies", {
 		decay.setRates = function() {
 			var d = 1;
 			var c = Game.cookiesEarned + 1;
-			d *= Math.pow(0.99875, Math.log10(c));
+			d *= Math.pow(0.99825, Math.log10(c));
 			d *= Math.pow(0.999, Math.log2(Math.max(Game.goldenClicks - 77, 1)));
-			d *= Math.pow(0.9985, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
-			d *= Math.pow(0.9985, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
+			d *= Math.pow(0.99875, Math.max(Math.sqrt(Game.AchievementsOwned) - 4, 0));
+			d *= Math.pow(0.99875, Math.max(Math.sqrt(Game.UpgradesOwned) - 5, 0));
 			d *= Math.pow(0.99825, Math.max(Math.pow(decay.getBuildingContribution(), 0.33) - 10, 0));
-			d *= Math.pow(0.9975, Math.log2(Math.max(Game.lumpsTotal, 1)));
+			d *= Math.pow(0.998, Math.log2(Math.max(Game.lumpsTotal, 1)));
 			d *= Math.pow(0.99825, Math.log10(Game.cookieClicks));
 			d *= Math.pow(0.999, Math.pow(Game.dragonLevel, 0.6));
 			d *= Math.pow(0.9999, Math.log2(Math.max(Date.now() - Game.startDate - 100000, 1))); //hopefully not too bruh
@@ -759,8 +768,8 @@ Game.registerMod("Kaizo Cookies", {
 			decay.incMult = 1 - d;
 
 			var w = 1 - 0.8;
-			w *= Math.pow(0.99, Math.log10(c));
-			decay.wrinklerSpawnFactor = 1 + (2 * w);
+			w *= Math.pow(0.985, Math.log10(c));
+			decay.wrinklerSpawnFactor = 2.5 * Math.pow(w * 5, 5);
 			if (Game.hasGod) { 
 				var godLvl = Game.hasGod('scorn');
 				if (godLvl == 1) { decay.wrinklerSpawnThreshold = 1 - Math.pow(w * 3, 0.25); decay.wcPow = 0.25 * 2; }
@@ -921,12 +930,12 @@ Game.registerMod("Kaizo Cookies", {
 			return false;
 		}
 		decay.wrinklerApproach = function() {
-			var base = 15 / Game.eff('wrinklerApproach');
+			var base = 15 / Math.pow(Game.eff('wrinklerApproach'), 1.5); //the bigger the number, the slower it approaches
 			base *= 1 + Game.auraMult("Dragon God") * 2;
-			return Math.max(0, base / ((Math.log(1 / Math.min(1, decay.gen)) / Math.log(decay.wrinklerApproachFactor))));
+			return Math.max(1, base / Math.pow((Math.log(1 / Math.min(1, decay.gen)) / Math.log(decay.wrinklerApproachFactor)), decay.wrinklerApproachPow));
 		}
 		replaceDesc('Wrinkler doormat', 'Wrinklers no longer spawn.<q>Quite possibly the cleanest doormat one will ever see.</q>');
-        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=0.0001 * Math.log(1 / Math.min(1, decay.gen)) / Math.log(decay.wrinklerSpawnFactor); if (decay.gen >= decay.wrinklerSpawnThreshold || !decay.unlocked || Game.Has("Wrinkler doormat")) { chance = 0; }').replace(`if (Game.Has('Wrinkler doormat')) chance=0.1;`, ''))
+        eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('var chance=0.00001*Game.elderWrath;','var chance=1 - Math.pow(0.9999, Math.log(1 / Math.min(1, decay.gen)) / Math.log(decay.wrinklerSpawnFactor)); if (decay.gen >= decay.wrinklerSpawnThreshold || !decay.unlocked || Game.Has("Wrinkler doormat")) { chance = 0; }').replace(`if (Game.Has('Wrinkler doormat')) chance=0.1;`, ''))
 		eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.close<1) me.close+=(1/Game.fps)/10;','if (me.close<1) me.close+=(1/Game.fps)/(decay.wrinklerApproach());'))//Changing Wrinkler movement speed
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('if (me.phase==0 && Game.elderWrath>0 && n<max && me.id<max)','if (me.phase==0 && n<max && me.id<max)'));
         eval('Game.UpdateWrinklers='+Game.UpdateWrinklers.toString().replace('me.sucked+=(((Game.cookiesPs/Game.fps)*Game.cpsSucked));//suck the cookies','if (!Game.auraMult("Dragon Guts")) { me.sucked+=(Game.cpsSucked * 10 * Math.max(Game.cookiesPsRawHighest, Game.cookiesPs))/Game.fps; }'));
