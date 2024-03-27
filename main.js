@@ -712,7 +712,7 @@ Game.registerMod("Kaizo Cookies", {
 		newDiv.style = 'top: 500px;'; 
 		l('sectionLeft').appendChild(newDiv);
 		decay.setWidget = function() {
-			if (!decay.prefs.widget) { l('decayWidget').style = 'display:none;'; }
+			if (!decay.prefs.widget) { l('decayWidget').style = 'display:none;'; return false; }
 			var str = '';
 			str = decay.effectStrs();
 			l('decayCpsData').innerHTML = str;
