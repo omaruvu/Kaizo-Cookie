@@ -157,6 +157,9 @@ Game.registerMod("Kaizo Cookies", {
 		// creating custImg variable
 		custImg=App?this.dir+"/img.png":"https://raw.githack.com/omaruvu/Kaizo-Cookie/main/modicons.png"
 
+		//uhhhhh
+		Game.priceIncrease = 1.1475;
+
 		//overriding notification so some really important notifs can last for any amount of time even with quick notes on
 		eval('Game.Notify='+Game.Notify.toString().replace('quick,noLog', 'quick,noLog,forceStay').replace('if (Game.prefs.notifs)', 'if (Game.prefs.notifs && (!forceStay))'));
 
