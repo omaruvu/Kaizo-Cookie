@@ -716,6 +716,13 @@ Game.registerMod("Kaizo Cookies", {
 			var str = '';
 			str = decay.effectStrs();
 			l('decayCpsData').innerHTML = str;
+			if (decay.gen > 1) {
+				l('decayRateIconLeft').style = writeIcon([2, 1, custImg]);
+				l('decayRateIconRight').style = writeIcon([2, 1, custImg]);
+			} else {
+				l('decayRateIconLeft').style = writeIcon([3, 1, custImg]);
+				l('decayRateIconRight').style = writeIcon([3, 1, custImg]);
+			}
 			str = 'x'+Beautify(decay.getTickspeedMultFromMomentum(), 3);
 			l('decayMomentumData').innerHTML = str;
 			var verticalPlacement = 0.95; 
@@ -725,7 +732,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		addLoc('CpS multiplier from your decay');
 		addLoc('Decay rate multiplier from your momentum');
-		l('decayWidget').innerHTML = `<div id="decayCpsMult" `+Game.getTooltip('<div style="width: 250px; text-align: center;">'+loc('CpS multiplier from your decay')+'</div>', 'middle', false)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([3, 1, custImg])+`"></div></div><br><div id="decayMomentum" `+Game.getTooltip('<div style="width: 250px; text-align: center;">'+loc('Decay rate multiplier from your momentum')+'</div>', 'middle', false)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([5, 3, custImg])+`"></div></div>`;
+		l('decayWidget').innerHTML = `<div id="decayCpsMult" `+Game.getTooltip('<div style="width: 250px; text-align: center;">'+loc('CpS multiplier from your decay/purity')+'</div>', 'middle', false)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" id="decayRateIconLeft" style="`+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" id="decayRateIconRight" style="`+writeIcon([3, 1, custImg])+`"></div></div><br><div id="decayMomentum" `+Game.getTooltip('<div style="width: 250px; text-align: center;">'+loc('Decay rate multiplier from your momentum')+'</div>', 'middle', false)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([5, 3, custImg])+`"></div></div>`;
 		
 		//decay scaling
 		decay.setRates = function() {
