@@ -503,13 +503,13 @@ Game.registerMod("Kaizo Cookies", {
 			momentum: {
 				title: 'Decay momentum',
 				desc: 'If you don\'t do anything about the decay for a while, the rate of growth will start to slowly increase and your clicks will get less effective at stopping decay; this is momentum. Unlike decay itself, purifying decay CANNOT reverse momentum; however, halting decay such as via clicking the big cookie, can halt its growth and even (very slowly) reverse its momentum!',
-				icon: [0, 0],
+				icon: [5, 3, custImg],
 				pref: 'decay.prefs.preventNotifs.momentum'
 			},
 			boost: {
 				title: 'Purity boosts',
 				desc: 'Some upgrades decrease your decay, but not all decreases decrease the same thing! There are three main ways:<br>"Decay rate" - The amount of decay that gets generated per second<br>"Decay momentum" - The decay momentum, which increases the decay rate if the decay is left uninterrupted<br>"Decay propagation" - Decay rates AND decay momentum',
-				icon: [0, 0],
+				icon: [20, 7],
 				pref: 'decay.prefs.preventNotifs.boost'
 			},
 			autoclicker: {
