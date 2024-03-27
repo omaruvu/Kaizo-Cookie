@@ -276,6 +276,7 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (decay.times.sinceLastPurify > 30) { decay.bankedPurification += Game.auraMult('Fierce Hoarder') / (4 * Game.fps * Math.pow(1 + decay.bankedPurification, 0.5)); }
 			decay.gen = decay.mults[20];
+			decay.setWidget();
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); decay.infReached = false; }
 		}
@@ -675,9 +676,19 @@ Game.registerMod("Kaizo Cookies", {
 
 		var newDiv = document.createElement('div'); 
 		newDiv.id = 'decayWidget'; 
-		newDiv.style = 'font-size: 18px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 5px; display: inline-block; z-index:6; left: 50%; top: 60%; transform: translate(-50%, 0); background: rgba(0, 0, 0, 0.4);'; 
-		newDiv.innerText = 'unspeakable';
+		injectCSS('.leftSectionWidget { font-size: 18px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 5px; display: inline-block; z-index: 6; left: 50%; transform: translate(-50%); background: rgba(0, 0, 0, 0.4); line-height: 1.25; border-radius: 10px; }');
+		newDiv.classList.add('leftSectionWidget');
+		newDiv.style = 'top: 500px;'; 
 		l('sectionLeft').appendChild(newDiv);
+		decay.setWidget = function() {
+			if (!decay.prefs.widget) { l('decayWidget').style = 'display:none;'; }
+			var str = '';
+			str += decay.effectStrs() + '<br>';
+			str += 'x'+decay.getTickspeedMultFromMomentum()
+			l('decayWidget').innerHTML = str;
+			var verticalPlacement = 800;
+			l('decayWidget').style = 'top:'+verticalPlacement+'px';
+		}
 		
 		//decay scaling
 		decay.setRates = function() {
