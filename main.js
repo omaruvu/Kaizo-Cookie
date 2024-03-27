@@ -697,6 +697,7 @@ Game.registerMod("Kaizo Cookies", {
 			str = 'x'+Beautify(decay.getTickspeedMultFromMomentum(), 3);
 			l('decayMomentumData').innerHTML = str;
 			var verticalPlacement = 0.95; 
+			if (Game.specialTab == 'dragon') { verticalPlacement = 0.65; } else if (Game.specialTab == 'santa') { verticalPlacement = 0.8; }
 			verticalPlacement = Math.max(verticalPlacement * l('sectionLeft').offsetHeight, 250);
 			l('decayWidget').style = 'top:'+verticalPlacement+'px';
 		}
