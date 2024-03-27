@@ -276,9 +276,12 @@ Game.registerMod("Kaizo Cookies", {
 			}
 			if (decay.times.sinceLastPurify > 30) { decay.bankedPurification += Game.auraMult('Fierce Hoarder') / (4 * Game.fps * Math.pow(1 + decay.bankedPurification, 0.5)); }
 			decay.gen = decay.mults[20];
-			decay.setWidget();
 			Game.updateVeil();
 			if (decay.infReached) { decay.onInf(); decay.infReached = false; }
+		}
+		decay.draw = function() {
+			decay.setWidget();
+			decay.updateStats();
 		}
 		decay.updateMomentum = function(m) {
 			if (Game.Has('Purity vaccines')) { return m; }
@@ -551,6 +554,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.momentum > 5) { decay.triggerNotif('momentum'); }
 		}
 		Game.registerHook('logic', decay.checkTriggerNotifs);
+		Game.registerHook('draw', decay.draw);
 		eval('Game.Win='+Game.Win.toString().replace('Game.recalculateGains=1;', 'decay.triggerNotif("achievement"); Game.recalculateGains=1;'));
 		eval('Game.shimmerTypes["golden"].popFunc='+Game.shimmerTypes["golden"].popFunc.toString().replace("if (me.wrath) Game.Win('Wrath cookie');", "if (me.wrath) { decay.triggerNotif('wrath'); Game.Win('Wrath cookie'); }"));
 
@@ -675,7 +679,6 @@ Game.registerMod("Kaizo Cookies", {
 				document.getElementById('decayMomentumMultD').innerHTML = decay.momentumStr();
 			}
 		}
-		Game.registerHook('draw', decay.updateStats);
 		//"D" stands for display, mainly just dont want to conflict with any other id and lazy to check
 
 		var newDiv = document.createElement('div'); 
