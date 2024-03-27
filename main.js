@@ -185,8 +185,8 @@ Game.registerMod("Kaizo Cookies", {
 		decay.haltTickingPow = 0.75; //the more it is, the more that the current decay tickspeed will affect decHalt
 		decay.haltToMomentumMult = 0.5; //momentum gets multiplied by this amount for each point of halt
 		decay.momentumOnHaltBuffer = 2; //for its effect on halting, this amount is negated from it when calcualting
-		decay.momentumOnHaltLogFactor = 1.5; //the more it is, the less momentum will affect halting power
-		decay.momentumOnHaltPowFactor = 3; //the less it is, the less momentum will affect halting power
+		decay.momentumOnHaltLogFactor = 2; //the more it is, the less momentum will affect halting power
+		decay.momentumOnHaltPowFactor = 2; //the less it is, the less momentum will affect halting power
 		decay.wrinklerSpawnThreshold = 0.5; //above this decay mult, wrinklers can never spawn regardless of chance
 		decay.wrinklerSpawnFactor = 2.5; //the more it is, the slower wrinklers spawn with increased decay
 		decay.wrinklerApproachFactor = 2.5; //the more it is, the slower wrinklers approach the big cookie with increased decay
@@ -201,7 +201,7 @@ Game.registerMod("Kaizo Cookies", {
 		};
 		decay.buffDurPow = 0.5; //the more this is, the more that decay will affect buff duration
 		decay.purifyMomentumMult = 2; //multiplied to the amount decrease; deprecated
-		decay.haltReverseMomentumFactor = 0.99; //each point of halt called when decay.stop multiplies the momentum with this amount
+		decay.haltReverseMomentumFactor = 0.985; //each point of halt called when decay.stop multiplies the momentum with this amount
 		decay.haltSubtractMomentum = 1000000; //halting from momentum is divided by this
 		decay.cpsList = [];
 		decay.exemptBuffs = ['clot', 'building debuff', 'loan 1 interest', 'loan 2 interest', 'loan 3 interest', 'gifted out', 'haggler misery', 'pixie misery', 'stagnant body'];
