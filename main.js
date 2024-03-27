@@ -672,6 +672,12 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		Game.registerHook('draw', decay.updateStats);
 		//"D" stands for display, mainly just dont want to conflict with any other id and lazy to check
+
+		var newDiv = document.createElement('div'); 
+		newDiv.id = 'decayWidget'; 
+		newDiv.style = 'font-size: 18px; text-shadow: 0px 1px 4px #000; position: relative; text-align: center; padding: 5px; display: inline-block;'; 
+		newDiv.innerText = 'unspeakable';
+		l('sectionLeft').appendChild(newDiv);
 		
 		//decay scaling
 		decay.setRates = function() {
@@ -2183,7 +2189,7 @@ Game.registerMod("Kaizo Cookies", {
 			'sugar frenzy': [10000, 10],
 			'sugar blessing': [10000, 3],
 			'building special': [100000, 5],
-			'cookie storm drop': [50, 15],
+			'cookie storm drop': [150, 15],
 			'blab': [2500000, 1.25],
 			'cookie storm': [10000, 8],
 			'clot': [6666, 6],
@@ -2211,7 +2217,7 @@ Game.registerMod("Kaizo Cookies", {
 				var pool=[];
 
 				for (let i in decay.cursedorThresholdMap) {
-					for (let ii = 0; ii < decay.getCursedorEffAdd(i, Game.cookieClicks); ii++) {
+					for (let ii = 0; ii < decay.getCursedorEffAdd(i, Game.cookieClicks * 3 /*must preserve 66666*/); ii++) {
 						pool.push(i);
 					}
 				}
