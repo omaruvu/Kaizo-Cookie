@@ -1,5 +1,5 @@
 var decay = {};
-var kaizoCookiesVer = 'v1.1.2'
+var kaizoCookiesVer = 'v1.0';
 
 //additional helper functions
 function replaceDesc(name, toReplaceWith) {
