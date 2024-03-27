@@ -683,7 +683,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		var newDiv = document.createElement('div'); 
 		newDiv.id = 'decayWidget'; 
-		injectCSS('.leftSectionWidget { font-size: 26px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 3px; display: inline-block; z-index: 6; left: 50%; transform: scale(0.5) translate(-25%, -50%); background: rgba(0, 0, 0, 0.4); line-height: 1.25; border-radius: 10px; }');
+		injectCSS('.leftSectionWidget { font-size: 26px; text-shadow: rgb(0, 0, 0) 0px 1px 4px; position: relative; text-align: center; padding: 3px; display: inline-block; z-index: 6; left: 50%; transform: scale(0.5) translate(-50%, -100%); background: rgba(0, 0, 0, 0.4); line-height: 1.25; border-radius: 10px; }');
 		newDiv.classList.add('leftSectionWidget');
 		newDiv.style = 'top: 500px;'; 
 		l('sectionLeft').appendChild(newDiv);
@@ -698,7 +698,7 @@ Game.registerMod("Kaizo Cookies", {
 			verticalPlacement = Math.max(verticalPlacement * l('sectionLeft').offsetHeight, 250);
 			l('decayWidget').style = 'top:'+verticalPlacement+'px';
 		}
-		l('decayWidget').innerHTML = `<div id="decayCpsMult" style="position: relative"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" style="display: inline; transform: translate(0%, -50%);">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([3, 1, custImg])+`"></div></div><div id="decayMomentum" style="position: relative"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" style="display: inline; transform: translate(0%, -50%);">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([5, 3, custImg])+`"></div></div>`;
+		l('decayWidget').innerHTML = `<div id="decayCpsMult" style="position: relative"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" style="display: inline; margin: 4px 52px 4px 52px;">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([3, 1, custImg])+`"></div></div><div id="decayMomentum" style="position: relative"><div class="icon" style="position: absolute; left: 0px; `+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" style="display: inline; margin: 4px 52px 4px 52px;">initializing...</div>`+`<div class="icon" style="position: absolute; right: 0px; `+writeIcon([5, 3, custImg])+`"></div></div>`;
 		
 		//decay scaling
 		decay.setRates = function() {
