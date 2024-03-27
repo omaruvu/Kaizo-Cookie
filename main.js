@@ -579,17 +579,21 @@ Game.registerMod("Kaizo Cookies", {
 		addLoc('Ascend on infinite decay');
 		addLoc('Wipe save on infinite decay');
 		addLoc('Upon reaching infinite decay, ascend without gaining any prestige or heavenly chips');
+		addLoc('Informational widget');
+		addLoc('Widget below the big cookie that displays information without having to look into the stats menu.');
+		addLoc('<b>none.</b><br>(You can see and replay information snippets you\'ve collected throughout the game here. The first one occurs at 5,555 cookies baked this ascension.)')
 		decay.getPrefButtons = function() {
 			var str = '';
 			str += decay.writePrefButton('ascendOnInf', 'AscOnInfDecayButton', loc('Ascend on infinite decay')+' ON', loc('Ascend on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, ascend without gaining any prestige or heavenly chips")+')</label><br>';
 			str += decay.writePrefButton('wipeOnInf', 'WipeOnInfDecayButton', loc('Wipe save on infinite decay')+' ON', loc('Wipe save on infinite decay')+' OFF')+'<label>('+loc("Upon reaching infinite decay, wipe save")+')</label><br>';
+			str += decay.writePrefButton('widget', 'widgetButton', loc('Informational widget')+' ON', loc('Informational widget')+' OFF')+'<label>('+loc('Widget below the big cookie that displays information without having to look into the stats menu.')+')</label><br>';
 			str += 'Replay information snippets:<br>'
 			var str2 = '';
 			for (let i in decay.notifs) {
 				str2 += decay.writeInfoSnippetButton(i, i+' Button')+'';
 			}
 			if (str2 == '') {
-				str2 = '<b>none.</b><br>(You can see and replay information snippets you\'ve collected throughout the game here. The first one occurs at 5,555 cookies baked this ascension.)';
+				str2 = loc('<b>none.</b><br>(You can see and replay information snippets you\'ve collected throughout the game here. The first one occurs at 5,555 cookies baked this ascension.)');
 			}
 			return str + str2;
 		}
@@ -638,9 +642,10 @@ Game.registerMod("Kaizo Cookies", {
 			return str;
 		}
 
+		addLoc('Decay rate multiplier from your momentum:');
 		decay.momentumStr = function() {
 			if (!decay.unlocked) { return ''; }
-			var str = '<b>Decay rate multiplier from your momentum:</b> x';
+			var str = '<b>'+loc('Decay rate multiplier from your momentum:')+'</b> x';
 			str += Beautify(decay.getTickspeedMultFromMomentum(), 3);
 			return str;
 		}
@@ -704,7 +709,9 @@ Game.registerMod("Kaizo Cookies", {
 			verticalPlacement = Math.max(verticalPlacement * l('sectionLeft').offsetHeight, 250);
 			l('decayWidget').style = 'top:'+verticalPlacement+'px';
 		}
-		l('decayWidget').innerHTML = `<div id="decayCpsMult" `+Game.getTooltip('<div style="width: 250px; text-align: center;">CpS multiplier from your decay</div>', 'middle', false)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([3, 1, custImg])+`"></div></div><br><div id="decayMomentum" `+Game.getTooltip('<div style="width: 250px; text-align: center;">Decay rate multiplier from your momentum</div>', 'middle', false)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([5, 3, custImg])+`"></div></div>`;
+		addLoc('CpS multiplier from your decay');
+		addLoc('Decay rate multiplier from your momentum');
+		l('decayWidget').innerHTML = `<div id="decayCpsMult" `+Game.getTooltip('<div style="width: 250px; text-align: center;">'+loc('CpS multiplier from your decay')+'</div>', 'middle', false)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([3, 1, custImg])+`"></div>`+`<div id="decayCpsData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([3, 1, custImg])+`"></div></div><br><div id="decayMomentum" `+Game.getTooltip('<div style="width: 250px; text-align: center;">'+loc('Decay rate multiplier from your momentum')+'</div>', 'middle', false)+` class="widgetDisplay"><div class="icon widgetIcon toLeft" style="`+writeIcon([5, 3, custImg])+`"></div>`+`<div id="decayMomentumData" class="widgetText">initializing...</div>`+`<div class="icon widgetIcon toRight" style="`+writeIcon([5, 3, custImg])+`"></div></div>`;
 		
 		//decay scaling
 		decay.setRates = function() {
