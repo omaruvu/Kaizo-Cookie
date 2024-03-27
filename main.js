@@ -618,7 +618,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.diffStr = function() {
 			if (!decay.unlocked) { return ''; }
 			var str = '<b>CpS multiplier from '+decay.term(decay.gen)+': </b>';
-			if (decay.gen < 0.00001) {
+			if (decay.gen < 0.0001) {
 				str += '1 / ';
 				str += Beautify(1 / decay.gen);
 			} else { 
@@ -652,9 +652,12 @@ Game.registerMod("Kaizo Cookies", {
 			if (num > 1) { 
 				str += '<small>+</small>'; 
 				str += Beautify(((num - 1) * 100), 3);
-			} else { 
+			} else if (num >= 0.0001) { 
 				str += '<small>-</small>'; 
 				str += Beautify(((1 - num) * 100), 3);
+			} else {
+				str += '1 / ';
+				str += Beautify(1 / num);
 			}
 			str += '%';
 			return str;
