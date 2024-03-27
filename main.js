@@ -1081,6 +1081,7 @@ Game.registerMod("Kaizo Cookies", {
 			 .replace(`Game.Lock('Elder Pledge');`,'Game.pledgeC = Game.getPledgeCooldown();')
 			 .replace(`Game.Unlock('Elder Pledge');`, 'decay.times.sincePledgeEnd = 0;')
 			 .replace(`(Game.Has('Elder Pact') && Game.Upgrades['Elder Pledge'].unlocked==0)`, `(Game.Has('One mind') && Game.Upgrades['Elder Pledge'].unlocked==0)`)
+			 .replace('Game.elderWrath=1;', '').replace('Game.elderWrath++;', '').replace(`Game.Has('Elder Pact') && Game.Upgrades['Elder Pledge'].unlocked==0`, 'false')
 		);
 
 		allValues('decay purification & halt');
@@ -1659,22 +1660,6 @@ Game.registerMod("Kaizo Cookies", {
 		cookieChange('Eternal heart biscuits', 9);
 		Game.Upgrades['Prism heart biscuits'].basePrice *=   1000000000000000000000000000000000000000000000000;
 		cookieChange('Prism heart biscuits', 10);
-
-		Game.Upgrades['Kitten helpers'].basePrice=9000000000
-		Game.Upgrades['Kitten workers'].basePrice=9000000000000
-		Game.Upgrades['Kitten engineers'].basePrice=900000000000000000
-		Game.Upgrades['Kitten overseers'].basePrice=90000000000000000000
-		Game.Upgrades['Kitten managers'].basePrice=900000000000000000000000
-		Game.Upgrades['Kitten accountants'].basePrice=9000000000000000000000000000
-		Game.Upgrades['Kitten specialists'].basePrice=900000000000000000000000000000
-		Game.Upgrades['Kitten experts'].basePrice=900000000000000000000000000000000
-		Game.Upgrades['Kitten consultants'].basePrice=9000000000000000000000000000000000000
-		Game.Upgrades['Kitten assistants to the regional manager'].basePrice=900000000000000000000000000000000000000
-		Game.Upgrades['Kitten marketeers'].basePrice=900000000000000000000000000000000000000000
-		Game.Upgrades['Kitten analysts'].basePrice=9000000000000000000000000000000000000000000000
-		Game.Upgrades['Kitten executives'].basePrice=900000000000000000000000000000000000000000000000
-		Game.Upgrades['Kitten admins'].basePrice=900000000000000000000000000000000000000000000000000
-		Game.Upgrades['Kitten strategists'].basePrice=9000000000000000000000000000000000000000000000000000000
 
 		Game.Upgrades['Wrinkly cookies'].power=15;
 		Game.Upgrades['Wrinkly cookies'].baseDesc=loc("Cookie production multiplier <b>+%1% permanently</b>.",15)+'<q>The result of regular cookies left to age out for countless eons in a place where time and space are meaningless.</q>';
