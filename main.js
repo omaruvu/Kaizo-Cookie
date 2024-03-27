@@ -652,14 +652,15 @@ Game.registerMod("Kaizo Cookies", {
 			if (num > 1) { 
 				str += '<small>+</small>'; 
 				str += Beautify(((num - 1) * 100), 3);
+				str += '%';
 			} else if (num >= 0.0001) { 
 				str += '<small>-</small>'; 
 				str += Beautify(((1 - num) * 100), 3);
+				str += '%';
 			} else {
 				str += '1 / ';
 				str += Beautify(1 / num);
 			}
-			str += '%';
 			return str;
 		}
 
