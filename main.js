@@ -233,7 +233,7 @@ Game.registerMod("Kaizo Cookies", {
 				autoclicker: 0,
 				garden: 0
 			},
-			widget: 1
+			widget: 0
 		}
 
 		//decay core
