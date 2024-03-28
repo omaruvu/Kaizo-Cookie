@@ -838,6 +838,7 @@ Game.registerMod("Kaizo Cookies", {
 
 		//decay visuals
 		decay.cookiesPsAnim = function() {
+			if (!decay.unlocked) { return ''; }
 			var colors = [];
 			var sec = Game.fps;
 			if (decay.times.sinceLastPurify < 3 * sec) {
