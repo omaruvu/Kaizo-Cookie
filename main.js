@@ -772,7 +772,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (Game.Has('One mind')) { d *= 0.99; }
 			if (Game.Has('Shimmering veil')) { d *= 0.99; }
 			if (Game.Has('Unshackled Purity')) { d *= 0.985; }
-			decay.incMult = 1 - d;
+			decay.incMult = Math.max(1 - d, 0.00001);
 
 			var w = 1 - 0.8;
 			w *= Math.pow(0.985, Math.log10(c));
