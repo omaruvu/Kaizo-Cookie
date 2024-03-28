@@ -294,7 +294,7 @@ Game.registerMod("Kaizo Cookies", {
 		}
 		decay.updateMomentum = function(m) {
 			if (Game.Has('Purity vaccines')) { return m; }
-			var mult = decay.getMomentumMult() * Math.pow(1 + decay.incMult, 5) * Math.pow(Math.max(decay.gen, 1), Game.Has('Unshackled Purity')?0.3:0.4) / (20 * Game.fps);
+			var mult = decay.getMomentumMult() * Math.pow(1 + decay.incMult, 5) * Math.pow(Math.max(decay.gen, 1), Game.Has('Unshackled Purity')?0.3:0.4) / (16 * Game.fps);
 			if (Game.pledgeT > 0) { mult *= 2; }
 			m += (Math.log2((m + 1)) * Math.pow(decay.haltToMomentumMult, Math.pow(decay.halt + decay.haltOvertime * decay.haltOTEfficiency, decay.haltFactor)) / Math.log2(decay.momentumIncFactor)) * mult;
 			
@@ -325,7 +325,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.getMomentumMult = function() {
 			//getTickspeed but for momentum
 			var tickSpeed = 1;
-			tickSpeed *= (1 - Math.pow(0.9, Math.log10(Math.max(Game.cookiesEarned - 1000000, 1))));
+			tickSpeed *= (1 - Math.pow(0.75, Math.log10(Math.max(Game.cookiesEarned - 1e+18, 1))));
 			tickSpeed *= Game.eff('decayMomentum');
 			if (Game.veilOn()) { tickSpeed *= 1 - Game.getVeilBoost(); }
 			if (Game.hasGod) {
@@ -517,7 +517,7 @@ Game.registerMod("Kaizo Cookies", {
 			},
 			boost: {
 				title: 'Purity boosts',
-				desc: 'Some upgrades decrease your decay, but not all decreases decrease the same thing! There are three main ways:<br>"Decay rate" - The amount of decay that gets generated per second<br>"Decay momentum" - The decay momentum, which increases the decay rate if the decay is left uninterrupted<br>"Decay propagation" - Decay rates AND decay momentum',
+				desc: 'Some upgrades decrease your decay, but not all decreases decrease the same thing! There are three main ways:<br>"Decay rate" - The amount of decay that gets generated per second<br>"Decay momentum" - The decay momentum, which increases the decay rate if the decay is left uninterrupted (requires a few quintillion cookies baked all time to unlock)<br>"Decay propagation" - Decay rates AND decay momentum',
 				icon: [20, 7],
 				pref: 'decay.prefs.preventNotifs.boost'
 			},
