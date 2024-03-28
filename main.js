@@ -152,7 +152,7 @@ Game.registerMod("Kaizo Cookies", {
 		
 		
         // notification!
-		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.<br>Also, look in options for this mod's settings!`, [21,32],10,1);
+		Game.Notify(`Oh, so you think comp is too easy?`, `Good luck.`, [21,32],10,1);
 
 		// creating custImg variable
 		custImg=App?this.dir+"/img.png":"https://raw.githack.com/omaruvu/Kaizo-Cookie/main/modicons.png"
@@ -213,8 +213,11 @@ Game.registerMod("Kaizo Cookies", {
 		decay.justMult = 0; //debugging use
 		decay.infReached = false;
 		decay.unlocked = false;
-		if (Game.cookiesEarned > 1000) { decay.unlocked = true; }
+		decay.momentumUnlocked = false;
+		if (Game.cookiesEarned > 5555) { decay.unlocked = true; }
+		if (Game.cookiesEarned > 5.555e18) { decay.momentumUnlocked = true; }
 		decay.DEBUG = false; //disable or enable the debugger statements
+		decay.hasEncounteredNotif = false;
 		decay.prefs = {
 			ascendOnInf: 1,
 			wipeOnInf: 0,
@@ -238,7 +241,7 @@ Game.registerMod("Kaizo Cookies", {
 				garden: 0,
 				momentumPlus: 0
 			},
-			widget: 0
+			widget: 1
 		}
 
 		//decay core
@@ -251,6 +254,7 @@ Game.registerMod("Kaizo Cookies", {
 		} 
 		decay.updateAll = function() {
 			if (Game.cookiesEarned <= 5555) { decay.unlocked = false; return false; } else { decay.unlocked = true; }
+			if (Game.cookiesEarned <= 5.555e18) { decay.momentumUnlocked = false; } else { decay.momentumUnlocked = true; }
 			if (decay.momentum < 1) { decay.momentum = 1; }
 			var t = decay.getTickspeed();
 			var c = decay.update(20, t);
@@ -259,7 +263,7 @@ Game.registerMod("Kaizo Cookies", {
 				decay.mults[i] = c;
 			}
 			decay.regainAcc();
-			decay.momentum = decay.updateMomentum(decay.momentum);
+			if (decay.momentumUnlocked) { decay.momentum = decay.updateMomentum(decay.momentum); }
 			Game.recalculateGains = 1;	//uh oh
 			decay.cpsList.push(Game.unbuffedCps);
 			if (decay.cpsList.length > Game.fps * 1.5) {
@@ -542,6 +546,8 @@ Game.registerMod("Kaizo Cookies", {
 			if (!decay.unlocked) { return false; }
 			Game.Notify(decay.notifs[key].title, decay.notifs[key].desc, decay.notifs[key].icon, 1e21, false, true);
 			eval(decay.notifs[key].pref+'=1;');
+			if (!decay.hasEncounteredNotif) { Game.Notify('Options', 'Look into the options menu for additional options and the ability to replay these informational notifications!', 0, 1e21, false, true); }
+			decay.hasEncounteredNotif = true; 
 		}
 		Game.buffCount = function() {
 			var count = 0;
@@ -561,7 +567,7 @@ Game.registerMod("Kaizo Cookies", {
 			if (decay.incMult >= 0.04) { decay.triggerNotif('decayII'); }
 			if (Game.buffCount() && decay.gen <= 0.5) { decay.triggerNotif('buff'); }
 			if (Game.gcBuffCount() > 1) { decay.triggerNotif('multipleBuffs'); }
-			if (Game.Objects['Idleverse'].amount > 0 && Game.Objects['Cortex baker'].amount > 0) { decay.triggerNotif('buildVariance'); }
+			if (Game.Objects['Idleverse'].amount > 0 && Game.Objects['Cortex baker'].amount > 0) { /* decay.triggerNotif('buildVariance'); this is kinda dumb*/ }
 			if (decay.momentum > 1.25) { decay.triggerNotif('momentum'); }
 			if (decay.momentum > 7.5) { decay.triggerNotif('momentumPlus'); }
 		}
@@ -699,7 +705,7 @@ Game.registerMod("Kaizo Cookies", {
 			return str;
 		}
 
-		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div id="decayMultD" class="listing">'+decay.diffStr()+'</div><div id="decayMomentumMultD" class="listing">'+decay.momentumStr()+'</div>'+`).replace(`'<div class="listing"><b>'+loc("Cookies per second:")`,`'<div id="CpSD" class="listing"><b>'+loc("Cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Raw cookies per second:")`,`'<div id="RawCpSD" class="listing"><b>'+loc("Raw cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Cookies per click:")`,`'<div id="CpCD" class="listing"><b>'+loc("Cookies per click:")`));
+		eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+`, `(giftStr!=''?'<div class="listing">'+giftStr+'</div>':'')+'<div id="decayMultD" class="listing">'+decay.diffStr()+'</div><div id="decayMomentumMultD" class="listing" style="'+(decay.momentumUnlocked?'':'display:none;')+'">'+decay.momentumStr()+'</div>'+`).replace(`'<div class="listing"><b>'+loc("Cookies per second:")`,`'<div id="CpSD" class="listing"><b>'+loc("Cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Raw cookies per second:")`,`'<div id="RawCpSD" class="listing"><b>'+loc("Raw cookies per second:")`).replace(`'<div class="listing"><b>'+loc("Cookies per click:")`,`'<div id="CpCD" class="listing"><b>'+loc("Cookies per click:")`));
 		Game.UpdateMenu();
 		decay.updateStats = function() {
 			if (Game.onMenu=='stats') { 
@@ -725,6 +731,7 @@ Game.registerMod("Kaizo Cookies", {
 		l('sectionLeft').appendChild(newDiv);
 		decay.setWidget = function() {
 			if (!decay.prefs.widget || !decay.unlocked) { l('decayWidget').style = 'display:none;'; return false; }
+			if (!decay.momentumUnlocked) { l('decayMomentum').style = 'display:none'; } else { l('decayMomentum').style = ''; }
 			var str = '';
 			str = decay.effectStrs();
 			l('decayCpsData').innerHTML = str;
@@ -2390,7 +2397,7 @@ Game.registerMod("Kaizo Cookies", {
 			var counter = 0;
 			strIn = str[6];
 			for (let i in decay.prefs.preventNotifs) {
-				if (isv(strIn[counter])) { decay.prefs.preventNotifs[i] = parseInt(strIn[counter]); }
+				if (isv(strIn[counter])) { decay.prefs.preventNotifs[i] = parseInt(strIn[counter]); if (parseInt(strIn[counter])) { decay.hasEncounteredNotif = true; }}
 				counter++;
 			}
 			strIn = str[7].split(',');
