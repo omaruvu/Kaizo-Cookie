@@ -216,7 +216,7 @@ Game.registerMod("Kaizo Cookies", {
 		decay.momentumUnlocked = false;
 		if (Game.cookiesEarned > 5555) { decay.unlocked = true; }
 		if (Game.cookiesEarned > 5.555e18) { decay.momentumUnlocked = true; }
-		decay.DEBUG = false; //disable or enable the debugger statements
+		decay.DEBUG = true; //disable or enable the debugger statements
 		decay.hasEncounteredNotif = false;
 		decay.prefs = {
 			ascendOnInf: 1,
