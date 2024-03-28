@@ -1974,6 +1974,16 @@ Game.registerMod("Kaizo Cookies", {
 				'News: stock prices reach record highs after the destruction of the Great Space Cookie Patch! Traders hail in delight!'
 			]); }
 
+			if (Game.Objects['Temple'].amount>25) { newList = newList.concat([
+				'News: are cookies real for gods? We sure hope not.'
+			]); }
+			if (Game.Objects['Temple'].amount>50) { newList = newList.concat([
+				'News: if cookies are not real for gods, then who are we praying to?'
+			]); }
+			if (Game.Objects['Temple'].amount>100) { newList = newList.concat([
+				'News: construction company founded to be "insane" after the construction of the 5899th statue of a wrinkled isosceles triangle!'
+			]); }
+
 			if (Game.Objects['Antimatter condenser'].amount>25) { newList = newList.concat([
 				'News: As it turns out, there is 1e200,405,192,204 times more antimatter than matter. Expert found cause to be "dimensions", whatever that means.',
 				'News: Experts advise against turning antimatter to cookies, reason being "there is already way too much cookies, and antimatter can help clear out some cookies"'
